@@ -46,4 +46,15 @@ class Ticket(models.Model):
         return f"{self.utilisateur} - {self.nom_evenement} - {self.type_ticket}"
     
 # Modèle paiement
+class Paiement(models.Model):
+    ticket = models.ForeignKey(Ticket, on_delete=models.CASCADE, related_name="paiements")
+    montant = models.DecimalField(max_digits=10, decimal_places=2)
+    methode_paiement = models.CharField(max_length=50)
+    statut_paiement = models.BooleanField(default=False)
+    date_paiement = models.DateField(auto_now_add=True)
+    cle_securisee_2 = models.CharField(max_length=50)
+
+    def __str__(self):
+        return f"{self.ticket} - {self.montant} - {self.date_paiement}"
+
 # Modèle génération_ticket
