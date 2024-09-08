@@ -51,10 +51,19 @@ class Paiement(models.Model):
     montant = models.DecimalField(max_digits=10, decimal_places=2)
     methode_paiement = models.CharField(max_length=50)
     statut_paiement = models.BooleanField(default=False)
-    date_paiement = models.DateField(auto_now_add=True)
-    cle_securisee_2 = models.CharField(max_length=50)
+    date_paiement = models.DateTimeField(default=timezone.now)
 
     def __str__(self):
         return f"{self.ticket} - {self.montant} - {self.date_paiement}"
 
 # Modèle génération_ticket
+
+class GenerationTicket(models.Model):
+    ticket = models.ForeignKey(Ticket, on_delete=models.CASCADE, related_name="generation_tickets")
+    qr_code = models.ImageField(upload_to='qr_codes/')
+    cle_securisee_2 = models.CharField(max_length=50)
+    quantite_vendue = models.IntegerField(default=0)
+    date_generation = models.DateTimeField(default=timezone.now)
+
+    def __str__(self):
+        return f"{self.ticket} - {self.date_generation}"
