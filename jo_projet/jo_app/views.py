@@ -1,3 +1,5 @@
 from django.shortcuts import render
 
-# Create your views here.
+# Définition de la vue 'home'
+def home(request):
+    return render(request, 'home.html')
