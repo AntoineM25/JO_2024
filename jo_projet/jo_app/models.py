@@ -17,7 +17,7 @@ class Utilisateur(models.Model):
     
     def save(self, *args, **kwargs):
         if not self.cle_securisee_1:  # Si la clé n'est pas définie
-            self.cle_securisee_1 = secrets.token_hex(16)  # Générer la clé sécurisée 1
+            self.cle_securisee_1 = secrets.token_hex(3)  # Générer la clé sécurisée 1
         super().save(*args, **kwargs)
 
     def __str__(self):
@@ -73,7 +73,7 @@ class GenerationTicket(models.Model):
 
     def save(self, *args, **kwargs):
         if not self.cle_securisee_2:  # Si la clé n'est pas définie
-            self.cle_securisee_2 = secrets.token_hex(16)  # Générer la clé sécurisée 2
+            self.cle_securisee_2 = secrets.token_hex(3)  # Générer la clé sécurisée 2
         super().save(*args, **kwargs)
 
     def __str__(self):
