@@ -63,7 +63,6 @@ class Paiement(models.Model):
         return f"{self.ticket} - {self.montant} - {self.date_paiement}"
 
 # Modèle génération_ticket
-
 class GenerationTicket(models.Model):
     ticket = models.ForeignKey('Ticket', on_delete=models.CASCADE, related_name="generation_tickets")
     qr_code = models.ImageField(upload_to='qr_codes/')
