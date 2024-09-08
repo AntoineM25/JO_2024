@@ -1,5 +1,6 @@
 from django.db import models
 from django.utils import timezone
+import secrets
 
 # Modèle utilisateur
 class Utilisateur(models.Model):
@@ -12,7 +13,12 @@ class Utilisateur(models.Model):
     date_de_naissance = models.DateField()
     date_d_inscription = models.DateField(auto_now_add=True)
     est_administrateur = models.BooleanField(default=False)
-    cle_securisee_1 = models.CharField(max_length=50)
+    cle_securisee_1 = models.CharField(max_length=50, blank=True, editable=False)
+    
+    def save(self, *args, **kwargs):
+        if not self.cle_securisee_1:  # Si la clé n'est pas définie
+            self.cle_securisee_1 = secrets.token_hex(16)  # Générer la clé sécurisée 1
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return f"{self.prenom} {self.nom}"
@@ -59,11 +65,16 @@ class Paiement(models.Model):
 # Modèle génération_ticket
 
 class GenerationTicket(models.Model):
-    ticket = models.ForeignKey(Ticket, on_delete=models.CASCADE, related_name="generation_tickets")
+    ticket = models.ForeignKey('Ticket', on_delete=models.CASCADE, related_name="generation_tickets")
     qr_code = models.ImageField(upload_to='qr_codes/')
-    cle_securisee_2 = models.CharField(max_length=50)
+    cle_securisee_2 = models.CharField(max_length=50, blank=True, editable=False)  
     quantite_vendue = models.IntegerField(default=0)
     date_generation = models.DateTimeField(default=timezone.now)
+
+    def save(self, *args, **kwargs):
+        if not self.cle_securisee_2:  # Si la clé n'est pas définie
+            self.cle_securisee_2 = secrets.token_hex(16)  # Générer la clé sécurisée 2
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return f"{self.ticket} - {self.date_generation}"
