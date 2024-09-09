@@ -6,3 +6,4 @@ admin.site.register(Utilisateur)
 admin.site.register(Ticket)
 admin.site.register(Paiement)
 admin.site.register(GenerationTicket)
+

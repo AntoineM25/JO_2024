@@ -1,6 +1,7 @@
 from django.db import models
 from django.utils import timezone
 from django.core.exceptions import ValidationError
+from datetime import date
 import secrets, re
 
 # Modèle utilisateur
@@ -25,7 +26,9 @@ class Utilisateur(models.Model):
     email = models.EmailField(max_length=50, unique=True)
     mot_de_passe = models.CharField(max_length=50, validators=[validate_password])
     adresse = models.CharField(max_length=100)
-    date_de_naissance = models.DateField()
+    code_postal = models.CharField(max_length=10, default='00000')  
+    ville = models.CharField(max_length=50, default='Inconnue')
+    date_de_naissance = models.DateField(null=True, blank=True)
     date_d_inscription = models.DateField(auto_now_add=True)
     est_administrateur = models.BooleanField(default=False)
     cle_securisee_1 = models.CharField(max_length=50, blank=True, editable=False)
