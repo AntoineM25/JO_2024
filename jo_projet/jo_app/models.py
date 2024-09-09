@@ -3,10 +3,16 @@ from django.utils import timezone
 import secrets
 
 # Modèle utilisateur
+SEXE_CHOICES = [
+    ('H', 'Homme'),
+    ('F', 'Femme'),
+    ('NB', 'Non-binaire'),
+]
+
 class Utilisateur(models.Model):
     nom = models.CharField(max_length=50)
     prenom = models.CharField(max_length=50)
-    sexe = models.CharField(max_length=20)
+    sexe = models.CharField(max_length=5, choices=SEXE_CHOICES, default='H')
     email = models.EmailField(max_length=50, unique=True)
     mot_de_passe = models.CharField(max_length=50)
     adresse = models.CharField(max_length=100)
