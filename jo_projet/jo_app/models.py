@@ -1,6 +1,7 @@
 from django.db import models
 from django.utils import timezone
-import secrets
+from django.core.exceptions import ValidationError
+import secrets, re
 
 # Modèle utilisateur
 SEXE_CHOICES = [
@@ -9,12 +10,20 @@ SEXE_CHOICES = [
     ('NB', 'Non-binaire'),
 ]
 
+def validate_password(value):
+    if len(value) < 8:
+        raise ValidationError('Le mot de passe doit contenir au moins 8 caractères.')
+    if not re.search(r'[A-Z]', value):
+        raise ValidationError('Le mot de passe doit contenir au moins une majuscule.')
+    if not re.search(r'[!@#$%^&*(),.?":{}|<>]', value):
+        raise ValidationError('Le mot de passe doit contenir au moins un caractère spécial.')
+
 class Utilisateur(models.Model):
     nom = models.CharField(max_length=50)
     prenom = models.CharField(max_length=50)
     sexe = models.CharField(max_length=5, choices=SEXE_CHOICES, default='H')
     email = models.EmailField(max_length=50, unique=True)
-    mot_de_passe = models.CharField(max_length=50)
+    mot_de_passe = models.CharField(max_length=50, validators=[validate_password])
     adresse = models.CharField(max_length=100)
     date_de_naissance = models.DateField()
     date_d_inscription = models.DateField(auto_now_add=True)
