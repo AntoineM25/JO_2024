@@ -1,8 +1,9 @@
 from django.db import models
 from django.utils import timezone
 from django.core.exceptions import ValidationError
-from datetime import date
-import secrets, re
+from django.core.files import File
+from io import BytesIO
+import secrets, re, qrcode
 
 # Modèle utilisateur
 SEXE_CHOICES = [
@@ -31,11 +32,11 @@ class Utilisateur(models.Model):
     date_de_naissance = models.DateField(null=True, blank=True)
     date_d_inscription = models.DateField(auto_now_add=True)
     est_administrateur = models.BooleanField(default=False)
-    cle_securisee_1 = models.CharField(max_length=50, blank=True, editable=False)
+    cle_securisee_1 = models.CharField(max_length=64, blank=True, editable=False)
     
     def save(self, *args, **kwargs):
         if not self.cle_securisee_1:  # Si la clé n'est pas définie
-            self.cle_securisee_1 = secrets.token_hex(3)  # Générer la clé sécurisée 1
+            self.cle_securisee_1 = secrets.token_hex(32)  # Générer la clé sécurisée 1
         super().save(*args, **kwargs)
 
     def __str__(self):
@@ -83,15 +84,32 @@ class Paiement(models.Model):
 # Modèle génération_ticket
 class GenerationTicket(models.Model):
     ticket = models.ForeignKey('Ticket', on_delete=models.CASCADE, related_name="generation_tickets")
-    qr_code = models.ImageField(upload_to='qr_codes/')
-    cle_securisee_2 = models.CharField(max_length=50, blank=True, editable=False)  
+    qr_code = models.ImageField(upload_to='qr_codes/', blank=True)
+    cle_securisee_2 = models.CharField(max_length=64, blank=True, editable=False)  
     quantite_vendue = models.IntegerField(default=0)
     date_generation = models.DateTimeField(default=timezone.now)
 
     def save(self, *args, **kwargs):
-        if not self.cle_securisee_2:  # Si la clé n'est pas définie
-            self.cle_securisee_2 = secrets.token_hex(3)  # Générer la clé sécurisée 2
+        # Génération de la clé sécurisée 2 si elle n'existe pas
+        if not self.cle_securisee_2:
+            self.cle_securisee_2 = secrets.token_hex(32)  # Générer la clé sécurisée 2
+
+        # Concaténation des clés sécurisées 1 et 2
+        cle_finale = f"{self.ticket.utilisateur.cle_securisee_1}{self.cle_securisee_2}"
+
+        # Génération du QR Code basé sur la clé finale
+        qr = qrcode.QRCode(version=1, box_size=10, border=5)
+        qr.add_data(cle_finale)
+        qr.make(fit=True)
+
+        # Sauvegarder le QR code comme fichier image
+        img = qr.make_image(fill='black', back_color='white')
+        buffer = BytesIO()
+        img.save(buffer, format="PNG")
+        self.qr_code.save(f'qr_code_{self.ticket.id}.png', File(buffer), save=False)
+
         super().save(*args, **kwargs)
 
     def __str__(self):
         return f"{self.ticket} - {self.date_generation}"
+
