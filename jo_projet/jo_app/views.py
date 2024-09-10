@@ -28,6 +28,18 @@ def ticket(request):
         form = TicketForm() 
     return render(request, 'ticket.html', {'form': form})
 
+# Récupérer le sport sélectionné (EN COURS DE DEVELOPPEMENT)
+def ticket_create_view(request):
+    sport = request.GET.get('sport', '') 
+    if request.method == "POST":
+        form = TicketForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('ticket_list')
+    else:
+        form = TicketForm(initial={'nom_evenement': sport})  
+    return render(request, 'ticket.html', {'form': form})
+
 # Affichage de la liste des tickets
 def ticket_list_view(request):
     tickets = Ticket.objects.all()
@@ -52,3 +64,8 @@ def ticket_delete_view(request, ticket_id):
         ticket.delete()  
         return redirect('ticket_list')  
     return render(request, 'ticket_confirm_delete.html', {'ticket': ticket})
+
+# Création de la liste des sports 
+def sport_list_view(request):
+    sports = Ticket.objects.values_list('nom_evenement', flat=True).distinct()
+    return render(request, 'sport.html', {'sports': sports})

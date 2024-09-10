@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1>Choisissez un sport</h1>
+    <div class="row">
+        {% for sport in sports %}
+            <div class="col-md-4">
+                <h3>{{ sport }}</h3>
+                <!-- Bouton pour choisir ce sport -->
+                <a href="{% url 'ticket_create' %}?sport={{ sport }}" class="btn btn-primary">Choisir ce sport</a>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

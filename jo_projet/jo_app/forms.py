@@ -46,3 +46,4 @@ class TicketForm(forms.ModelForm):
             "nom_evenement": forms.TextInput(attrs={"class": "form-control", "placeholder": "Entrez le sport choisi"}),
             "date_evenement": forms.DateInput(attrs={"type": "date", "class": "form-control"})
         }
+    
