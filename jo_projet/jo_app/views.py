@@ -10,8 +10,10 @@ def inscription(request):
     if request.method == 'POST':
         form = UtilisateurForm(request.POST)
         if form.is_valid():
-            form.save()  
-            return redirect('home')  
+            form.save()
+            return redirect('home')  # Redirection après inscription
     else:
-        form = UtilisateurForm()  
+        form = UtilisateurForm()
+
+    return render(request, 'inscription.html', {'form': form})
 
