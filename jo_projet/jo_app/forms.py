@@ -1,5 +1,5 @@
 from django import forms
-from .models import Utilisateur 
+from .models import Utilisateur
 
 # Formulaire d'inscription
 class UtilisateurForm(forms.ModelForm):
