@@ -13,7 +13,15 @@
 #### ***Base de données***
 
 -   Test réalisé sur le terminal avec MySQL, la base de données est bien implémentée suite à l'ajout d'utilisateurs via django/admin.
+-   Vérification de la bonne implémentation du formulaire d'inscription dans la BDD
 
 #### ***Template***
 
--   Test réalisé avec un template qui affiche du texte sur une page web, pour voir si tout s'affiche correctement 
+-   Test réalisé avec un template qui affiche du texte sur une page web, pour voir si tout s'affiche correctement
+-   Test du template "Home" suite à l'ajout de bootstrap 
+
+#### ***Formulaire***
+
+-   Test du formulaire d'inscription en renseignant chaque case
+-   Test du formulaire d'inscription sur chaque ligne, pour valider le fait qu'il faut obligatoirement renseigner chaque case
+-   Test du formulaire de paiement et vérification qu'un choix de billet soit synchronisé au bon prix 
