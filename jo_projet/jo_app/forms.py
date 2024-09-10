@@ -2,10 +2,32 @@ from django import forms
 from .models import Utilisateur
 
 # Formulaire d'inscription
+from django import forms
+from .models import Utilisateur
+
 class UtilisateurForm(forms.ModelForm):
     class Meta:
         model = Utilisateur
         fields = ["nom", "prenom", "sexe", "email", "mot_de_passe", "adresse", "code_postal", "ville", "date_de_naissance"]
+        labels = {
+            "nom": "Nom",
+            "prenom": "Prénom",
+            "sexe": "Sexe",
+            "email": "Adresse e-mail",
+            "mot_de_passe": "Mot de passe",
+            "adresse": "Adresse",
+            "code_postal": "Code postal",
+            "ville": "Ville",
+            "date_de_naissance": "Date de naissance",
+        }
         widgets = {
-            "mot_de_passe": forms.PasswordInput(),  # Pour afficher le champ mot de passe en tant que champ sécurisé
+            "nom": forms.TextInput(attrs={"class": "form-control", "placeholder": "Entrez votre nom"}),
+            "prenom": forms.TextInput(attrs={"class": "form-control", "placeholder": "Entrez votre prénom"}),
+            "sexe": forms.Select(attrs={"class": "form-control"}),
+            "email": forms.EmailInput(attrs={"class": "form-control", "placeholder": "Entrez votre adresse e-mail"}),
+            "mot_de_passe": forms.PasswordInput(attrs={"class": "form-control", "placeholder": "Entrez votre mot de passe"}),
+            "adresse": forms.TextInput(attrs={"class": "form-control", "placeholder": "Entrez votre adresse"}),
+            "code_postal": forms.TextInput(attrs={"class": "form-control", "placeholder": "Entrez votre code postal"}),
+            "ville": forms.TextInput(attrs={"class": "form-control", "placeholder": "Entrez votre ville"}),
+            "date_de_naissance": forms.DateInput(attrs={"type": "date", "class": "form-control"}),
         }
