@@ -29,7 +29,7 @@ class Utilisateur(models.Model):
     adresse = models.CharField(max_length=100)
     code_postal = models.CharField(max_length=10)  
     ville = models.CharField(max_length=50)
-    date_de_naissance = models.DateField(null=False, blank=False)
+    date_de_naissance = models.DateField(null=False, blank=False, default='2000-01-01')
     date_d_inscription = models.DateField(auto_now_add=True)
     est_administrateur = models.BooleanField(default=False)
     cle_securisee_1 = models.CharField(max_length=64, blank=True, editable=False)
@@ -54,7 +54,7 @@ class Ticket(models.Model):
     prix_solo = models.DecimalField(max_digits=10, decimal_places=2, default=20.00)
     prix_duo = models.DecimalField(max_digits=10, decimal_places=2, default=35.00)
     prix_famille = models.DecimalField(max_digits=10, decimal_places=2, default=50.00)
-    nom_evenement = models.CharField(max_length=100)
+    nom_evenement = models.CharField(max_length=100) # choix du sport
     date_evenement = models.DateField()
 
     # Obtenir le prix selon le type de ticket

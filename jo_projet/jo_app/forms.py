@@ -1,9 +1,7 @@
 from django import forms
-from .models import Utilisateur
+from .models import Utilisateur, Ticket, Paiement, GenerationTicket
 
 # Formulaire d'inscription
-from django import forms
-from .models import Utilisateur
 
 class UtilisateurForm(forms.ModelForm):
     class Meta:
@@ -29,5 +27,22 @@ class UtilisateurForm(forms.ModelForm):
             "adresse": forms.TextInput(attrs={"class": "form-control", "placeholder": "Entrez votre adresse"}),
             "code_postal": forms.TextInput(attrs={"class": "form-control", "placeholder": "Entrez votre code postal"}),
             "ville": forms.TextInput(attrs={"class": "form-control", "placeholder": "Entrez votre ville"}),
-            "date_de_naissance": forms.DateInput(attrs={"type": "date", "class": "form-control"}),
+            "date_de_naissance": forms.DateInput(attrs={"type": "date", "class": "form-control"})
+        }
+
+# Formulaire choix de ticket
+
+class TicketForm(forms.ModelForm):
+    class Meta:
+        model = Ticket 
+        fields = ["type_ticket", "nom_evenement", "date_evenement"]
+        labels = {
+            "type_ticket": "Choix de l'offre",
+            "nom_evenement": "Choix du sport",
+            "date_evenement": "Choix de la date",
+        }
+        widgets = {
+            "type_ticket": forms.Select(attrs={"class": "form-control"}),
+            "nom_evenement": forms.TextInput(attrs={"class": "form-control", "placeholder": "Entrez le sport choisi"}),
+            "date_evenement": forms.DateInput(attrs={"type": "date", "class": "form-control"})
         }

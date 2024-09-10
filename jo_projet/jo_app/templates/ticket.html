@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <h2>Choix du billet</h2>
+            <form method="POST">
+                {% csrf_token %}
+                {{ form.as_p }}
+
+                <!-- Paragraphe pour afficher le prix -->
+                <p id="prix">Prix : 20.00€</p> <!-- Le prix par défaut est pour le type "solo" -->
+
+                <button type="submit" class="btn btn-primary mt-3">Choisir</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Script pour afficher le prix dynamiquement -->
+<script>
+    document.getElementById("id_type_ticket").addEventListener("change", function() {
+        let prix;
+        switch (this.value) {
+            case "solo":
+                prix = "20.00€";
+                break;
+            case "duo":
+                prix = "35.00€";
+                break;
+            case "famille":
+                prix = "50.00€";
+                break;
+        }
+        document.getElementById("prix").innerText = "Prix : " + prix;
+    });
+</script>
+{% endblock %}
