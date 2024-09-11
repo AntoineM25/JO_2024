@@ -32,6 +32,7 @@ class UtilisateurForm(forms.ModelForm):
 
 # Formulaire choix de ticket
 
+"""
 class TicketForm(forms.ModelForm):
     class Meta:
         model = Ticket
@@ -44,5 +45,21 @@ class TicketForm(forms.ModelForm):
             'type_ticket': forms.Select(attrs={"class": "form-control"}),
             'sport': forms.Select(attrs={"class": "form-control"})  
         } 
+"""
+
+class TicketForm(forms.ModelForm):
+    class Meta:
+        model = Ticket
+        fields = ["type_ticket", "nom_evenement", "date_evenement"]
+        labels = {
+            "type_ticket": "Choix de l'offre",
+            "nom_evenement": "Sport choisi",
+            "date_evenement": "Date de l'événement",
+        }
+        widgets = {
+            "type_ticket": forms.Select(attrs={"class": "form-control"}),
+            "nom_evenement": forms.TextInput(attrs={"class": "form-control", "readonly": "readonly"}),
+            "date_evenement": forms.TextInput(attrs={"class": "form-control", "readonly": "readonly"}),
+        }
 
     

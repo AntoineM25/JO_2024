@@ -26,8 +26,16 @@ def sport_list_view(request):
     
 # Création de 'ticket'
 def ticket_create_view(request):
-    sport_nom = request.GET.get('sport', '')  # Récupérer le nom du sport depuis l'URL
-    sport_instance = Sport.objects.filter(nom=sport_nom).first()  # Trouver le sport dans la BDD
+    sport_nom = request.GET.get('sport', '')  # Récupérer le nom du sport sélectionné
+
+    # Trouver le sport correspondant dans la base de données
+    sport = Sport.objects.filter(nom=sport_nom).first()
+
+    # Si le sport existe, on récupère sa date
+    if sport:
+        date_evenement = sport.date_evenement
+    else:
+        date_evenement = None
 
     if request.method == 'POST':
         form = TicketForm(request.POST)
@@ -35,8 +43,10 @@ def ticket_create_view(request):
             form.save()
             return redirect('ticket_list')
     else:
+        # Initialiser les données avec le sport et sa date
         initial_data = {
-            'sport': sport_instance  # Utiliser l'instance du sport comme valeur initiale
+            'nom_evenement': sport_nom,
+            'date_evenement': date_evenement,
         }
         form = TicketForm(initial=initial_data)
 
