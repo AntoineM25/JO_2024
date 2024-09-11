@@ -17,28 +17,59 @@ def inscription(request):
         form = UtilisateurForm()
     return render(request, 'inscription.html', {'form': form})
 
+# Page des sports
+def sport_list_view(request):
+    sports = [
+        {"nom": "Judo"},
+        {"nom": "Basketball"},
+        {"nom": "Tennis"},
+        {"nom": "Natation"},
+        {"nom": "Athlétisme"},
+    ]
+    return render(request, 'sport.html', {'sports': sports})
+    
+"""
+    # Liste des sports + dates des événements
+def sport_list_view(request):
+    sports = [
+        {"nom": "Football", "date_evenement": "2024-06-10"},
+        {"nom": "Basketball", "date_evenement": "2024-06-12"},
+        {"nom": "Tennis", "date_evenement": "2024-06-15"},
+        {"nom": "Natation", "date_evenement": "2024-06-18"},
+        {"nom": "Athlétisme", "date_evenement": "2024-06-20"},
+    ]
+    return render(request, 'sport.html', {'sports': sports})
+"""
 # Création de 'ticket'
-def ticket(request):
+def ticket_create_view(request):
+    sport = request.GET.get('sport', '') 
+
+    # Correspondance entre les sports et leurs dates
+    sport_dates = {
+        'Judo': '2024-06-10',
+        'Basketball': '2024-06-12',
+        'Tennis': '2024-06-15',
+        'Natation': '2024-06-18',
+        'Athlétisme': '2024-06-20',
+    }
+
+    # Récupérer la date en fonction du sport sélectionné
+    date_evenement = sport_dates.get(sport, '')  
+
     if request.method == 'POST':
         form = TicketForm(request.POST)
         if form.is_valid():
             form.save()
             return redirect('ticket_list')
-    else: 
-        form = TicketForm() 
+    else:
+        initial_data = {
+            'nom_evenement': sport,
+            'date_evenement': date_evenement,
+        }
+        form = TicketForm(initial=initial_data)
+
     return render(request, 'ticket.html', {'form': form})
 
-# Récupérer le sport sélectionné (EN COURS DE DEVELOPPEMENT)
-def ticket_create_view(request):
-    sport = request.GET.get('sport', '') 
-    if request.method == "POST":
-        form = TicketForm(request.POST)
-        if form.is_valid():
-            form.save()
-            return redirect('ticket_list')
-    else:
-        form = TicketForm(initial={'nom_evenement': sport})  
-    return render(request, 'ticket.html', {'form': form})
 
 # Affichage de la liste des tickets
 def ticket_list_view(request):
@@ -65,7 +96,3 @@ def ticket_delete_view(request, ticket_id):
         return redirect('ticket_list')  
     return render(request, 'ticket_confirm_delete.html', {'ticket': ticket})
 
-# Création de la liste des sports 
-def sport_list_view(request):
-    sports = Ticket.objects.values_list('nom_evenement', flat=True).distinct()
-    return render(request, 'sport.html', {'sports': sports})

@@ -2,13 +2,11 @@
 
 {% block content %}
 <div class="container mt-5">
-    <h1>Choisissez un sport</h1>
+    <h1>Les sports des JO</h1>
     <div class="row">
         {% for sport in sports %}
             <div class="col-md-4">
-                <h3>{{ sport }}</h3>
-                <!-- Bouton pour choisir ce sport -->
-                <a href="{% url 'ticket_create' %}?sport={{ sport }}" class="btn btn-primary">Choisir ce sport</a>
+                <h3>{{ sport.nom }}</h3>
             </div>
         {% endfor %}
     </div>

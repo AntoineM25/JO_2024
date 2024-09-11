@@ -34,16 +34,17 @@ class UtilisateurForm(forms.ModelForm):
 
 class TicketForm(forms.ModelForm):
     class Meta:
-        model = Ticket 
+        model = Ticket
         fields = ["type_ticket", "nom_evenement", "date_evenement"]
         labels = {
             "type_ticket": "Choix de l'offre",
-            "nom_evenement": "Choix du sport",
-            "date_evenement": "Choix de la date",
+            "nom_evenement": "Sport choisi",
+            "date_evenement": "Date de l'événement",
         }
         widgets = {
             "type_ticket": forms.Select(attrs={"class": "form-control"}),
-            "nom_evenement": forms.TextInput(attrs={"class": "form-control", "placeholder": "Entrez le sport choisi"}),
-            "date_evenement": forms.DateInput(attrs={"type": "date", "class": "form-control"})
+            "nom_evenement": forms.TextInput(attrs={"class": "form-control", "readonly": "readonly"}),
+            "date_evenement": forms.TextInput(attrs={"class": "form-control", "readonly": "readonly"}),
         }
+
     
