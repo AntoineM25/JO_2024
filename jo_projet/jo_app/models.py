@@ -42,6 +42,16 @@ class Utilisateur(models.Model):
     def __str__(self):
         return f"{self.prenom} {self.nom}"
 
+# Modèle sport
+from django.db import models
+
+class Sport(models.Model):
+    nom = models.CharField(max_length=100)
+    date_evenement = models.DateField()
+
+    def __str__(self):
+        return self.nom
+
 # Modèle ticket
 class Ticket(models.Model):
     utilisateur = models.ForeignKey(Utilisateur, on_delete=models.CASCADE, related_name="tickets")
@@ -54,8 +64,9 @@ class Ticket(models.Model):
     prix_solo = models.DecimalField(max_digits=10, decimal_places=2, default=20.00)
     prix_duo = models.DecimalField(max_digits=10, decimal_places=2, default=35.00)
     prix_famille = models.DecimalField(max_digits=10, decimal_places=2, default=50.00)
-    nom_evenement = models.CharField(max_length=100) # choix du sport
-    date_evenement = models.DateField()
+
+    # Clé étrangère pour lier un ticket à un sport spécifique
+    sport = models.ForeignKey(Sport, on_delete=models.CASCADE, default=1)
 
     # Obtenir le prix selon le type de ticket
     def get_prix(self):
@@ -68,7 +79,7 @@ class Ticket(models.Model):
         return 0
 
     def __str__(self):
-        return f"{self.utilisateur} - {self.nom_evenement} - {self.type_ticket}"
+        return f"{self.utilisateur} - {self.sport.nom} - {self.type_ticket}"
     
 # Modèle paiement
 class Paiement(models.Model):

@@ -18,43 +18,16 @@ def inscription(request):
     return render(request, 'inscription.html', {'form': form})
 
 # Page des sports
+from .models import Sport
+
 def sport_list_view(request):
-    sports = [
-        {"nom": "Judo"},
-        {"nom": "Basketball"},
-        {"nom": "Tennis"},
-        {"nom": "Natation"},
-        {"nom": "Athlétisme"},
-    ]
+    sports = Sport.objects.all()  # Récupérer tous les sports depuis la base de données
     return render(request, 'sport.html', {'sports': sports})
     
-"""
-    # Liste des sports + dates des événements
-def sport_list_view(request):
-    sports = [
-        {"nom": "Football", "date_evenement": "2024-06-10"},
-        {"nom": "Basketball", "date_evenement": "2024-06-12"},
-        {"nom": "Tennis", "date_evenement": "2024-06-15"},
-        {"nom": "Natation", "date_evenement": "2024-06-18"},
-        {"nom": "Athlétisme", "date_evenement": "2024-06-20"},
-    ]
-    return render(request, 'sport.html', {'sports': sports})
-"""
 # Création de 'ticket'
 def ticket_create_view(request):
-    sport = request.GET.get('sport', '') 
-
-    # Correspondance entre les sports et leurs dates
-    sport_dates = {
-        'Judo': '2024-06-10',
-        'Basketball': '2024-06-12',
-        'Tennis': '2024-06-15',
-        'Natation': '2024-06-18',
-        'Athlétisme': '2024-06-20',
-    }
-
-    # Récupérer la date en fonction du sport sélectionné
-    date_evenement = sport_dates.get(sport, '')  
+    sport_nom = request.GET.get('sport', '')  # Récupérer le nom du sport depuis l'URL
+    sport_instance = Sport.objects.filter(nom=sport_nom).first()  # Trouver le sport dans la BDD
 
     if request.method == 'POST':
         form = TicketForm(request.POST)
@@ -63,13 +36,11 @@ def ticket_create_view(request):
             return redirect('ticket_list')
     else:
         initial_data = {
-            'nom_evenement': sport,
-            'date_evenement': date_evenement,
+            'sport': sport_instance  # Utiliser l'instance du sport comme valeur initiale
         }
         form = TicketForm(initial=initial_data)
 
     return render(request, 'ticket.html', {'form': form})
-
 
 # Affichage de la liste des tickets
 def ticket_list_view(request):
