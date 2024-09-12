@@ -1,7 +1,8 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from .forms import UtilisateurForm, TicketForm
+from .forms import UtilisateurForm, TicketForm, PaiementForm
+from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
-from .models import Ticket, Sport
+from .models import Ticket, Sport, Utilisateur
 import locale
 
 # Création de 'home'
@@ -87,3 +88,24 @@ def get_sport_date(request, sport_id):
     except Sport.DoesNotExist:
         return JsonResponse({'error': 'Sport non trouvé'}, status=404)
 
+# Vue du panier
+@login_required
+def panier_view(request):
+    try:
+        utilisateur = Utilisateur.objects.get(email=request.user.email)
+        tickets = Ticket.objects.filter(utilisateur=utilisateur)
+        total = sum(ticket.get_prix() for ticket in tickets)
+
+        if request.method == 'POST':
+            form = PaiementForm(request.POST)
+            if form.is_valid():
+                paiement = form.save(commit=False)
+                paiement.montant = total
+                paiement.save()
+                return redirect('confirmation')
+        else:
+            form = PaiementForm(initial={'montant': total})
+
+        return render(request, 'panier.html', {'tickets': tickets, 'total': total, 'form': form})
+    except Utilisateur.DoesNotExist:
+        return redirect('inscription')
