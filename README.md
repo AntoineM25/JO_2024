@@ -28,3 +28,10 @@
 -   Test du formulaire d'inscription en renseignant chaque case
 -   Test du formulaire d'inscription sur chaque ligne, pour valider le fait qu'il faut obligatoirement renseigner chaque case
 -   Test du formulaire de Choix du billet et vérification qu'un choix de billet soit synchronisé au bon prix 
+
+
+## __BUG__
+
+### ***Templates***
+
+-   Bug d'affichage de la date de l'événement
