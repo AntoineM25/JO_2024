@@ -2,7 +2,6 @@ from django import forms
 from .models import Utilisateur, Ticket, Paiement, GenerationTicket
 
 # Formulaire d'inscription
-
 class UtilisateurForm(forms.ModelForm):
     class Meta:
         model = Utilisateur
@@ -31,7 +30,6 @@ class UtilisateurForm(forms.ModelForm):
         }
 
 # Formulaire choix de ticket
-
 class TicketForm(forms.ModelForm):
     class Meta:
         model = Ticket
@@ -43,4 +41,20 @@ class TicketForm(forms.ModelForm):
         widgets = {
             'type_ticket': forms.Select(attrs={'class': 'form-control'}),
             'sport': forms.Select(attrs={'class': 'form-control'}),
+        }
+    
+# Formulaire du paiement
+class PaiementForm(forms.ModelForm):
+    class Meta:
+        model = Paiement
+        fields = ['ticket', 'montant', 'methode_paiement']
+        labels = {
+            'ticket': 'Ticket',
+            'montant': 'Montant',
+            'methode_paiement': 'Mode de paiement',
+        }
+        widgets = {
+            'ticket': forms.Select(attrs={'class': 'form-control'}),
+            'montant': forms.NumberInput(attrs={'class': 'form-control'}),
+            'methode_paiement': forms.Select(attrs={'class': 'form-control'}),
         }
