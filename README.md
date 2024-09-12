@@ -30,8 +30,8 @@
 -   Test du formulaire de Choix du billet et vérification qu'un choix de billet soit synchronisé au bon prix 
 
 
-## __BUG__
+## __Bug__
 
 ### ***Templates***
 
--   Bug d'affichage de la date de l'événement
+-   Bug en choisissant un sport : la date de l’événement n’était pas pris en compte sur le formulaire de choix des tickets. Ce bug a été résolue en rajoutant {{ date_evenement }}, manquant dans le template ticket. 
