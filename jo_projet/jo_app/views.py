@@ -1,6 +1,8 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from .forms import UtilisateurForm, TicketForm
-from .models import Ticket
+from django.http import JsonResponse
+from .models import Ticket, Sport
+import locale
 
 # Création de 'home'
 def home(request):
@@ -73,4 +75,15 @@ def ticket_delete_view(request, ticket_id):
         ticket.delete()  
         return redirect('ticket_list')  
     return render(request, 'ticket_confirm_delete.html', {'ticket': ticket})
+
+#Récupérer la date de l'événement
+locale.setlocale(locale.LC_TIME, 'fr_FR.UTF-8')  
+
+def get_sport_date(request, sport_id):
+    try:
+        sport = Sport.objects.get(id=sport_id)
+        formatted_date = sport.date_evenement.strftime('%d %B %Y')
+        return JsonResponse({'date_evenement': formatted_date})
+    except Sport.DoesNotExist:
+        return JsonResponse({'error': 'Sport non trouvé'}, status=404)
 

@@ -35,10 +35,10 @@ class UtilisateurForm(forms.ModelForm):
 class TicketForm(forms.ModelForm):
     class Meta:
         model = Ticket
-        fields = ['type_ticket', 'sport']  # Utilisation de 'sport' et non 'nom_evenement' et 'date_evenement'
+        fields = ['type_ticket', 'sport']  
         labels = {
-            'type_ticket': 'Choix de l\'offre',
-            'sport': 'Sport choisi',
+            'type_ticket': "Choix de l'offre",
+            'sport': "Sport choisi",
         }
         widgets = {
             'type_ticket': forms.Select(attrs={'class': 'form-control'}),
