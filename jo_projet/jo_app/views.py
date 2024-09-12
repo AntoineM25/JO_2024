@@ -84,8 +84,10 @@ def get_sport_date(request, sport_id):
     try:
         sport = Sport.objects.get(id=sport_id)
         formatted_date = sport.date_evenement.strftime('%d %B %Y')
+        print(f"Date formatée : {formatted_date}")
         return JsonResponse({'date_evenement': formatted_date})
     except Sport.DoesNotExist:
+        print(f"Sport avec ID {sport_id} non trouvé.")
         return JsonResponse({'error': 'Sport non trouvé'}, status=404)
 
 # Vue du panier
