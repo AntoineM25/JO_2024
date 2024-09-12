@@ -21,17 +21,15 @@ def inscription(request):
 from .models import Sport
 
 def sport_list_view(request):
-    sports = Sport.objects.all()  # Récupérer tous les sports depuis la base de données
+    sports = Sport.objects.all()  
     return render(request, 'sport.html', {'sports': sports})
     
 # Création de 'ticket'
 def ticket_create_view(request):
-    sport_nom = request.GET.get('sport', '')  # Récupérer le nom du sport sélectionné
-
-    # Trouver le sport correspondant dans la base de données
+    sport_nom = request.GET.get('sport', '')  
+    
     sport = Sport.objects.filter(nom=sport_nom).first()
 
-    # Si le sport existe, on récupère sa date
     if sport:
         date_evenement = sport.date_evenement
     else:
@@ -45,12 +43,11 @@ def ticket_create_view(request):
     else:
         # Initialiser les données avec le sport et sa date
         initial_data = {
-            'nom_evenement': sport_nom,
-            'date_evenement': date_evenement,
+            'sport': sport,  # Utiliser le champ "sport"
         }
         form = TicketForm(initial=initial_data)
 
-    return render(request, 'ticket.html', {'form': form})
+    return render(request, 'ticket.html', {'form': form, 'date_evenement': date_evenement})
 
 # Affichage de la liste des tickets
 def ticket_list_view(request):

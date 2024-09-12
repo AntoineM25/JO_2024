@@ -9,11 +9,11 @@
                 {% csrf_token %}
                 {{ form.as_p }}
 
-                <!-- Paragraphe pour afficher la date de l'événement -->
-                <p id="date_evenement">Date : {{ form.initial.date_evenement }}</p>
+                <!-- Paragraphe pour afficher la date -->
+                <p>Date de l'événement : {{ date_evenement }}</p>
 
                 <!-- Paragraphe pour afficher le prix -->
-                <p id="prix">Prix : 20.00€</p> 
+                <p id="prix">Prix : 20.00€</p> <!-- Le prix par défaut est pour le type "solo" -->
 
                 <button type="submit" class="btn btn-primary mt-3">Choisir</button>
             </form>
