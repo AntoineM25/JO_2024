@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from .forms import UtilisateurForm, TicketForm, PaiementForm
+from .forms import UtilisateurForm, TicketForm, PaiementForm, ConnexionForm
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.views import LoginView, LogoutView
 from django.http import JsonResponse
 from .models import Ticket, Sport, Utilisateur
 import locale
@@ -111,3 +112,12 @@ def panier_view(request):
         return render(request, 'panier.html', {'tickets': tickets, 'total': total, 'form': form})
     except Utilisateur.DoesNotExist:
         return redirect('inscription')
+    
+# Vue pour la connexion
+class ConnexionView(LoginView):
+    template_name = 'connexion.html'
+    form_class = ConnexionForm
+
+# Vue pour la déconnexion
+class DeconnexionView(LogoutView):
+    next_page = 'home'

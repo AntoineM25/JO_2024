@@ -1,9 +1,48 @@
 from django.db import models
 from django.utils import timezone
+from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 from django.core.exceptions import ValidationError
 from django.core.files import File
 from io import BytesIO
 import secrets, re, qrcode
+
+# # Modèle utilisateur
+# SEXE_CHOICES = [
+#     ('H', 'Homme'),
+#     ('F', 'Femme'),
+#     ('NB', 'Non-binaire'),
+# ]
+
+# def validate_password(value):
+#     if len(value) < 8:
+#         raise ValidationError('Le mot de passe doit contenir au moins 8 caractères.')
+#     if not re.search(r'[A-Z]', value):
+#         raise ValidationError('Le mot de passe doit contenir au moins une majuscule.')
+#     if not re.search(r'[!@#$%^&*(),.?":{}|<>]', value):
+#         raise ValidationError('Le mot de passe doit contenir au moins un caractère spécial.')
+
+# class Utilisateur(models.Model):
+#     nom = models.CharField(max_length=50)
+#     prenom = models.CharField(max_length=50)
+#     sexe = models.CharField(max_length=5, choices=SEXE_CHOICES, default='H')
+#     email = models.EmailField(max_length=50, unique=True)
+#     mot_de_passe = models.CharField(max_length=50, validators=[validate_password])
+#     adresse = models.CharField(max_length=100)
+#     code_postal = models.CharField(max_length=10)  
+#     ville = models.CharField(max_length=50)
+#     date_de_naissance = models.DateField(null=False, blank=False, default='2000-01-01')
+#     date_d_inscription = models.DateField(auto_now_add=True)
+#     est_administrateur = models.BooleanField(default=False)
+#     cle_securisee_1 = models.CharField(max_length=64, blank=True, editable=False)
+    
+#     def save(self, *args, **kwargs):
+#         if not self.cle_securisee_1:  # Si la clé n'est pas définie
+#             self.cle_securisee_1 = secrets.token_hex(32)  # Générer la clé sécurisée 1
+#         super().save(*args, **kwargs)
+
+#     def __str__(self):
+#         return f"{self.prenom} {self.nom}"
+
 
 # Modèle utilisateur
 SEXE_CHOICES = [
@@ -20,27 +59,55 @@ def validate_password(value):
     if not re.search(r'[!@#$%^&*(),.?":{}|<>]', value):
         raise ValidationError('Le mot de passe doit contenir au moins un caractère spécial.')
 
-class Utilisateur(models.Model):
+class UtilisateurManager(BaseUserManager):
+    def create_user(self, email, nom, prenom, password=None, **extra_fields):
+        """Crée et enregistre un utilisateur normal."""
+        if not email:
+            raise ValueError('Les utilisateurs doivent avoir une adresse email')
+        email = self.normalize_email(email)
+        user = self.model(email=email, nom=nom, prenom=prenom, **extra_fields)
+        user.set_password(password)  # Utilise la méthode set_password de AbstractBaseUser pour hacher le mot de passe
+        user.save(using=self._db)
+        return user
+
+    def create_superuser(self, email, nom, prenom, password=None, **extra_fields):
+        """Crée et enregistre un superutilisateur."""
+        extra_fields.setdefault('is_staff', True)
+        extra_fields.setdefault('is_superuser', True)
+
+        return self.create_user(email, nom, prenom, password, **extra_fields)
+
+class Utilisateur(AbstractBaseUser, PermissionsMixin):
     nom = models.CharField(max_length=50)
     prenom = models.CharField(max_length=50)
     sexe = models.CharField(max_length=5, choices=SEXE_CHOICES, default='H')
     email = models.EmailField(max_length=50, unique=True)
-    mot_de_passe = models.CharField(max_length=50, validators=[validate_password])
     adresse = models.CharField(max_length=100)
     code_postal = models.CharField(max_length=10)  
     ville = models.CharField(max_length=50)
     date_de_naissance = models.DateField(null=False, blank=False, default='2000-01-01')
     date_d_inscription = models.DateField(auto_now_add=True)
-    est_administrateur = models.BooleanField(default=False)
     cle_securisee_1 = models.CharField(max_length=64, blank=True, editable=False)
-    
+
+    # Champs nécessaires pour le système d'authentification
+    is_active = models.BooleanField(default=True)
+    is_staff = models.BooleanField(default=False)
+
+    # Déclaration du champ utilisé pour la connexion
+    USERNAME_FIELD = 'email'
+    REQUIRED_FIELDS = ['nom', 'prenom']
+
+    # Utilisation du manager personnalisé
+    objects = UtilisateurManager()
+
     def save(self, *args, **kwargs):
-        if not self.cle_securisee_1:  # Si la clé n'est pas définie
-            self.cle_securisee_1 = secrets.token_hex(32)  # Générer la clé sécurisée 1
+        if not self.cle_securisee_1:
+            self.cle_securisee_1 = secrets.token_hex(32)
         super().save(*args, **kwargs)
 
     def __str__(self):
         return f"{self.prenom} {self.nom}"
+
 
 # Modèle sport
 from django.db import models

@@ -1,17 +1,24 @@
 from django import forms
 from .models import Utilisateur, Ticket, Paiement, GenerationTicket
+from django.contrib.auth.forms import AuthenticationForm
+
+# Formulaire d'inscription
+from django.contrib.auth.forms import UserCreationForm
+from .models import Utilisateur
 
 # Formulaire d'inscription
 class UtilisateurForm(forms.ModelForm):
+    password1 = forms.CharField(label="Mot de passe", widget=forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': 'Entrez votre mot de passe'}))
+    password2 = forms.CharField(label="Confirmer le mot de passe", widget=forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': 'Confirmez votre mot de passe'}))
+    
     class Meta:
         model = Utilisateur
-        fields = ["nom", "prenom", "sexe", "email", "mot_de_passe", "adresse", "code_postal", "ville", "date_de_naissance"]
+        fields = ["nom", "prenom", "sexe", "email", "adresse", "code_postal", "ville", "date_de_naissance"]
         labels = {
             "nom": "Nom",
             "prenom": "Prénom",
             "sexe": "Sexe",
             "email": "Adresse e-mail",
-            "mot_de_passe": "Mot de passe",
             "adresse": "Adresse",
             "code_postal": "Code postal",
             "ville": "Ville",
@@ -22,12 +29,12 @@ class UtilisateurForm(forms.ModelForm):
             "prenom": forms.TextInput(attrs={"class": "form-control", "placeholder": "Entrez votre prénom"}),
             "sexe": forms.Select(attrs={"class": "form-control"}),
             "email": forms.EmailInput(attrs={"class": "form-control", "placeholder": "Entrez votre adresse e-mail"}),
-            "mot_de_passe": forms.PasswordInput(attrs={"class": "form-control", "placeholder": "Entrez votre mot de passe"}),
             "adresse": forms.TextInput(attrs={"class": "form-control", "placeholder": "Entrez votre adresse"}),
             "code_postal": forms.TextInput(attrs={"class": "form-control", "placeholder": "Entrez votre code postal"}),
             "ville": forms.TextInput(attrs={"class": "form-control", "placeholder": "Entrez votre ville"}),
             "date_de_naissance": forms.DateInput(attrs={"type": "date", "class": "form-control"})
         }
+
 
 # Formulaire choix de ticket
 class TicketForm(forms.ModelForm):
@@ -58,3 +65,8 @@ class PaiementForm(forms.ModelForm):
             'montant': forms.NumberInput(attrs={'class': 'form-control'}),
             'methode_paiement': forms.Select(attrs={'class': 'form-control'}),
         }
+
+# Formulaire de connexion
+class ConnexionForm(AuthenticationForm):
+    email = forms.EmailField(widget=forms.EmailInput(attrs={'class': 'form-control', 'placeholder': 'Entrez votre adresse email'}))
+    mot_de_passe = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': 'Entrez votre mot de passe'}))

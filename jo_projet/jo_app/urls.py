@@ -1,9 +1,12 @@
 from django.urls import path
 from . import views
+from django.contrib.auth.views import LoginView, LogoutView  # Import LoginView et LogoutView
 
 urlpatterns = [
     path('', views.home, name='home'),
     path('inscription/', views.inscription, name='inscription'),
+    path('connexion/', LoginView.as_view(template_name='connexion.html'), name='connexion'),  # Utilise LoginView avec le bon template
+    path('deconnexion/', LogoutView.as_view(next_page='home'), name='deconnexion'),  # Utilise LogoutView pour la déconnexion
     path('ticket/create/', views.ticket_create_view, name='ticket_create'),
     path('tickets/', views.ticket_list_view, name='ticket_list'),
     path('ticket/<int:ticket_id>/update/', views.ticket_update_view, name='ticket_update'),
