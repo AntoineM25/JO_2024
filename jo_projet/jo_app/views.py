@@ -97,6 +97,8 @@ def sport_list_view(request):
     return render(request, 'sport.html', {'sports': sports})
 
 # Vue pour le panier
+from django.contrib import messages
+
 @login_required(login_url='connexion')
 def panier_view(request):
     utilisateur = request.user
@@ -110,6 +112,7 @@ def panier_view(request):
             ticket_id = action.split('_')[1]
             ticket = get_object_or_404(Ticket, id=ticket_id, utilisateur=request.user)
             ticket.delete()
+            messages.success(request, 'Ticket supprimé avec succès.')
             return redirect('panier')
 
         elif action == 'update':
@@ -121,6 +124,7 @@ def panier_view(request):
                     if quantite > 0:
                         ticket.quantite = quantite
                         ticket.save()
+            messages.success(request, 'Quantités mises à jour avec succès.')
 
         elif action == 'pay':
             # Gestion du paiement
@@ -136,6 +140,7 @@ def panier_view(request):
                     ticket.paiements.add(paiement)
                     ticket.save()
 
+                messages.success(request, 'Paiement effectué avec succès.')
                 return redirect('confirmation')
 
     # Recalculer le total après la mise à jour des quantités
@@ -144,36 +149,6 @@ def panier_view(request):
     form = PaiementForm(initial={'montant': total})
     
     return render(request, 'panier.html', {'tickets': tickets, 'total': total, 'form': form})
-
-# # Vue quantité MAJ du panier
-# from django.http import JsonResponse
-
-# @login_required(login_url='connexion')
-# def update_ticket_quantity(request):
-#     if request.method == 'POST' and request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-#         ticket_id = request.POST.get('ticket_id')
-#         quantite_str = request.POST.get('quantite')
-
-#         try:
-#             ticket = Ticket.objects.get(id=ticket_id, utilisateur=request.user)
-#             quantite = int(quantite_str)
-#             if quantite > 0:
-#                 ticket.quantite = quantite
-#                 ticket.save()
-                
-#                 # Recalculer le total du panier
-#                 tickets = Ticket.objects.filter(utilisateur=request.user)
-#                 total = sum(ticket.get_prix() for ticket in tickets)
-                
-#                 return JsonResponse({'success': True, 'total': total})
-#             else:
-#                 return JsonResponse({'success': False, 'error': 'Quantité invalide'})
-#         except Ticket.DoesNotExist:
-#             return JsonResponse({'success': False, 'error': 'Ticket non trouvé'})
-#         except ValueError:
-#             return JsonResponse({'success': False, 'error': 'Quantité non valide'})
-#     return JsonResponse({'success': False, 'error': 'Requête invalide'})
-
 
     
 # Vue pour la connexion

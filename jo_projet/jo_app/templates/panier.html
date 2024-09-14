@@ -3,16 +3,23 @@
 {% block content %}
 <div class="container mt-5">
     <h2>Mon Panier</h2>
-    <!-- Formulaire global pour toutes les actions (mise à jour des quantités et paiement) -->
+
+    <!-- Messages de confirmation -->
+    {% if messages %}
+        <div class="alert alert-info" role="alert">
+            {% for message in messages %}
+                <p>{{ message }}</p>
+            {% endfor %}
+        </div>
+    {% endif %}
+
     <form method="POST" action="{% url 'panier' %}">
         {% csrf_token %}
         <ul>
             {% for ticket in tickets %}
                 <li>
                     {{ ticket }} - Prix unitaire : {{ ticket.get_prix }}€
-                    <!-- Champ pour modifier la quantité -->
                     <input type="number" name="quantite_{{ ticket.id }}" value="{{ ticket.quantite }}" min="1" class="form-control d-inline w-auto">
-                    <!-- Bouton de suppression -->
                     <button type="submit" name="action" value="delete_{{ ticket.id }}" class="btn btn-danger btn-sm">Supprimer</button>
                 </li>
             {% endfor %}
@@ -20,9 +27,10 @@
         <p>Total : {{ total }}€</p>
 
         <h3>Paiement</h3>
-        {{ form.as_p }}
-        
-        <!-- Boutons pour mettre à jour et payer -->
+        {{ form.ticket }}
+        {{ form.montant }}
+        {{ form.methode_paiement }}
+
         <button type="submit" name="action" value="update" class="btn btn-primary">Mettre à jour le panier</button>
         <button type="submit" name="action" value="pay" class="btn btn-success">Payer</button>
     </form>

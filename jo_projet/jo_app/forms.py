@@ -79,7 +79,25 @@ class TicketForm(forms.ModelForm):
         }
     
 # Formulaire du paiement
+# forms.py
+
+from django import forms
+from .models import Paiement
+
+# Formulaire du paiement
 class PaiementForm(forms.ModelForm):
+    METHODES_PAIEMENT_CHOICES = [
+        ('carte', 'Carte de crédit'),
+        ('paypal', 'PayPal'),
+        ('virement', 'Virement bancaire'),
+    ]
+    
+    methode_paiement = forms.ChoiceField(
+        choices=METHODES_PAIEMENT_CHOICES,
+        widget=forms.Select(attrs={'class': 'form-control'}),
+        label='Méthode de paiement'
+    )
+
     class Meta:
         model = Paiement
         fields = ['ticket', 'montant', 'methode_paiement']
@@ -91,6 +109,7 @@ class PaiementForm(forms.ModelForm):
             'ticket': forms.Select(attrs={'class': 'form-control'}),
             'montant': forms.NumberInput(attrs={'class': 'form-control'}),
         }
+
 
 # Formulaire de connexion
 class ConnexionForm(AuthenticationForm):
