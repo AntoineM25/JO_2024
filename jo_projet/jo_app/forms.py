@@ -1,15 +1,18 @@
 from django import forms
-from .models import Utilisateur, Ticket, Paiement, GenerationTicket
+from .models import Utilisateur, Ticket, Paiement, validate_password
 from django.contrib.auth.forms import AuthenticationForm
-
-# Formulaire d'inscription
-from django.contrib.auth.forms import UserCreationForm
-from .models import Utilisateur
+from django.core.exceptions import ValidationError
 
 # Formulaire d'inscription
 class UtilisateurForm(forms.ModelForm):
-    password1 = forms.CharField(label="Mot de passe", widget=forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': 'Entrez votre mot de passe'}))
-    password2 = forms.CharField(label="Confirmer le mot de passe", widget=forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': 'Confirmez votre mot de passe'}))
+    password1 = forms.CharField(
+        label="Mot de passe",
+        widget=forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': 'Entrez votre mot de passe'})
+    )
+    password2 = forms.CharField(
+        label="Confirmer le mot de passe",
+        widget=forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': 'Confirmez votre mot de passe'})
+    )
     
     class Meta:
         model = Utilisateur
@@ -34,7 +37,32 @@ class UtilisateurForm(forms.ModelForm):
             "ville": forms.TextInput(attrs={"class": "form-control", "placeholder": "Entrez votre ville"}),
             "date_de_naissance": forms.DateInput(attrs={"type": "date", "class": "form-control"})
         }
+    
+    def clean_password1(self):
+        password1 = self.cleaned_data.get('password1')
+        # Valider le mot de passe en utilisant la fonction validate_password
+        try:
+            validate_password(password1)
+        except ValidationError as e:
+            self.add_error('password1', e)  # Ajoute les erreurs de validation du mot de passe
+        return password1
 
+    def clean(self):
+        cleaned_data = super().clean()
+        password1 = cleaned_data.get("password1")
+        password2 = cleaned_data.get("password2")
+        
+        if password1 and password2 and password1 != password2:
+            self.add_error('password2', "Les mots de passe ne correspondent pas.")
+        
+        return cleaned_data
+    
+    def save(self, commit=True):
+        user = super().save(commit=False)
+        user.set_password(self.cleaned_data["password1"])  # Hachage du mot de passe
+        if commit:
+            user.save()
+        return user
 
 # Formulaire choix de ticket
 class TicketForm(forms.ModelForm):
@@ -68,9 +96,8 @@ class PaiementForm(forms.ModelForm):
 
 # Formulaire de connexion
 class ConnexionForm(AuthenticationForm):
-    email = forms.EmailField(widget=forms.EmailInput(attrs={'class': 'form-control', 'placeholder': 'Entrez votre adresse email'}))
-    mot_de_passe = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': 'Entrez votre mot de passe'}))
+    username = forms.EmailField(widget=forms.EmailInput(attrs={'class': 'form-control', 'placeholder': 'Entrez votre adresse email'}))
+    password = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': 'Entrez votre mot de passe'}))
 
-# Formulaire de déconnexion
-class DeconnexionForm(forms.Form):
-    pass    
+
+   
