@@ -107,13 +107,20 @@ def panier_view(request):
                 paiement = form.save(commit=False)
                 paiement.montant = total
                 paiement.save()
-                return redirect('confirmation')
+
+                # Associer les tickets au paiement
+                for ticket in tickets:
+                    ticket.paiements.add(paiement)
+                    ticket.save()
+
+                return redirect('confirmation')  # Rediriger vers la page de confirmation
         else:
             form = PaiementForm(initial={'montant': total})
 
         return render(request, 'panier.html', {'tickets': tickets, 'total': total, 'form': form})
     except Utilisateur.DoesNotExist:
         return redirect('inscription')
+
     
 # Vue pour la connexion
 class ConnexionView(LoginView):

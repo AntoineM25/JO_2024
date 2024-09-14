@@ -86,12 +86,10 @@ class PaiementForm(forms.ModelForm):
         labels = {
             'ticket': 'Ticket',
             'montant': 'Montant',
-            'methode_paiement': 'Mode de paiement',
         }
         widgets = {
             'ticket': forms.Select(attrs={'class': 'form-control'}),
             'montant': forms.NumberInput(attrs={'class': 'form-control'}),
-            'methode_paiement': forms.Select(attrs={'class': 'form-control'}),
         }
 
 # Formulaire de connexion
