@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from .forms import UtilisateurForm, TicketForm, PaiementForm, ConnexionForm
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.views import LoginView, LogoutView
+from django.contrib import messages
 from django.http import JsonResponse
 from django.urls import reverse_lazy
 from .models import Ticket, Sport, Utilisateur
@@ -150,7 +151,7 @@ def panier_view(request):
     
     return render(request, 'panier.html', {'tickets': tickets, 'total': total, 'form': form})
 
-    
+
 # Vue pour la connexion
 class ConnexionView(LoginView):
     template_name = 'connexion.html'

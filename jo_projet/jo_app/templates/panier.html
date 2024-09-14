@@ -19,19 +19,23 @@
             {% for ticket in tickets %}
                 <li>
                     {{ ticket }} - Prix unitaire : {{ ticket.get_prix }}€
+                    <!-- Champ pour modifier la quantité -->
                     <input type="number" name="quantite_{{ ticket.id }}" value="{{ ticket.quantite }}" min="1" class="form-control d-inline w-auto">
-                    <button type="submit" name="action" value="delete_{{ ticket.id }}" class="btn btn-danger btn-sm">Supprimer</button>
+                    <!-- Affichage du total du ticket -->
+                    <span>Total : {{ ticket.get_prix|floatformat:2 }}€</span>
+                    <!-- Bouton de suppression -->
+                    <button type="submit" name="action" value="delete_{{ ticket.id }}" class="btn btn-danger btn-sm"><i class="fa-solid fa-trash-can"></i></button>
                 </li>
             {% endfor %}
         </ul>
-        <p>Total : {{ total }}€</p>
+        <p>Total du panier : {{ total }}€</p>
 
         <h3>Paiement</h3>
-        {{ form.ticket }}
-        {{ form.montant }}
         {{ form.methode_paiement }}
 
+        <!-- Bouton pour mettre à jour le panier -->
         <button type="submit" name="action" value="update" class="btn btn-primary">Mettre à jour le panier</button>
+        <!-- Bouton pour payer -->
         <button type="submit" name="action" value="pay" class="btn btn-success">Payer</button>
     </form>
 </div>
