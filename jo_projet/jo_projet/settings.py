@@ -128,7 +128,7 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [BASE_DIR / 'jo_app/static',]
-
+STATIC_ROOT = BASE_DIR / "staticfiles"
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
@@ -140,11 +140,6 @@ LOGIN_URL = 'connexion'
 LOGIN_REDIRECT_URL = 'home'
 LOGOUT_REDIRECT_URL = 'home'
 
-# # Configuration des sessions
-# SESSION_COOKIE_SECURE = False  
-# SESSION_COOKIE_SAMESITE = 'Lax'
-# SESSION_EXPIRE_AT_BROWSER_CLOSE = False
-
 # Configuration des cookies de session
 SESSION_ENGINE = 'django.contrib.sessions.backends.db'  
 SESSION_ENGINE = 'django.contrib.sessions.backends.db'  
@@ -155,4 +150,3 @@ SESSION_COOKIE_SAMESITE = 'Lax'
 SESSION_EXPIRE_AT_BROWSER_CLOSE = False
 SESSION_COOKIE_AGE = 1209600  
 SESSION_SAVE_EVERY_REQUEST = True
-

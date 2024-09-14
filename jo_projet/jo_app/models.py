@@ -87,6 +87,8 @@ from django.db import models
 class Sport(models.Model):
     nom = models.CharField(max_length=100)
     date_evenement = models.DateField()
+    image = models.ImageField(upload_to='images/sports/', blank=True)
+    description = models.TextField(blank=True)
 
     def __str__(self):
         return self.nom

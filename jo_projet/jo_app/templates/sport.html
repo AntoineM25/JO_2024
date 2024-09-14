@@ -1,14 +1,19 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block content %}
 <div class="container mt-5">
-    <h1>Choisissez un sport</h1>
-    <div class="row">
+    <h1 class="text-center mb-4">Les sports présents aux Jeux Olympiques Paris 2024</h1>
+    <div class="row g-4">
         {% for sport in sports %}
-            <div class="col-md-4">
+            <div class="col-sm-4 mb-4 mx-auto">
                 <h3>{{ sport.nom }}</h3>
-                <p>Date : {{ sport.date_evenement }}</p>
-                <a href="{% url 'ticket_create' %}?sport={{ sport.nom }}" class="btn btn-primary">Choisir ce sport</a>
+                <img src="{% static sport.image %}" alt="{{ sport.nom }}" class="img-fluid">
+                <p class="mt-3">{{ sport.description }}</p>
+                <div class="d-flex justify-content-between align-items-center mt-2">
+                    <p class="fw-bold mb-0">Date : {{ sport.date_evenement }}</p>
+                    <a href="{% url 'ticket_create' %}?sport={{ sport.nom }}" class="btn btn-primary"><i class="fa-solid fa-basket-shopping pe-2"></i> Acheter des places</a>
+                </div>
             </div>
         {% endfor %}
     </div>
