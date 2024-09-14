@@ -20,26 +20,26 @@
               </button>
               <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
-                  <li class="nav-item">
+                  <li class="nav-item {% if request.path == '/' %}active{% endif %}">
                     <a class="nav-link" href="{% url 'home' %}"><i class="fa-solid fa-house"></i> Accueil</a> <!-- Lien vers la page d'accueil -->
                   </li>
-                  <li class="nav-item">
+                  <li class="nav-item {% if request.path == '/sport/' %}active{% endif %}">
                     <a class="nav-link" href="{% url 'sports_list' %}"><i class="fa-solid fa-medal"></i> Sports</a>  <!-- Lien vers la page des sports -->
                   </li>
 
                   <!-- Lien vers la page de choix des tickets, dépendant de l'authentification -->
                   {% if user.is_authenticated %}
-                      <li class="nav-item">
+                      <li class="nav-item {% if request.path == '/ticket/create/' %}active{% endif %}">
                         <a class="nav-link" href="{% url 'ticket_create' %}"><i class="fa-solid fa-ticket"></i> Tickets</a> <!-- Accessible uniquement aux utilisateurs connectés -->
                       </li>
-                      <li class="nav-item">
+                      <li class="nav-item {% if request.path == '/panier/' %}active{% endif %}">
                         <a class="nav-link" href="{% url 'panier' %}"><i class="fa-solid fa-basket-shopping"></i> Panier</a> <!-- Accessible uniquement aux utilisateurs connectés -->
                       </li>
                   {% else %}
-                      <li class="nav-item">
+                      <li class="nav-item {% if request.path == '/ticket/create/' %}active{% endif %}">
                         <a class="nav-link" href="{% url 'connexion' %}?next={% url 'ticket_create' %}"><i class="fa-solid fa-ticket"></i> Tickets</a> <!-- Redirige vers la connexion si non connecté -->
                       </li>
-                      <li class="nav-item">
+                      <li class="nav-item {% if request.path == '/panier/' %}active{% endif %}">
                         <a class="nav-link" href="{% url 'connexion' %}?next={% url 'panier' %}"><i class="fa-solid fa-basket-shopping"></i> Panier</a> <!-- Redirige vers la connexion si non connecté -->
                       </li>
                   {% endif %}
@@ -53,10 +53,10 @@
                         </form>
                     </li>
                   {% else %}
-                    <li class="nav-item">
+                    <li class="nav-item {% if request.path == '/inscription/' %}active{% endif %}">
                       <a class="nav-link" href="{% url 'inscription' %}"><i class="fa-solid fa-user-plus"></i> Inscription</a> <!-- Lien vers la page d'inscription -->
                     </li>
-                    <li class="nav-item">
+                    <li class="nav-item {% if request.path == '/connexion/' %}active{% endif %}">
                         <a class="nav-link" href="{% url 'connexion' %}"><i class="fa-solid fa-right-to-bracket"></i> Se connecter</a>
                     </li>
                   {% endif %}
