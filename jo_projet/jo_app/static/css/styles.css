@@ -1,0 +1,11 @@
+body {
+    color: #040404
+}
+
+.nav-link:hover i {
+    color: #d4c47c
+}
+
+.nav-link i {
+    transition: color 0.3s ease;
+}
