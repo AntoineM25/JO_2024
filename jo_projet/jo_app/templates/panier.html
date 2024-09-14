@@ -3,26 +3,28 @@
 {% block content %}
 <div class="container mt-5">
     <h2>Mon Panier</h2>
-    <ul>
-        {% for ticket in tickets %}
-            <li>
-                {{ ticket }} - Prix : {{ ticket.get_prix }}€
-                <!-- Bouton de suppression -->
-                <form action="{% url 'panier' %}" method="post" style="display: inline;">
-                    {% csrf_token %}
-                    <input type="hidden" name="ticket_id" value="{{ ticket.id }}">
-                    <button type="submit" name="action" value="delete" class="btn btn-danger btn-sm">Supprimer</button>
-                </form>
-            </li>
-        {% endfor %}
-    </ul>
-    <p>Total : {{ total }}€</p>
-
-    <h3>Paiement</h3>
-    <form method="POST">
+    <!-- Formulaire global pour toutes les actions (mise à jour des quantités et paiement) -->
+    <form method="POST" action="{% url 'panier' %}">
         {% csrf_token %}
+        <ul>
+            {% for ticket in tickets %}
+                <li>
+                    {{ ticket }} - Prix unitaire : {{ ticket.get_prix }}€
+                    <!-- Champ pour modifier la quantité -->
+                    <input type="number" name="quantite_{{ ticket.id }}" value="{{ ticket.quantite }}" min="1" class="form-control d-inline w-auto">
+                    <!-- Bouton de suppression -->
+                    <button type="submit" name="action" value="delete_{{ ticket.id }}" class="btn btn-danger btn-sm">Supprimer</button>
+                </li>
+            {% endfor %}
+        </ul>
+        <p>Total : {{ total }}€</p>
+
+        <h3>Paiement</h3>
         {{ form.as_p }}
-        <button type="submit" name="action" value="pay" class="btn btn-primary">Payer</button>
+        
+        <!-- Boutons pour mettre à jour et payer -->
+        <button type="submit" name="action" value="update" class="btn btn-primary">Mettre à jour le panier</button>
+        <button type="submit" name="action" value="pay" class="btn btn-success">Payer</button>
     </form>
 </div>
 {% endblock %}
