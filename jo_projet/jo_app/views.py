@@ -15,23 +15,17 @@ def inscription(request):
     if request.method == 'POST':
         form = UtilisateurForm(request.POST)
         if form.is_valid():
-            form.save()
-            return redirect('home')
+            user = form.save(commit=False)
+            user.set_password(form.cleaned_data['password1'])  # Assure-toi d'enregistrer le mot de passe correctement
+            user.save()
+            return redirect('connexion')  # Redirige vers la page de connexion après l'inscription
     else:
         form = UtilisateurForm()
     return render(request, 'inscription.html', {'form': form})
 
-# Page des sports
-from .models import Sport
-
-def sport_list_view(request):
-    sports = Sport.objects.all()  
-    return render(request, 'sport.html', {'sports': sports})
-    
-# Création de 'ticket'
+@login_required
 def ticket_create_view(request):
     sport_nom = request.GET.get('sport', '')  
-    
     sport = Sport.objects.filter(nom=sport_nom).first()
 
     if sport:
@@ -42,23 +36,25 @@ def ticket_create_view(request):
     if request.method == 'POST':
         form = TicketForm(request.POST)
         if form.is_valid():
-            form.save()
-            return redirect('ticket_list')
+            ticket = form.save(commit=False)  # Ne sauvegarde pas encore le ticket dans la base de données
+            ticket.utilisateur = request.user  # Associe le ticket à l'utilisateur connecté
+            ticket.save()  # Maintenant, on peut sauvegarder le ticket
+            return redirect('panier')  # Redirige vers la page du panier
     else:
-        # Initialiser les données avec le sport et sa date
-        initial_data = {
-            'sport': sport,  # Utiliser le champ "sport"
-        }
+        initial_data = {'sport': sport}
         form = TicketForm(initial=initial_data)
 
     return render(request, 'ticket.html', {'form': form, 'date_evenement': date_evenement})
 
+
 # Affichage de la liste des tickets
+@login_required
 def ticket_list_view(request):
     tickets = Ticket.objects.all()
     return render(request, 'ticket_list.html', {'tickets': tickets})
 
 # Mise à jour d'un ticket
+@login_required
 def ticket_update_view(request, ticket_id):
     ticket = get_object_or_404(Ticket, id=ticket_id)  
     if request.method == "POST":
@@ -71,6 +67,7 @@ def ticket_update_view(request, ticket_id):
     return render(request, 'ticket.html', {'form': form}) 
 
 # Suppression d'un ticket 
+
 def ticket_delete_view(request, ticket_id):
     ticket = get_object_or_404(Ticket, id=ticket_id)
     if request.method == "POST":
@@ -90,6 +87,11 @@ def get_sport_date(request, sport_id):
     except Sport.DoesNotExist:
         print(f"Sport avec ID {sport_id} non trouvé.")
         return JsonResponse({'error': 'Sport non trouvé'}, status=404)
+    
+#Liste des sports
+def sport_list_view(request):
+    sports = Sport.objects.all()
+    return render(request, 'sport.html', {'sports': sports})
 
 # Vue du panier
 @login_required
