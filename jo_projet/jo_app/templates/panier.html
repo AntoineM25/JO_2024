@@ -5,7 +5,15 @@
     <h2>Mon Panier</h2>
     <ul>
         {% for ticket in tickets %}
-            <li>{{ ticket }} - Prix : {{ ticket.get_prix }}€</li>
+            <li>
+                {{ ticket }} - Prix : {{ ticket.get_prix }}€
+                <!-- Bouton de suppression -->
+                <form action="{% url 'panier' %}" method="post" style="display: inline;">
+                    {% csrf_token %}
+                    <input type="hidden" name="ticket_id" value="{{ ticket.id }}">
+                    <button type="submit" name="action" value="delete" class="btn btn-danger btn-sm">Supprimer</button>
+                </form>
+            </li>
         {% endfor %}
     </ul>
     <p>Total : {{ total }}€</p>
@@ -14,7 +22,7 @@
     <form method="POST">
         {% csrf_token %}
         {{ form.as_p }}
-        <button type="submit" class="btn btn-primary">Payer</button>
+        <button type="submit" name="action" value="pay" class="btn btn-primary">Payer</button>
     </form>
 </div>
 {% endblock %}

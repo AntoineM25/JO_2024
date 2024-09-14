@@ -71,11 +71,12 @@ def ticket_update_view(request, ticket_id):
 # Suppression d'un ticket 
 @login_required(login_url='connexion')
 def ticket_delete_view(request, ticket_id):
-    ticket = get_object_or_404(Ticket, id=ticket_id)
+    ticket = get_object_or_404(Ticket, id=ticket_id, utilisateur=request.user) 
     if request.method == "POST":
         ticket.delete()  
-        return redirect('ticket_list')  
+        return redirect('panier')  
     return render(request, 'ticket_confirm_delete.html', {'ticket': ticket})
+
 
 #Récupérer la date de l'événement
 locale.setlocale(locale.LC_TIME, 'fr_FR.UTF-8')  
@@ -95,30 +96,44 @@ def sport_list_view(request):
     sports = Sport.objects.all()
     return render(request, 'sport.html', {'sports': sports})
 
-# Vue du panier
+# Vue pour le panier
 @login_required(login_url='connexion')
 def panier_view(request):
-    utilisateur = request.user  # Utilise directement request.user
+    utilisateur = request.user
     tickets = Ticket.objects.filter(utilisateur=utilisateur)
     total = sum(ticket.get_prix() for ticket in tickets)
 
     if request.method == 'POST':
-        form = PaiementForm(request.POST)
-        if form.is_valid():
-            paiement = form.save(commit=False)
-            paiement.montant = total
-            paiement.save()
+        # Vérifie quelle action l'utilisateur a déclenchée
+        action = request.POST.get('action')
 
-            # Associer les tickets au paiement
-            for ticket in tickets:
-                ticket.paiements.add(paiement)
-                ticket.save()
+        if action == 'delete':
+            # Supprimer le ticket
+            ticket_id = request.POST.get('ticket_id')
+            ticket = get_object_or_404(Ticket, id=ticket_id, utilisateur=request.user)
+            ticket.delete()
+            return redirect('panier')
 
-            return redirect('confirmation')  # Rediriger vers la page de confirmation
+        elif action == 'pay':
+            # Gestion du paiement
+            form = PaiementForm(request.POST)
+            if form.is_valid():
+                paiement = form.save(commit=False)
+                paiement.montant = total
+                paiement.save()
+
+                # Associer les tickets au paiement
+                for ticket in tickets:
+                    ticket.paiements.add(paiement)
+                    ticket.save()
+
+                return redirect('confirmation')
+
     else:
         form = PaiementForm(initial={'montant': total})
 
     return render(request, 'panier.html', {'tickets': tickets, 'total': total, 'form': form})
+
 
     
 # Vue pour la connexion
