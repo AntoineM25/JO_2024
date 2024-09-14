@@ -33,13 +33,17 @@
                   </li>
                   <!-- Gestion de la connexion -->
                   {% if user.is_authenticated %}
-                  <li class="nav-item">
-                    <a class="nav-link" href="{% url 'deconnexion' %}">Se déconnecter</a>
+                    <form action="{% url 'deconnexion' %}" method="post" style="display: inline;">
+                      {% csrf_token %}
+                      <button type="submit" class="btn btn-link nav-link" style="display: inline; border: none; background: none; padding: 0; cursor: pointer;">
+                        Se déconnecter
+                      </button>
+                    </form>
                   </li>
                   {% else %}
                   <li class="nav-item">
                     <a class="nav-link" href="{% url 'connexion' %}">Se connecter</a>
-                  </li>
+                </li>
                   {% endif %}
                 </ul>
               </div>
