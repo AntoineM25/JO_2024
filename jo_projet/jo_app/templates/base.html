@@ -17,7 +17,7 @@
               <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
                   <li class="nav-item">
-                    <a class="nav-link" href="{% url 'home' %}">Accueil</a> <!-- Lie vers la page d'accueil -->
+                    <a class="nav-link" href="{% url 'home' %}">Accueil</a> <!-- Lien vers la page d'accueil -->
                   </li>
                   <li class="nav-item">
                     <a class="nav-link" href="{% url 'inscription' %}">Inscription</a> <!-- Lien vers la page d'inscription -->
@@ -25,27 +25,37 @@
                   <li class="nav-item">
                     <a class="nav-link" href="{% url 'sports_list' %}">Sports</a>  <!-- Lien vers la page des sports -->
                   </li>
-                  <li class="nav-item">
-                    <a class="nav-link" href="{% url 'connexion' %}?next={% url 'ticket_create' %}">Choix des tickets</a> <!-- Lien vers la page de choix des tickets -->
-                  </li>
-                  <li class="nav-item">
-                    <a class="nav-link" href="{% url 'connexion' %}?next={% url 'panier' %}">Voir le panier</a> <!-- Lien vers la page panier -->
-                  </li>
+
+                  <!-- Lien vers la page de choix des tickets, dépendant de l'authentification -->
+                  {% if user.is_authenticated %}
+                      <li class="nav-item">
+                        <a class="nav-link" href="{% url 'ticket_create' %}">Choix des tickets</a> <!-- Accessible uniquement aux utilisateurs connectés -->
+                      </li>
+                      <li class="nav-item">
+                        <a class="nav-link" href="{% url 'panier' %}">Voir le panier</a> <!-- Accessible uniquement aux utilisateurs connectés -->
+                      </li>
+                  {% else %}
+                      <li class="nav-item">
+                        <a class="nav-link" href="{% url 'connexion' %}?next={% url 'ticket_create' %}">Choix des tickets</a> <!-- Redirige vers la connexion si non connecté -->
+                      </li>
+                      <li class="nav-item">
+                        <a class="nav-link" href="{% url 'connexion' %}?next={% url 'panier' %}">Voir le panier</a> <!-- Redirige vers la connexion si non connecté -->
+                      </li>
+                  {% endif %}
+
                   <!-- Gestion de la connexion -->
                   {% if user.is_authenticated %}
-                    <form action="{% url 'deconnexion' %}" method="post" style="display: inline;">
-                      {% csrf_token %}
-                      <button type="submit" class="btn btn-link nav-link" style="display: inline; border: none; background: none; padding: 0; cursor: pointer;">
-                        Se déconnecter
-                      </button>
-                    </form>
-                  </li>
+                    <li class="nav-item">
+                        <form action="{% url 'deconnexion' %}" method="post" style="display: inline;">
+                            {% csrf_token %}
+                            <button type="submit" class="nav-link btn btn-link">Se déconnecter</button>
+                        </form>
+                    </li>
                   {% else %}
-                  <li class="nav-item">
-                    <a class="nav-link" href="{% url 'connexion' %}">Se connecter</a>
-                 </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'connexion' %}">Se connecter</a>
+                    </li>
                   {% endif %}
-                  
                 </ul>
               </div>
             </div>

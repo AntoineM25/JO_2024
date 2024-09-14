@@ -3,6 +3,7 @@ from .forms import UtilisateurForm, TicketForm, PaiementForm, ConnexionForm
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.views import LoginView, LogoutView
 from django.http import JsonResponse
+from django.urls import reverse_lazy
 from .models import Ticket, Sport, Utilisateur
 import locale
 
@@ -23,6 +24,7 @@ def inscription(request):
         form = UtilisateurForm()
     return render(request, 'inscription.html', {'form': form})
 
+# Vue pour la création de tickets
 @login_required(login_url='connexion')
 def ticket_create_view(request):
     sport_nom = request.GET.get('sport', '')  
@@ -96,36 +98,41 @@ def sport_list_view(request):
 # Vue du panier
 @login_required(login_url='connexion')
 def panier_view(request):
-    try:
-        utilisateur = Utilisateur.objects.get(email=request.user.email)
-        tickets = Ticket.objects.filter(utilisateur=utilisateur)
-        total = sum(ticket.get_prix() for ticket in tickets)
+    utilisateur = request.user  # Utilise directement request.user
+    tickets = Ticket.objects.filter(utilisateur=utilisateur)
+    total = sum(ticket.get_prix() for ticket in tickets)
 
-        if request.method == 'POST':
-            form = PaiementForm(request.POST)
-            if form.is_valid():
-                paiement = form.save(commit=False)
-                paiement.montant = total
-                paiement.save()
+    if request.method == 'POST':
+        form = PaiementForm(request.POST)
+        if form.is_valid():
+            paiement = form.save(commit=False)
+            paiement.montant = total
+            paiement.save()
 
-                # Associer les tickets au paiement
-                for ticket in tickets:
-                    ticket.paiements.add(paiement)
-                    ticket.save()
+            # Associer les tickets au paiement
+            for ticket in tickets:
+                ticket.paiements.add(paiement)
+                ticket.save()
 
-                return redirect('confirmation')  # Rediriger vers la page de confirmation
-        else:
-            form = PaiementForm(initial={'montant': total})
+            return redirect('confirmation')  # Rediriger vers la page de confirmation
+    else:
+        form = PaiementForm(initial={'montant': total})
 
-        return render(request, 'panier.html', {'tickets': tickets, 'total': total, 'form': form})
-    except Utilisateur.DoesNotExist:
-        return redirect('inscription')
+    return render(request, 'panier.html', {'tickets': tickets, 'total': total, 'form': form})
 
     
 # Vue pour la connexion
 class ConnexionView(LoginView):
     template_name = 'connexion.html'
     form_class = ConnexionForm
+
+    def form_valid(self, form):
+        # Vérifier l'authentification
+        print(f"Authentification réussie pour : {form.get_user()}")
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        return self.request.GET.get('next', reverse_lazy('home'))
 
 # Vue pour la déconnexion
 class DeconnexionView(LogoutView):
