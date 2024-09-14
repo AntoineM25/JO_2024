@@ -70,3 +70,7 @@ class PaiementForm(forms.ModelForm):
 class ConnexionForm(AuthenticationForm):
     email = forms.EmailField(widget=forms.EmailInput(attrs={'class': 'form-control', 'placeholder': 'Entrez votre adresse email'}))
     mot_de_passe = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': 'Entrez votre mot de passe'}))
+
+# Formulaire de déconnexion
+class DeconnexionForm(forms.Form):
+    pass    
