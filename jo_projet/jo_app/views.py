@@ -23,7 +23,7 @@ def inscription(request):
         form = UtilisateurForm()
     return render(request, 'inscription.html', {'form': form})
 
-@login_required
+@login_required(login_url='connexion')
 def ticket_create_view(request):
     sport_nom = request.GET.get('sport', '')  
     sport = Sport.objects.filter(nom=sport_nom).first()
@@ -48,13 +48,13 @@ def ticket_create_view(request):
 
 
 # Affichage de la liste des tickets
-@login_required
+@login_required(login_url='connexion')
 def ticket_list_view(request):
     tickets = Ticket.objects.all()
     return render(request, 'ticket_list.html', {'tickets': tickets})
 
 # Mise à jour d'un ticket
-@login_required
+@login_required(login_url='connexion')
 def ticket_update_view(request, ticket_id):
     ticket = get_object_or_404(Ticket, id=ticket_id)  
     if request.method == "POST":
@@ -67,7 +67,7 @@ def ticket_update_view(request, ticket_id):
     return render(request, 'ticket.html', {'form': form}) 
 
 # Suppression d'un ticket 
-
+@login_required(login_url='connexion')
 def ticket_delete_view(request, ticket_id):
     ticket = get_object_or_404(Ticket, id=ticket_id)
     if request.method == "POST":
@@ -94,7 +94,7 @@ def sport_list_view(request):
     return render(request, 'sport.html', {'sports': sports})
 
 # Vue du panier
-@login_required
+@login_required(login_url='connexion')
 def panier_view(request):
     try:
         utilisateur = Utilisateur.objects.get(email=request.user.email)
