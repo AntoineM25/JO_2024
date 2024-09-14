@@ -26,10 +26,10 @@
                     <a class="nav-link" href="{% url 'sports_list' %}">Sports</a>  <!-- Lien vers la page des sports -->
                   </li>
                   <li class="nav-item">
-                    <a class="nav-link" href="{% url 'ticket_create' %}">Choix des tickets</a> <!-- Lien vers la page de choix des tickets -->
+                    <a class="nav-link" href="{% url 'connexion' %}?next={% url 'ticket_create' %}">Choix des tickets</a> <!-- Lien vers la page de choix des tickets -->
                   </li>
                   <li class="nav-item">
-                    <a class="nav-link" href="{% url 'panier' %}">Voir le panier</a> <!-- Lien vers la page panier -->
+                    <a class="nav-link" href="{% url 'connexion' %}?next={% url 'panier' %}">Voir le panier</a> <!-- Lien vers la page panier -->
                   </li>
                   <!-- Gestion de la connexion -->
                   {% if user.is_authenticated %}
