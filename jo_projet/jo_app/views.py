@@ -97,44 +97,6 @@ def sport_list_view(request):
     sports = Sport.objects.all()
     return render(request, 'sport.html', {'sports': sports})
 
-# Vue du panier
-# @login_required(login_url='connexion')
-# def panier_view(request):
-#     utilisateur = request.user
-#     tickets = Ticket.objects.filter(utilisateur=utilisateur)
-
-#     if request.method == 'POST':
-#         action = request.POST.get('action')
-
-#         if action.startswith('delete_'):
-#             # Supprimer le ticket
-#             ticket_id = action.split('_')[1]
-#             ticket = get_object_or_404(Ticket, id=ticket_id, utilisateur=request.user)
-#             ticket.delete()
-#             messages.success(request, 'Ticket supprimé avec succès.')
-#             return redirect('panier')
-
-#         elif action == 'pay':
-#             # Mettre à jour les quantités avant le paiement
-#             for ticket in tickets:
-#                 quantite_str = request.POST.get(f'quantite_{ticket.id}')
-#                 if quantite_str and quantite_str.isdigit():
-#                     quantite = int(quantite_str)
-#                     if quantite > 0:
-#                         ticket.quantite = quantite
-#                         ticket.save()
-
-#             # Rediriger vers la page de paiement avec le montant mis à jour
-#             return redirect('paiement')
-
-#     # Recalculer le total après la mise à jour des quantités
-#     tickets = Ticket.objects.filter(utilisateur=utilisateur)  # Rafraîchir la liste des tickets
-#     total = sum(ticket.get_prix() * ticket.quantite for ticket in tickets)  # Calcul du total avec les quantités
-#     form = PaiementForm(initial={'montant': total})
-
-#     return render(request, 'panier.html', {'tickets': tickets, 'total': total, 'form': form})
-
-# Vue du panier
 @login_required(login_url='connexion')
 def panier_view(request):
     utilisateur = request.user
@@ -209,22 +171,22 @@ class DeconnexionView(LogoutView):
 def paiement_view(request):
     utilisateur = request.user
     tickets = Ticket.objects.filter(utilisateur=utilisateur)
-    total = sum(ticket.get_prix() * ticket.quantite for ticket in tickets)  # Calculer le total avec les quantités
-
+    total = sum(ticket.get_prix() for ticket in tickets)
+    
     if request.method == 'POST':
-        # Simuler le paiement en vérifiant les champs de carte de crédit
+        # Simuler le paiement
         card_number = request.POST.get('cardNumber')
         expiry_date = request.POST.get('expiryDate')
         cvv = request.POST.get('cvv')
-
-        if card_number and expiry_date and cvv:  # Vérification simple
+        
+        if card_number and expiry_date and cvv:  # Vérification basique pour le mock
             # Générer les billets
             for ticket in tickets:
                 GenerationTicket.objects.create(ticket=ticket)
-
-            # Afficher un message de succès (optionnel)
+            
+            # Afficher un message de succès
             messages.success(request, 'Paiement réussi et billets générés !')
-
+            
             # Rediriger vers la page de confirmation
             return redirect('confirmation')
         else:
@@ -232,9 +194,8 @@ def paiement_view(request):
 
     return render(request, 'paiement.html', {'total': total})
 
-# MAJ automatique des quantités du panier
-from django.http import JsonResponse
 
+# MAJ automatique des quantités du panier
 @login_required(login_url='connexion')
 def maj_quantite_view(request):
     if request.method == 'POST':
@@ -259,3 +220,19 @@ def maj_quantite_view(request):
         return JsonResponse({'success': True, 'total': total_formatted})
 
     return JsonResponse({'success': False, 'message': 'Requête invalide.'})
+
+# Vue de confirmation du paiement
+def confirmation_view(request):
+    return render(request, 'confirmation.html', {
+        'message': 'Votre paiement a bien été effectué et vos billets ont été générés !'
+    })
+
+# Vue Mes commandes
+# Vue pour "mes commandes"
+@login_required(login_url='connexion')
+def mes_commandes_view(request):
+    utilisateur = request.user
+    tickets = Ticket.objects.filter(utilisateur=utilisateur)
+    billets = GenerationTicket.objects.filter(ticket__utilisateur=utilisateur)
+    
+    return render(request, 'mes_commandes.html', {'tickets': tickets, 'billets': billets})
