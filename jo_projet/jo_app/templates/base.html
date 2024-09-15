@@ -47,6 +47,9 @@
 
                   <!-- Gestion de la connexion -->
                   {% if user.is_authenticated %}
+                    <li class="nav-item {% if request.path == '/mes-commandes/' %}active{% endif %}">
+                      <a class="nav-link" href="{% url 'mes_commandes' %}"><i class="fa-solid fa-box-open"></i> Mes Commandes</a>
+                    </li>
                     <li class="nav-item">
                         <form action="{% url 'deconnexion' %}" method="post" style="display: inline;">
                             {% csrf_token %}

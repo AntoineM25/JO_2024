@@ -19,4 +19,5 @@ urlpatterns = [
     path('maj_quantite/', views.maj_quantite_view, name='maj_quantite'),
     path('paiement/', views.paiement_view, name='paiement'),
     path('confirmation/', views.confirmation_view, name='confirmation'),
+    path('mes-commandes/', views.mes_commandes_view, name='mes_commandes'),
 ]

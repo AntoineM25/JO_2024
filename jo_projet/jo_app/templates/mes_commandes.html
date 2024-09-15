@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2>Mes Commandes</h2>
+    
+    <!-- Afficher les tickets achetés -->
+    <h3>Tickets achetés</h3>
+    <ul>
+        {% for ticket in tickets %}
+            <li>{{ ticket }} - Type : {{ ticket.type_ticket }} - Quantité : {{ ticket.quantite }} - Sport : {{ ticket.sport.nom }}</li>
+        {% endfor %}
+    </ul>
+
+    <!-- Afficher les billets générés -->
+    <h3>Billets générés</h3>
+    <ul>
+        {% for billet in billets %}
+            <li>
+                {{ billet.ticket.sport.nom }} - Clé : {{ billet.cle_securisee_2 }} - 
+                <img src="{{ billet.qr_code.url }}" alt="QR Code" width="100">
+            </li>
+        {% endfor %}
+    </ul>
+</div>
+{% endblock %}
