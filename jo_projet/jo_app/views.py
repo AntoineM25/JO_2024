@@ -97,7 +97,7 @@ def sport_list_view(request):
     sports = Sport.objects.all()
     return render(request, 'sport.html', {'sports': sports})
 
-# Vue du panier
+# Vue pour le panier
 # @login_required(login_url='connexion')
 # def panier_view(request):
 #     utilisateur = request.user
@@ -126,33 +126,17 @@ def sport_list_view(request):
 #             messages.success(request, 'Quantités mises à jour avec succès.')
 
 #         elif action == 'pay':
-#             # Gestion du paiement
-#             form = PaiementForm(request.POST)
-#             if form.is_valid():
-#                 total = sum(ticket.get_prix() * ticket.quantite for ticket in tickets)  # Recalculer le total avec les quantités
-#                 paiement = form.save(commit=False)
-#                 paiement.montant = total
-#                 paiement.save()
+#             # Rediriger vers la page de paiement
+#             return redirect('paiement')  # Utiliser la vue de paiement pour gérer le paiement
 
-#                 # Associer les tickets au paiement et générer les billets
-#                 for ticket in tickets:
-#                     ticket.paiements.add(paiement)
-#                     ticket.save()
-
-#                     # Générer un billet pour chaque ticket
-#                     generation_ticket = GenerationTicket(ticket=ticket)
-#                     generation_ticket.save()
-
-#                 messages.success(request, 'Paiement effectué et billets générés avec succès.')
-#                 return redirect('confirmation')
-
-#     # Recalculer le total après la mise à jour des quantités
-#     tickets = Ticket.objects.filter(utilisateur=utilisateur)  # Rafraîchir la liste des tickets
-#     total = sum(ticket.get_prix() * ticket.quantite for ticket in tickets)  # Calcul du total avec les quantités
+#     # Recalculer le total après les mises à jour
+#     tickets = Ticket.objects.filter(utilisateur=utilisateur)
+#     total = sum(ticket.get_prix() * ticket.quantite for ticket in tickets)
 #     form = PaiementForm(initial={'montant': total})
 
 #     return render(request, 'panier.html', {'tickets': tickets, 'total': total, 'form': form})
 
+# Vue du panier
 @login_required(login_url='connexion')
 def panier_view(request):
     utilisateur = request.user
@@ -181,12 +165,21 @@ def panier_view(request):
             messages.success(request, 'Quantités mises à jour avec succès.')
 
         elif action == 'pay':
-            # Rediriger vers la page de paiement
-            return redirect('paiement')  # Utiliser la vue de paiement pour gérer le paiement
+            # Mettre à jour les quantités avant le paiement
+            for ticket in tickets:
+                quantite_str = request.POST.get(f'quantite_{ticket.id}')
+                if quantite_str and quantite_str.isdigit():
+                    quantite = int(quantite_str)
+                    if quantite > 0:
+                        ticket.quantite = quantite
+                        ticket.save()
 
-    # Recalculer le total après les mises à jour
-    tickets = Ticket.objects.filter(utilisateur=utilisateur)
-    total = sum(ticket.get_prix() * ticket.quantite for ticket in tickets)
+            # Rediriger vers la page de paiement avec le montant mis à jour
+            return redirect('paiement')
+
+    # Recalculer le total après la mise à jour des quantités
+    tickets = Ticket.objects.filter(utilisateur=utilisateur)  # Rafraîchir la liste des tickets
+    total = sum(ticket.get_prix() * ticket.quantite for ticket in tickets)  # Calcul du total avec les quantités
     form = PaiementForm(initial={'montant': total})
 
     return render(request, 'panier.html', {'tickets': tickets, 'total': total, 'form': form})
@@ -211,54 +204,82 @@ class DeconnexionView(LogoutView):
     next_page = 'home'
     
 # Vue pour le paiement
+# @login_required(login_url='connexion')
+# def paiement_view(request):
+#     utilisateur = request.user
+#     tickets = Ticket.objects.filter(utilisateur=utilisateur)
+#     total = sum(ticket.get_prix() for ticket in tickets)
+    
+#     if request.method == 'POST':
+#         action = request.POST.get('action')
+        
+#         if action == 'simulate':
+#             # Créer une instance du modèle Paiement pour la simulation
+#             paiement = Paiement.objects.create(
+#                 ticket=tickets.first(),  # Associer un ticket (arbitraire dans le cas de simulation)
+#                 montant=total,
+#                 methode_paiement='Simulation',
+#                 statut_paiement=True  # Marquer comme payé pour la simulation
+#             )
+            
+#             # Générer les billets
+#             for ticket in tickets:
+#                 GenerationTicket.objects.create(ticket=ticket)
+
+#             messages.success(request, 'Paiement simulé avec succès et billets générés !')
+#             return redirect('confirmation')
+
+#         elif action == 'pay':
+#             # Vérifier les champs de paiement
+#             card_number = request.POST.get('cardNumber')
+#             expiry_date = request.POST.get('expiryDate')
+#             cvv = request.POST.get('cvv')
+            
+#             if card_number and expiry_date and cvv:
+#                 # Créer une instance du modèle Paiement pour le paiement réel
+#                 paiement = Paiement.objects.create(
+#                     ticket=tickets.first(), 
+#                     montant=total,
+#                     methode_paiement='Carte de crédit',
+#                     statut_paiement=True 
+#                 )
+                
+#                 # Générer les billets
+#                 for ticket in tickets:
+#                     GenerationTicket.objects.create(ticket=ticket)
+
+#                 messages.success(request, 'Paiement réussi et billets générés !')
+#                 return redirect('confirmation')
+#             else:
+#                 messages.error(request, 'Veuillez remplir tous les champs pour le paiement.')
+    
+#     return render(request, 'paiement.html', {'total': total})
+
+# Vue pour le paiement
 @login_required(login_url='connexion')
-def payment_view(request):
+def paiement_view(request):
     utilisateur = request.user
     tickets = Ticket.objects.filter(utilisateur=utilisateur)
-    total = sum(ticket.get_prix() for ticket in tickets)
-    
+    total = sum(ticket.get_prix() * ticket.quantite for ticket in tickets)  # Calculer le total avec les quantités
+
     if request.method == 'POST':
-        action = request.POST.get('action')
-        
-        if action == 'simulate':
-            # Créer une instance du modèle Paiement pour la simulation
-            paiement = Paiement.objects.create(
-                ticket=tickets.first(),  # Associer un ticket (arbitraire dans le cas de simulation)
-                montant=total,
-                methode_paiement='Simulation',
-                statut_paiement=True  # Marquer comme payé pour la simulation
-            )
-            
+        # Simuler le paiement en vérifiant les champs de carte de crédit
+        card_number = request.POST.get('cardNumber')
+        expiry_date = request.POST.get('expiryDate')
+        cvv = request.POST.get('cvv')
+
+        if card_number and expiry_date and cvv:  # Vérification simple
             # Générer les billets
             for ticket in tickets:
                 GenerationTicket.objects.create(ticket=ticket)
 
-            messages.success(request, 'Paiement simulé avec succès et billets générés !')
+            # Afficher un message de succès (optionnel)
+            messages.success(request, 'Paiement réussi et billets générés !')
+
+            # Rediriger vers la page de confirmation
             return redirect('confirmation')
+        else:
+            messages.error(request, 'Veuillez remplir tous les champs pour le paiement.')
 
-        elif action == 'pay':
-            # Vérifier les champs de paiement
-            card_number = request.POST.get('cardNumber')
-            expiry_date = request.POST.get('expiryDate')
-            cvv = request.POST.get('cvv')
-            
-            if card_number and expiry_date and cvv:
-                # Créer une instance du modèle Paiement pour le paiement réel
-                paiement = Paiement.objects.create(
-                    ticket=tickets.first(),  # Associer un ticket (arbitraire pour l'exemple)
-                    montant=total,
-                    methode_paiement='Carte de crédit',
-                    statut_paiement=True  # Marquer comme payé
-                )
-                
-                # Générer les billets
-                for ticket in tickets:
-                    GenerationTicket.objects.create(ticket=ticket)
-
-                messages.success(request, 'Paiement réussi et billets générés !')
-                return redirect('confirmation')
-            else:
-                messages.error(request, 'Veuillez remplir tous les champs pour le paiement.')
-    
     return render(request, 'paiement.html', {'total': total})
 
