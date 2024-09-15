@@ -97,7 +97,7 @@ def sport_list_view(request):
     sports = Sport.objects.all()
     return render(request, 'sport.html', {'sports': sports})
 
-# Vue pour le panier
+# Vue du panier
 # @login_required(login_url='connexion')
 # def panier_view(request):
 #     utilisateur = request.user
@@ -114,8 +114,8 @@ def sport_list_view(request):
 #             messages.success(request, 'Ticket supprimé avec succès.')
 #             return redirect('panier')
 
-#         elif action == 'update':
-#             # Mettre à jour les quantités
+#         elif action == 'pay':
+#             # Mettre à jour les quantités avant le paiement
 #             for ticket in tickets:
 #                 quantite_str = request.POST.get(f'quantite_{ticket.id}')
 #                 if quantite_str and quantite_str.isdigit():
@@ -123,15 +123,13 @@ def sport_list_view(request):
 #                     if quantite > 0:
 #                         ticket.quantite = quantite
 #                         ticket.save()
-#             messages.success(request, 'Quantités mises à jour avec succès.')
 
-#         elif action == 'pay':
-#             # Rediriger vers la page de paiement
-#             return redirect('paiement')  # Utiliser la vue de paiement pour gérer le paiement
+#             # Rediriger vers la page de paiement avec le montant mis à jour
+#             return redirect('paiement')
 
-#     # Recalculer le total après les mises à jour
-#     tickets = Ticket.objects.filter(utilisateur=utilisateur)
-#     total = sum(ticket.get_prix() * ticket.quantite for ticket in tickets)
+#     # Recalculer le total après la mise à jour des quantités
+#     tickets = Ticket.objects.filter(utilisateur=utilisateur)  # Rafraîchir la liste des tickets
+#     total = sum(ticket.get_prix() * ticket.quantite for ticket in tickets)  # Calcul du total avec les quantités
 #     form = PaiementForm(initial={'montant': total})
 
 #     return render(request, 'panier.html', {'tickets': tickets, 'total': total, 'form': form})
@@ -163,6 +161,7 @@ def panier_view(request):
                         ticket.quantite = quantite
                         ticket.save()
             messages.success(request, 'Quantités mises à jour avec succès.')
+            return redirect('panier')
 
         elif action == 'pay':
             # Mettre à jour les quantités avant le paiement
@@ -185,6 +184,7 @@ def panier_view(request):
     return render(request, 'panier.html', {'tickets': tickets, 'total': total, 'form': form})
 
 
+
 # Vue pour la connexion
 class ConnexionView(LoginView):
     template_name = 'connexion.html'
@@ -203,57 +203,6 @@ class ConnexionView(LoginView):
 class DeconnexionView(LogoutView):
     next_page = 'home'
     
-# Vue pour le paiement
-# @login_required(login_url='connexion')
-# def paiement_view(request):
-#     utilisateur = request.user
-#     tickets = Ticket.objects.filter(utilisateur=utilisateur)
-#     total = sum(ticket.get_prix() for ticket in tickets)
-    
-#     if request.method == 'POST':
-#         action = request.POST.get('action')
-        
-#         if action == 'simulate':
-#             # Créer une instance du modèle Paiement pour la simulation
-#             paiement = Paiement.objects.create(
-#                 ticket=tickets.first(),  # Associer un ticket (arbitraire dans le cas de simulation)
-#                 montant=total,
-#                 methode_paiement='Simulation',
-#                 statut_paiement=True  # Marquer comme payé pour la simulation
-#             )
-            
-#             # Générer les billets
-#             for ticket in tickets:
-#                 GenerationTicket.objects.create(ticket=ticket)
-
-#             messages.success(request, 'Paiement simulé avec succès et billets générés !')
-#             return redirect('confirmation')
-
-#         elif action == 'pay':
-#             # Vérifier les champs de paiement
-#             card_number = request.POST.get('cardNumber')
-#             expiry_date = request.POST.get('expiryDate')
-#             cvv = request.POST.get('cvv')
-            
-#             if card_number and expiry_date and cvv:
-#                 # Créer une instance du modèle Paiement pour le paiement réel
-#                 paiement = Paiement.objects.create(
-#                     ticket=tickets.first(), 
-#                     montant=total,
-#                     methode_paiement='Carte de crédit',
-#                     statut_paiement=True 
-#                 )
-                
-#                 # Générer les billets
-#                 for ticket in tickets:
-#                     GenerationTicket.objects.create(ticket=ticket)
-
-#                 messages.success(request, 'Paiement réussi et billets générés !')
-#                 return redirect('confirmation')
-#             else:
-#                 messages.error(request, 'Veuillez remplir tous les champs pour le paiement.')
-    
-#     return render(request, 'paiement.html', {'total': total})
 
 # Vue pour le paiement
 @login_required(login_url='connexion')
@@ -283,3 +232,30 @@ def paiement_view(request):
 
     return render(request, 'paiement.html', {'total': total})
 
+# MAJ automatique des quantités du panier
+from django.http import JsonResponse
+
+@login_required(login_url='connexion')
+def maj_quantite_view(request):
+    if request.method == 'POST':
+        ticket_id = request.POST.get('ticket_id')
+        quantite = request.POST.get('quantite')
+        
+        try:
+            ticket = Ticket.objects.get(id=ticket_id, utilisateur=request.user)
+            if quantite.isdigit() and int(quantite) > 0:
+                ticket.quantite = int(quantite)
+                ticket.save()
+            else:
+                return JsonResponse({'success': False, 'message': 'Quantité invalide.'})
+        except Ticket.DoesNotExist:
+            return JsonResponse({'success': False, 'message': 'Ticket non trouvé.'})
+
+        # Recalculer le total du panier après la mise à jour de la quantité
+        tickets = Ticket.objects.filter(utilisateur=request.user)
+        total = sum(ticket.get_prix() * ticket.quantite for ticket in tickets)
+        total_formatted = f"{total:.2f}€"  # Formater le total avec deux décimales
+
+        return JsonResponse({'success': True, 'total': total_formatted})
+
+    return JsonResponse({'success': False, 'message': 'Requête invalide.'})

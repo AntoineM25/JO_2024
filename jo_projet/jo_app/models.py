@@ -109,17 +109,17 @@ class Ticket(models.Model):
     quantite = models.PositiveIntegerField(default=1)  
 
     def get_prix(self):
-        prix_unitaire = 0
         if self.type_ticket == 'solo':
-            prix_unitaire = self.prix_solo
+            return self.prix_solo
         elif self.type_ticket == 'duo':
-            prix_unitaire = self.prix_duo
+            return self.prix_duo
         elif self.type_ticket == 'famille':
-            prix_unitaire = self.prix_famille
-        return prix_unitaire * self.quantite  # Calcul du prix total en fonction de la quantité
+            return self.prix_famille
+        else:
+            return 0
 
     def __str__(self):
-        return f"{self.utilisateur} - {self.sport.nom} - {self.type_ticket}"
+        return f"{self.sport.nom} - {self.type_ticket}"
     
 # Modèle paiement
 class Paiement(models.Model):

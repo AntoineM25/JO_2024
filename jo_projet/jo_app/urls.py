@@ -16,5 +16,6 @@ urlpatterns = [
     path('sport/', views.sport_list_view, name='sports_list'),
     path('get-sport-date/<int:sport_id>/', views.get_sport_date, name='get_sport_date'),
     path('panier/', views.panier_view, name='panier'),
+    path('maj_quantite/', views.maj_quantite_view, name='maj_quantite'),
     path('paiement/', views.paiement_view, name='paiement'),
 ]

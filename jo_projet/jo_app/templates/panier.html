@@ -18,25 +18,53 @@
         <ul>
             {% for ticket in tickets %}
                 <li>
-                    {{ ticket }} - Prix unitaire : {{ ticket.get_prix }}€
+                    {{ ticket }}
                     <!-- Champ pour modifier la quantité -->
-                    <input type="number" name="quantite_{{ ticket.id }}" value="{{ ticket.quantite }}" min="1" class="form-control d-inline w-auto">
-                    <!-- Affichage du total du ticket -->
-                    <span>Total : {{ ticket.get_prix|floatformat:2 }}€</span>
+                    <input type="number" name="quantite_{{ ticket.id }}" value="{{ ticket.quantite }}" min="1" class="form-control d-inline w-auto quantity-input" data-ticket-id="{{ ticket.id }}" data-ticket-price="{{ ticket.get_prix }}">
                     <!-- Bouton de suppression -->
                     <button type="submit" name="action" value="delete_{{ ticket.id }}" class="btn btn-danger btn-sm"><i class="fa-solid fa-trash-can"></i></button>
                 </li>
             {% endfor %}
         </ul>
-        <p>Total du panier : {{ total }}€</p>
+        <p>Total du panier : <span id="total-panier">{{ total }}€</span></p>
+
 
         <h3>Paiement</h3>
         {{ form.methode_paiement }}
 
-        <!-- Bouton pour mettre à jour le panier -->
-        <button type="submit" name="action" value="update" class="btn btn-primary">Mettre à jour le panier</button>
         <!-- Bouton pour payer -->
         <button type="submit" name="action" value="pay" class="btn btn-success">Payer</button>
     </form>
 </div>
+
+<script>
+    // JavaScript pour mettre à jour la quantité et le total en temps réel
+    document.querySelectorAll('.quantity-input').forEach(function(input) {
+        input.addEventListener('change', function() {
+            let ticketId = this.dataset.ticketId;
+            let quantite = this.value;
+            let csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+            fetch("{% url 'maj_quantite' %}", {  // Utilise 'maj_quantite' ici
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': csrfToken,
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: `ticket_id=${ticketId}&quantite=${quantite}`
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Mettre à jour le total du panier
+                    document.getElementById('total-panier').textContent = data.total;
+                } else {
+                    alert('Erreur lors de la mise à jour du panier : ' + data.message);
+                }
+            })
+            .catch(error => console.error('Erreur:', error));
+        });
+    });
+</script>
+
 {% endblock %}
