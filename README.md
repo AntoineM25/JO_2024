@@ -19,7 +19,8 @@
 -   Vérification de la création d'un QR code avec la clé sécurisé 1 et 2 (Résultat : OK)
 
 - Test du QR code récupération de la clé sécurisée 1 de l'utilisateur Guillaume Masson. Récupération de toutes les clés sécurisées 2 de l'utilisateur Guillaume Masson. Vérification de la bonne concaténation dans le QR code. Résultat : OK
-[Test QR code](/jo_projet/jo_app/static/images/tests/test_qr_code.png)
+
+![Test QR code](/jo_projet/jo_app/static/images/tests/test_qr_code.png)
 
 #### ***Templates***
 
