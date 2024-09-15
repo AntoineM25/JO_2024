@@ -151,8 +151,6 @@ def panier_view(request):
     
     return render(request, 'panier.html', {'tickets': tickets, 'total': total, 'form': form})
 
-
-# Vue pour la connexion
 class ConnexionView(LoginView):
     template_name = 'connexion.html'
     form_class = ConnexionForm
@@ -163,7 +161,8 @@ class ConnexionView(LoginView):
         return super().form_valid(form)
 
     def get_success_url(self):
-        return self.request.GET.get('next', reverse_lazy('home'))
+        next_url = self.request.POST.get('next') or self.request.GET.get('next')
+        return next_url or reverse_lazy('home')
 
 # Vue pour la déconnexion
 class DeconnexionView(LogoutView):

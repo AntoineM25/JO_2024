@@ -31,17 +31,17 @@
                   <!-- Lien vers la page de choix des tickets, dépendant de l'authentification -->
                   {% if user.is_authenticated %}
                       <li class="nav-item {% if request.path == '/ticket/create/' %}active{% endif %}">
-                        <a class="nav-link" href="{% url 'ticket_create' %}"><i class="fa-solid fa-ticket"></i> Tickets</a> <!-- Accessible uniquement aux utilisateurs connectés -->
+                          <a class="nav-link" href="{% url 'ticket_create' %}"><i class="fa-solid fa-ticket"></i> Tickets</a> <!-- Accessible uniquement aux utilisateurs connectés -->
                       </li>
                       <li class="nav-item {% if request.path == '/panier/' %}active{% endif %}">
-                        <a class="nav-link" href="{% url 'panier' %}"><i class="fa-solid fa-basket-shopping"></i> Panier</a> <!-- Accessible uniquement aux utilisateurs connectés -->
+                          <a class="nav-link" href="{% url 'panier' %}"><i class="fa-solid fa-basket-shopping"></i> Panier</a> <!-- Accessible uniquement aux utilisateurs connectés -->
                       </li>
                   {% else %}
                       <li class="nav-item {% if request.path == '/ticket/create/' %}active{% endif %}">
-                        <a class="nav-link" href="{% url 'connexion' %}?next={% url 'ticket_create' %}"><i class="fa-solid fa-ticket"></i> Tickets</a> <!-- Redirige vers la connexion si non connecté -->
+                          <a class="nav-link" href="{% url 'connexion' %}?next={% url 'ticket_create' %}"><i class="fa-solid fa-ticket"></i> Tickets</a> <!-- Redirige vers la connexion si non connecté -->
                       </li>
                       <li class="nav-item {% if request.path == '/panier/' %}active{% endif %}">
-                        <a class="nav-link" href="{% url 'connexion' %}?next={% url 'panier' %}"><i class="fa-solid fa-basket-shopping"></i> Panier</a> <!-- Redirige vers la connexion si non connecté -->
+                          <a class="nav-link" href="{% url 'connexion' %}?next={% url 'panier' %}"><i class="fa-solid fa-basket-shopping"></i> Panier</a> <!-- Redirige vers la connexion si non connecté -->
                       </li>
                   {% endif %}
 
