@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2>Paiement</h2>
+    <p>Montant total à payer : {{ total }}€</p>
+    
+    <form method="POST">
+        {% csrf_token %}
+        <div class="mb-3">
+            <label for="cardNumber" class="form-label">Numéro de carte</label>
+            <input type="text" class="form-control" id="cardNumber" placeholder="Entrez le numéro de carte" required>
+        </div>
+        <div class="mb-3">
+            <label for="expiryDate" class="form-label">Date d'expiration</label>
+            <input type="text" class="form-control" id="expiryDate" placeholder="MM/AA" required>
+        </div>
+        <div class="mb-3">
+            <label for="cvv" class="form-label">CVV</label>
+            <input type="text" class="form-control" id="cvv" placeholder="Entrez le CVV" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Payer</button>
+    </form>
+</div>
+{% endblock %}
