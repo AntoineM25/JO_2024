@@ -211,60 +211,54 @@ class DeconnexionView(LogoutView):
     next_page = 'home'
     
 # Vue pour le paiement
-# @login_required(login_url='connexion')
-# def payment_view(request):
-#     utilisateur = request.user
-#     tickets = Ticket.objects.filter(utilisateur=utilisateur)
-#     total = sum(ticket.get_prix() for ticket in tickets)
-    
-#     if request.method == 'POST':
-#         # Simuler le paiement en vérifiant les champs de carte de crédit
-#         card_number = request.POST.get('cardNumber')
-#         expiry_date = request.POST.get('expiryDate')
-#         cvv = request.POST.get('cvv')
-        
-#         if card_number and expiry_date and cvv:  # Vérification simple
-#             # Générer les billets
-#             for ticket in tickets:
-#                 GenerationTicket.objects.create(ticket=ticket)
-            
-#             # Afficher un message de succès (optionnel)
-#             messages.success(request, 'Paiement réussi et billets générés !')
-            
-#             # Rediriger vers la page de confirmation
-#             return redirect('confirmation')
-#         else:
-#             messages.error(request, 'Veuillez remplir tous les champs pour le paiement.')
-
-#     return render(request, 'payment.html', {'total': total})
-
-
 @login_required(login_url='connexion')
 def payment_view(request):
     utilisateur = request.user
     tickets = Ticket.objects.filter(utilisateur=utilisateur)
-    total = sum(ticket.get_prix() * ticket.quantite for ticket in tickets)
-
+    total = sum(ticket.get_prix() for ticket in tickets)
+    
     if request.method == 'POST':
-        # Simuler le paiement en vérifiant les champs de carte de crédit
-        card_number = request.POST.get('cardNumber')
-        expiry_date = request.POST.get('expiryDate')
-        cvv = request.POST.get('cvv')
+        action = request.POST.get('action')
         
-        if card_number and expiry_date and cvv:  # Vérification simple
+        if action == 'simulate':
+            # Créer une instance du modèle Paiement pour la simulation
+            paiement = Paiement.objects.create(
+                ticket=tickets.first(),  # Associer un ticket (arbitraire dans le cas de simulation)
+                montant=total,
+                methode_paiement='Simulation',
+                statut_paiement=True  # Marquer comme payé pour la simulation
+            )
+            
             # Générer les billets
             for ticket in tickets:
-                for _ in range(ticket.quantite):  # Générer un billet pour chaque quantité
-                    generation_ticket = GenerationTicket(ticket=ticket)
-                    generation_ticket.save()
+                GenerationTicket.objects.create(ticket=ticket)
 
-            # Afficher un message de succès
-            messages.success(request, 'Paiement réussi et billets générés !')
-            
-            # Rediriger vers la page de confirmation
+            messages.success(request, 'Paiement simulé avec succès et billets générés !')
             return redirect('confirmation')
-        else:
-            messages.error(request, 'Veuillez remplir tous les champs pour le paiement.')
 
+        elif action == 'pay':
+            # Vérifier les champs de paiement
+            card_number = request.POST.get('cardNumber')
+            expiry_date = request.POST.get('expiryDate')
+            cvv = request.POST.get('cvv')
+            
+            if card_number and expiry_date and cvv:
+                # Créer une instance du modèle Paiement pour le paiement réel
+                paiement = Paiement.objects.create(
+                    ticket=tickets.first(),  # Associer un ticket (arbitraire pour l'exemple)
+                    montant=total,
+                    methode_paiement='Carte de crédit',
+                    statut_paiement=True  # Marquer comme payé
+                )
+                
+                # Générer les billets
+                for ticket in tickets:
+                    GenerationTicket.objects.create(ticket=ticket)
+
+                messages.success(request, 'Paiement réussi et billets générés !')
+                return redirect('confirmation')
+            else:
+                messages.error(request, 'Veuillez remplir tous les champs pour le paiement.')
+    
     return render(request, 'paiement.html', {'total': total})
 

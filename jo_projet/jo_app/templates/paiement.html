@@ -5,21 +5,34 @@
     <h2>Paiement</h2>
     <p>Montant total à payer : {{ total }}€</p>
     
-    <form method="POST">
+    <form method="POST" id="paymentForm">
         {% csrf_token %}
         <div class="mb-3">
             <label for="cardNumber" class="form-label">Numéro de carte</label>
-            <input type="text" class="form-control" id="cardNumber" placeholder="Entrez le numéro de carte" required>
+            <input type="text" class="form-control" id="cardNumber" name="cardNumber" placeholder="Entrez le numéro de carte" required>
         </div>
         <div class="mb-3">
             <label for="expiryDate" class="form-label">Date d'expiration</label>
-            <input type="text" class="form-control" id="expiryDate" placeholder="MM/AA" required>
+            <input type="text" class="form-control" id="expiryDate" name="expiryDate" placeholder="MM/AA" required>
         </div>
         <div class="mb-3">
             <label for="cvv" class="form-label">CVV</label>
-            <input type="text" class="form-control" id="cvv" placeholder="Entrez le CVV" required>
+            <input type="text" class="form-control" id="cvv" name="cvv" placeholder="Entrez le CVV" required>
         </div>
-        <button type="submit" class="btn btn-primary">Payer</button>
+        
+        <div class="d-flex justify-content-start">
+            <button type="button" class="btn btn-secondary me-2" id="simulatePaymentBtn">Simuler Paiement</button>
+            <button type="submit" class="btn btn-primary">Payer</button>
+        </div>
     </form>
 </div>
+
+<script>
+    // JavaScript pour remplir automatiquement les champs de paiement lorsque l'utilisateur clique sur "Simuler Paiement"
+    document.getElementById('simulatePaymentBtn').addEventListener('click', function() {
+        document.getElementById('cardNumber').value = '1234567891011122';
+        document.getElementById('expiryDate').value = '12/27';
+        document.getElementById('cvv').value = '123';
+    });
+</script>
 {% endblock %}

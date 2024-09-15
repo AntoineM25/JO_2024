@@ -106,7 +106,7 @@ class Ticket(models.Model):
     prix_duo = models.DecimalField(max_digits=10, decimal_places=2, default=35.00)
     prix_famille = models.DecimalField(max_digits=10, decimal_places=2, default=50.00)
     sport = models.ForeignKey(Sport, on_delete=models.CASCADE, default=1)
-    quantite = models.PositiveIntegerField(default=1)  # Nouveau champ pour la quantité
+    quantite = models.PositiveIntegerField(default=1)  
 
     def get_prix(self):
         prix_unitaire = 0
