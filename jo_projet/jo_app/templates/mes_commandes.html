@@ -14,13 +14,23 @@
 
     <!-- Afficher les billets générés -->
     <h3>Billets générés</h3>
-    <ul>
+    <div class="row">
         {% for billet in billets %}
-            <li>
-                {{ billet.ticket.sport.nom }} - Clé : {{ billet.cle_securisee_2 }} - 
-                <img src="{{ billet.qr_code.url }}" alt="QR Code" width="100">
-            </li>
+            <div class="col-md-6 mb-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ billet.ticket.sport.nom }}</h5>
+                        <p class="card-text">
+                            Type de Ticket : {{ billet.ticket.type_ticket }}<br>
+                            Quantité : {{ billet.ticket.quantite }}<br>
+                            Date : {{ billet.date_generation|date:"d/m/Y H:i" }}<br>
+                            Clé sécurisée : {{ billet.cle_securisee_2 }}
+                        </p>
+                        <img src="{{ billet.qr_code.url }}" alt="QR Code" class="img-fluid">
+                    </div>
+                </div>
+            </div>
         {% endfor %}
-    </ul>
+    </div>
 </div>
 {% endblock %}
