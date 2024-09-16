@@ -247,17 +247,14 @@ def mes_commandes_view(request):
 # Vue pour télécharger le billet en PDF
 @login_required(login_url='connexion')
 def telecharger_billet_view(request, billet_id):
-    billet = get_object_or_404(GenerationTicket, id=billet_id)
-
-    # Construire l'URL absolue pour le QR code
+    billet = get_object_or_404(GenerationTicket, id=billet_id, ticket__utilisateur=request.user)
+    nom_fichier = f"Billet_{billet.ticket.sport.nom}_{billet.ticket.utilisateur.prenom}_{billet.ticket.utilisateur.nom}.pdf"
     qr_code_url = request.build_absolute_uri(billet.qr_code.url)
-
-    # Passer l'URL absolue au template
     html_string = render(request, 'billet_pdf.html', {'billet': billet, 'qr_code_url': qr_code_url}).content.decode('utf-8')
     html = HTML(string=html_string)
     response = HttpResponse(content_type='application/pdf')
-    response['Content-Disposition'] = f'attachment; filename="billet_{billet.id}.pdf"'
+    response['Content-Disposition'] = f'attachment; filename="{nom_fichier}"'
     html.write_pdf(response)
-
+    
     return response
 
