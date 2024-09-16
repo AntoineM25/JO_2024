@@ -1,15 +1,26 @@
-body {
-    color: #040404
+.navbar {
+    background-color: rgba(4, 4, 4, 0.9) !important;
 }
 
-.nav-item:hover i {
-    color: #d4c47c
+.nav-item a,
+.nav-item button {
+    color: #fff;
+}
+
+.nav-item a:hover,
+.nav-item button:hover {
+    color: #fff;
+}
+
+.nav-item:hover i,
+.nav-item.active i {
+    color: #d4c47c;
 }
 
 .nav-item i {
     transition: color 0.3s ease;
 }
 
-.nav-item.active i {
-    color: #d4c47c;
+.form-control {
+    width: fit-content !important;
 }

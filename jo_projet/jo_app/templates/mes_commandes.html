@@ -22,7 +22,7 @@
                             </p>
                             <img src="{{ billet.qr_code.url }}" alt="QR Code" class="img-fluid" style="width: 150px; height: 150px;">   
                         </div>
-                        <a href="{% url 'telecharger_billet' billet.id %}" class="btn btn-primary">Télécharger le billet</a>
+                        <a href="{% url 'telecharger_billet' billet.id %}" class="btn btn-dark">Télécharger le billet</a>
                     </div>
                 </div>
             {% endfor %}
