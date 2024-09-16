@@ -26,7 +26,7 @@
         <p>Type de Ticket : {{ billet.ticket.type_ticket }}</p>
         <p>Prix : {{ billet.ticket.get_prix }} €</p>
         <p>Date de l'événement : {{ billet.ticket.sport.date_evenement }}</p>
-        <img src="{{ billet.qr_code.url }}" alt="QR Code">
+        <img src="{{ qr_code_url }}" alt="QR Code" width="150" height="150">
     </div>
 </body>
 </html>
