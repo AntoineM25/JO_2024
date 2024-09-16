@@ -2,11 +2,11 @@
 {% load static %}
 
 {% block content %}
-<div class="container mt-5">
-    <h1 class="text-center mb-4">Les sports présents aux Jeux Olympiques Paris 2024</h1>
-    <div class="row g-4">
+<div class="container text-center mt-5">
+    <h2 class="mb-4">Les sports présents aux Jeux Olympiques Paris 2024</h2>
+    <div class="row justify-content-center">
         {% for sport in sports %}
-            <div class="col-sm-4 mb-4 mx-auto">
+            <div class="col-md-4 mb-2">
                 <h3>{{ sport.nom }}</h3>
                 <img src="{% static sport.image %}" alt="image représentant le sport{{ sport.nom }}" class="img-fluid">
                 <p class="mt-3">{{ sport.description }}</p>

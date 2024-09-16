@@ -20,8 +20,8 @@
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Billet pour {{ billet.ticket.sport.nom }}</h1>
+    <div class="container text-center mt-5">
+        <h2 class="mb-4">Billet pour {{ billet.ticket.sport.nom }}</h2>
         <p>Acheteur : {{ billet.ticket.utilisateur.prenom }} {{ billet.ticket.utilisateur.nom }}</p>
         <p>Type de Ticket : {{ billet.ticket.type_ticket }}</p>
         <p>Prix : {{ billet.ticket.get_prix }} €</p>

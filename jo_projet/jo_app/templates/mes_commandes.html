@@ -1,11 +1,11 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="container mt-5">
-    <h2>Mes Billets</h2>
+<div class="container text-center mt-5">
+    <h2 class="mb-4">Mes Billets</h2>
 
     <!-- Afficher les billets générés -->
-    <div class="row">
+    <div class="row justify-content-center">
         {% if billets %}
             {% for billet in billets %}
                 <div class="col-md-4 mb-2">

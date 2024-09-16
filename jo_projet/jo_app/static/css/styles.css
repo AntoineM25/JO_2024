@@ -22,5 +22,7 @@
 }
 
 .form-control {
-    width: fit-content !important;
+    text-align: center;
+    margin: auto;
+    width: 50%;
 }

@@ -1,41 +1,45 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="container mt-5">
-    <h2>Mon Panier</h2>
+<div class="container text-center mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <h2 class="mb-4">Mon Panier</h2>
 
-    <!-- Messages de confirmation -->
-    {% if messages %}
-        <div class="alert alert-info" role="alert">
-            {% for message in messages %}
-                <p>{{ message }}</p>
-            {% endfor %}
+            <!-- Messages de confirmation -->
+            {% if messages %}
+                <div class="alert alert-info" role="alert">
+                    {% for message in messages %}
+                        <p>{{ message }}</p>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            <form method="POST" action="{% url 'panier' %}">
+                {% csrf_token %}
+                <ul>
+                    {% for ticket in tickets %}
+                        <li>
+                            {{ ticket }}
+                            <!-- Champ pour modifier la quantité -->
+                            <input type="number" name="quantite_{{ ticket.id }}" value="{{ ticket.quantite }}" min="1" class="form-control d-inline w-auto quantity-input" data-ticket-id="{{ ticket.id }}" data-ticket-price="{{ ticket.get_prix }}">
+                            <!-- Bouton de suppression -->
+                            <button type="submit" name="action" value="delete_{{ ticket.id }}" class="btn btn-danger btn-sm"><i class="fa-solid fa-trash-can"></i></button>
+                        </li>
+                    {% endfor %}
+                </ul>
+                <p>Total du panier : <span id="total-panier">{{ total }}</span></p>
+
+
+                <h3>Paiement</h3>
+                <span class="form">{{ form.methode_paiement }}</span>
+                
+
+                <!-- Bouton pour payer -->
+                <button type="submit" name="action" value="pay" class="btn btn-dark mt-3">Payer</button>
+            </form>
         </div>
-    {% endif %}
-
-    <form method="POST" action="{% url 'panier' %}">
-        {% csrf_token %}
-        <ul>
-            {% for ticket in tickets %}
-                <li>
-                    {{ ticket }}
-                    <!-- Champ pour modifier la quantité -->
-                    <input type="number" name="quantite_{{ ticket.id }}" value="{{ ticket.quantite }}" min="1" class="form-control d-inline w-auto quantity-input" data-ticket-id="{{ ticket.id }}" data-ticket-price="{{ ticket.get_prix }}">
-                    <!-- Bouton de suppression -->
-                    <button type="submit" name="action" value="delete_{{ ticket.id }}" class="btn btn-danger btn-sm"><i class="fa-solid fa-trash-can"></i></button>
-                </li>
-            {% endfor %}
-        </ul>
-        <p>Total du panier : <span id="total-panier">{{ total }}</span></p>
-
-
-        <h3>Paiement</h3>
-        <span class="form">{{ form.methode_paiement }}</span>
-        
-
-        <!-- Bouton pour payer -->
-        <button type="submit" name="action" value="pay" class="btn btn-dark mt-3">Payer</button>
-    </form>
+    </div>
 </div>
 
 <script>
