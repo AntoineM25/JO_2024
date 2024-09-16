@@ -3,7 +3,7 @@
 {% block content %}
 <div class="container mt-5">
     <h2>Paiement</h2>
-    <p>Montant total à payer : {{ total }}€</p>
+    <p>Montant total à payer : {{ total }}</p>
     
     <form method="POST" id="paymentForm">
         {% csrf_token %}

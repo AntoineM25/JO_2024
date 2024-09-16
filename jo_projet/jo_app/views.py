@@ -97,11 +97,12 @@ def sport_list_view(request):
     sports = Sport.objects.all()
     return render(request, 'sport.html', {'sports': sports})
 
-# Vue pour le panier
+# Vue du panier
 @login_required(login_url='connexion')
 def panier_view(request):
     utilisateur = request.user
-    tickets = Ticket.objects.filter(utilisateur=utilisateur)
+    # Filtrer uniquement les tickets non achetés
+    tickets = Ticket.objects.filter(utilisateur=utilisateur, est_achete=False)
 
     if request.method == 'POST':
         action = request.POST.get('action')
@@ -140,19 +141,10 @@ def panier_view(request):
             return redirect('paiement')
 
     # Recalculer le total après la mise à jour des quantités
-    tickets = Ticket.objects.filter(utilisateur=utilisateur)  # Rafraîchir la liste des tickets
     total = sum(ticket.get_prix() * ticket.quantite for ticket in tickets)  # Calcul du total avec les quantités
     form = PaiementForm(initial={'montant': total})
 
-    return render(request, 'panier.html', {'tickets': tickets, 'total': total, 'form': form})
-
-
-    # Recalculer le total après la mise à jour des quantités
-    tickets = Ticket.objects.filter(utilisateur=utilisateur, est_achete=False)  # Rafraîchir la liste des tickets non achetés
-    total = sum(ticket.get_prix() * ticket.quantite for ticket in tickets)  # Calcul du total avec les quantités
-    form = PaiementForm(initial={'montant': total})
-
-    return render(request, 'panier.html', {'tickets': tickets, 'total': total, 'form': form})
+    return render(request, 'panier.html', {'tickets': tickets, 'total': f"{total:.2f}€", 'form': form})
 
 
 
@@ -174,14 +166,14 @@ class ConnexionView(LoginView):
 class DeconnexionView(LogoutView):
     next_page = 'home'
     
-
 # Vue pour le paiement
 @login_required(login_url='connexion')
 def paiement_view(request):
     utilisateur = request.user
-    tickets = Ticket.objects.filter(utilisateur=utilisateur)
-    total = sum(ticket.get_prix() * ticket.quantite for ticket in tickets)  # Calcul correct du total avec les quantités
-    
+    # Filtrer uniquement les tickets non achetés pour le calcul du paiement
+    tickets = Ticket.objects.filter(utilisateur=utilisateur, est_achete=False)
+    total = sum(ticket.get_prix() * ticket.quantite for ticket in tickets)  # Calcul du total avec les quantités
+
     if request.method == 'POST':
         # Simuler le paiement
         card_number = request.POST.get('cardNumber')
@@ -189,9 +181,11 @@ def paiement_view(request):
         cvv = request.POST.get('cvv')
         
         if card_number and expiry_date and cvv:  # Vérification basique pour le mock
-            # Générer les billets
+            # Générer les billets et marquer les tickets comme achetés
             for ticket in tickets:
                 GenerationTicket.objects.create(ticket=ticket)
+                ticket.est_achete = True
+                ticket.save()
             
             # Afficher un message de succès
             messages.success(request, 'Paiement réussi et billets générés !')
@@ -201,8 +195,7 @@ def paiement_view(request):
         else:
             messages.error(request, 'Veuillez remplir tous les champs pour le paiement.')
 
-    return render(request, 'paiement.html', {'total': total})
-
+    return render(request, 'paiement.html', {'total': f"{total:.2f}€"})
 
 
 # MAJ automatique des quantités du panier
