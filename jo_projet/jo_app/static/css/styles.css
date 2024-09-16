@@ -13,7 +13,8 @@
 }
 
 .nav-item:hover i,
-.nav-item.active i {
+.nav-item.active i,
+#logo-text:hover {
     color: #d4c47c;
 }
 
