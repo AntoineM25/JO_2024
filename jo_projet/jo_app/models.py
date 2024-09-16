@@ -150,7 +150,7 @@ class GenerationTicket(models.Model):
         cle_finale = f"{self.ticket.utilisateur.cle_securisee_1}{self.cle_securisee_2}"
 
         # Génération du QR Code basé sur la clé finale
-        qr = qrcode.QRCode(version=1, box_size=10, border=5)
+        qr = qrcode.QRCode(version=1, box_size=10, border=5) # Ajuster la taille du QR code
         qr.add_data(cle_finale)
         qr.make(fit=True)
 
