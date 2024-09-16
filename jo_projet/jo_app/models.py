@@ -107,6 +107,7 @@ class Ticket(models.Model):
     prix_famille = models.DecimalField(max_digits=10, decimal_places=2, default=50.00)
     sport = models.ForeignKey(Sport, on_delete=models.CASCADE, default=1)
     quantite = models.PositiveIntegerField(default=1)  
+    est_achete = models.BooleanField(default=False)
 
     def get_prix(self):
         if self.type_ticket == 'solo':

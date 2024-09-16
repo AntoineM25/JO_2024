@@ -92,15 +92,66 @@ def get_sport_date(request, sport_id):
         print(f"Sport avec ID {sport_id} non trouvé.")
         return JsonResponse({'error': 'Sport non trouvé'}, status=404)
     
-#Liste des sports
+# Liste des sports
 def sport_list_view(request):
     sports = Sport.objects.all()
     return render(request, 'sport.html', {'sports': sports})
 
+# Vue pour le panier
+# @login_required(login_url='connexion')
+# def panier_view(request):
+#     utilisateur = request.user
+#     tickets = Ticket.objects.filter(utilisateur=utilisateur)
+
+#     if request.method == 'POST':
+#         action = request.POST.get('action')
+
+#         if action.startswith('delete_'):
+#             # Supprimer le ticket
+#             ticket_id = action.split('_')[1]
+#             ticket = get_object_or_404(Ticket, id=ticket_id, utilisateur=request.user)
+#             ticket.delete()
+#             messages.success(request, 'Ticket supprimé avec succès.')
+#             return redirect('panier')
+
+#         elif action == 'update':
+#             # Mettre à jour les quantités
+#             for ticket in tickets:
+#                 quantite_str = request.POST.get(f'quantite_{ticket.id}')
+#                 if quantite_str and quantite_str.isdigit():
+#                     quantite = int(quantite_str)
+#                     if quantite > 0:
+#                         ticket.quantite = quantite
+#                         ticket.save()
+#             messages.success(request, 'Quantités mises à jour avec succès.')
+#             return redirect('panier')
+
+#         elif action == 'pay':
+#             # Mettre à jour les quantités avant le paiement
+#             for ticket in tickets:
+#                 quantite_str = request.POST.get(f'quantite_{ticket.id}')
+#                 if quantite_str and quantite_str.isdigit():
+#                     quantite = int(quantite_str)
+#                     if quantite > 0:
+#                         ticket.quantite = quantite
+#                         ticket.save()
+
+#             # Rediriger vers la page de paiement avec le montant mis à jour
+#             return redirect('paiement')
+
+#     # Recalculer le total après la mise à jour des quantités
+#     tickets = Ticket.objects.filter(utilisateur=utilisateur)  # Rafraîchir la liste des tickets
+#     total = sum(ticket.get_prix() * ticket.quantite for ticket in tickets)  # Calcul du total avec les quantités
+#     form = PaiementForm(initial={'montant': total})
+
+#     return render(request, 'panier.html', {'tickets': tickets, 'total': total, 'form': form})
+
+# Vue pour le panier
+# Vue pour le panier
 @login_required(login_url='connexion')
 def panier_view(request):
     utilisateur = request.user
-    tickets = Ticket.objects.filter(utilisateur=utilisateur)
+    tickets = Ticket.objects.filter(utilisateur=utilisateur, est_achete=False)  # Filtrer pour exclure les tickets achetés
 
     if request.method == 'POST':
         action = request.POST.get('action')
@@ -108,7 +159,7 @@ def panier_view(request):
         if action.startswith('delete_'):
             # Supprimer le ticket
             ticket_id = action.split('_')[1]
-            ticket = get_object_or_404(Ticket, id=ticket_id, utilisateur=request.user)
+            ticket = get_object_or_404(Ticket, id=ticket_id, utilisateur=request.user, est_achete=False)
             ticket.delete()
             messages.success(request, 'Ticket supprimé avec succès.')
             return redirect('panier')
@@ -135,11 +186,16 @@ def panier_view(request):
                         ticket.quantite = quantite
                         ticket.save()
 
+            # Marquer les tickets comme achetés
+            for ticket in tickets:
+                ticket.est_achete = True
+                ticket.save()
+
             # Rediriger vers la page de paiement avec le montant mis à jour
             return redirect('paiement')
 
     # Recalculer le total après la mise à jour des quantités
-    tickets = Ticket.objects.filter(utilisateur=utilisateur)  # Rafraîchir la liste des tickets
+    tickets = Ticket.objects.filter(utilisateur=utilisateur, est_achete=False)  # Rafraîchir la liste des tickets non achetés
     total = sum(ticket.get_prix() * ticket.quantite for ticket in tickets)  # Calcul du total avec les quantités
     form = PaiementForm(initial={'montant': total})
 
@@ -228,11 +284,11 @@ def confirmation_view(request):
     })
 
 # Vue Mes commandes
-# Vue pour "mes commandes"
 @login_required(login_url='connexion')
 def mes_commandes_view(request):
     utilisateur = request.user
-    tickets = Ticket.objects.filter(utilisateur=utilisateur)
+    tickets = Ticket.objects.filter(utilisateur=utilisateur, est_achete=True)  
     billets = GenerationTicket.objects.filter(ticket__utilisateur=utilisateur)
     
     return render(request, 'mes_commandes.html', {'tickets': tickets, 'billets': billets})
+
