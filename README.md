@@ -57,12 +57,32 @@ Ce bug a été résolu en ajoutant la validation du mot de passe lors de l'inscr
 
 ### ***Views***
 
-- Petit problème lorsque l'utilisateur se connecte depuis la page "Choix du billet" ou "Panier". Il était directement renvoyé sur la page d'accueil ce qui dégradait légèrement son experience utilisateur. Solution : Ajustement de "def get_success_url(self)" en ajoutant "next_url"
+-   Petit problème lorsque l'utilisateur se connecte depuis la page "Choix du billet" ou "Panier". Il était directement renvoyé sur la page d'accueil ce qui dégradait légèrement son experience utilisateur. Solution : Ajustement de "def get_success_url(self)" en ajoutant "next_url"
 
 ### ***Models***
-- Problème de somme dans le Panier. Il y avait un doublon dans les calculs du prix des billets entre le "Model" et la "View". Solution : MAJ du model Ticket
+-   Problème de somme dans le Panier. Il y avait un doublon dans les calculs du prix des billets entre le "Model" et la "View". Solution : MAJ du model Ticket
 
 ## __Améliorations__
 
 ### ***Paiement***
-- Pour ce rendu je suis parti sur une simulation de paiement pour une carte bancaire. Pour améliorer la partie Paiement du site, il serait intéressant d'ajouter les fonctionnalités pour Paypal et pour un Virement bancaire 
+-   Pour ce rendu je suis parti sur une simulation de paiement pour une carte bancaire. Pour améliorer la partie Paiement du site, il serait intéressant d'ajouter les fonctionnalités pour Paypal et pour un Virement bancaire 
+
+## __Technologies utilisées__
+
+### ***Langages***
+-   Python + lien
+-   HTML
+-   CSS
+-   JavaScript
+
+### ***Frameworks***
+-   Django
+-   Bootstrap
+
+### ***Librairies***
+-   Weasyprint
+
+### ***Autres***
+-   Font Awesome
+-   FontIcon
+-   IA generator image (pour les sports)
