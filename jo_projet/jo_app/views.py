@@ -199,6 +199,32 @@ def paiement_view(request):
 
 
 # MAJ automatique des quantités du panier
+# @login_required(login_url='connexion')
+# def maj_quantite_view(request):
+#     if request.method == 'POST':
+#         ticket_id = request.POST.get('ticket_id')
+#         quantite = request.POST.get('quantite')
+        
+#         try:
+#             ticket = Ticket.objects.get(id=ticket_id, utilisateur=request.user)
+#             if quantite.isdigit() and int(quantite) > 0:
+#                 ticket.quantite = int(quantite)
+#                 ticket.save()
+#             else:
+#                 return JsonResponse({'success': False, 'message': 'Quantité invalide.'})
+#         except Ticket.DoesNotExist:
+#             return JsonResponse({'success': False, 'message': 'Ticket non trouvé.'})
+
+#         # Recalculer le total du panier après la mise à jour de la quantité
+#         tickets = Ticket.objects.filter(utilisateur=request.user)
+#         total = sum(ticket.get_prix() * ticket.quantite for ticket in tickets)
+#         total_formatted = f"{total:.2f}€"  # Formater le total avec deux décimales
+
+#         return JsonResponse({'success': True, 'total': total_formatted})
+
+#     return JsonResponse({'success': False, 'message': 'Requête invalide.'})
+
+# MAJ automatique des quantités du panier
 @login_required(login_url='connexion')
 def maj_quantite_view(request):
     if request.method == 'POST':
@@ -206,7 +232,8 @@ def maj_quantite_view(request):
         quantite = request.POST.get('quantite')
         
         try:
-            ticket = Ticket.objects.get(id=ticket_id, utilisateur=request.user)
+            # Assurez-vous de filtrer les tickets non achetés
+            ticket = Ticket.objects.get(id=ticket_id, utilisateur=request.user, est_achete=False)
             if quantite.isdigit() and int(quantite) > 0:
                 ticket.quantite = int(quantite)
                 ticket.save()
@@ -216,13 +243,14 @@ def maj_quantite_view(request):
             return JsonResponse({'success': False, 'message': 'Ticket non trouvé.'})
 
         # Recalculer le total du panier après la mise à jour de la quantité
-        tickets = Ticket.objects.filter(utilisateur=request.user)
+        tickets = Ticket.objects.filter(utilisateur=request.user, est_achete=False)  # Filtrer les tickets non achetés
         total = sum(ticket.get_prix() * ticket.quantite for ticket in tickets)
         total_formatted = f"{total:.2f}€"  # Formater le total avec deux décimales
 
         return JsonResponse({'success': True, 'total': total_formatted})
 
     return JsonResponse({'success': False, 'message': 'Requête invalide.'})
+
 
 # Vue de confirmation du paiement
 def confirmation_view(request):
