@@ -1,7 +1,9 @@
 from django.urls import path
 from . import views
+from django.conf import settings
 from django.contrib.auth.views import LogoutView 
-from .views import ConnexionView, ticket_delete_view
+from django.conf.urls.static import static
+from .views import ConnexionView, ticket_delete_view, telecharger_billet_view
 
 urlpatterns = [
     path('', views.home, name='home'),
@@ -20,4 +22,5 @@ urlpatterns = [
     path('paiement/', views.paiement_view, name='paiement'),
     path('confirmation/', views.confirmation_view, name='confirmation'),
     path('mes-commandes/', views.mes_commandes_view, name='mes_commandes'),
-]
+    path('telecharger-billet/<int:billet_id>/', telecharger_billet_view, name='telecharger_billet'),
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -20,9 +20,9 @@
                                 Prix unitaire : {{ billet.ticket.get_prix|floatformat:2 }} €<br>
                                 Date de l'événement : {{ billet.ticket.sport.date_evenement|date:"d/m/Y" }}<br>
                             </p>
-                            <img src="{{ billet.qr_code.url }}" alt="QR Code" class="img-fluid" style="width: 200px; height: 200px;">
-
+                            <img src="{{ billet.qr_code.url }}" alt="QR Code" class="img-fluid" style="width: 150px; height: 150px;">   
                         </div>
+                        <a href="{% url 'telecharger_billet' billet.id %}" class="btn btn-primary">Télécharger le billet</a>
                     </div>
                 </div>
             {% endfor %}

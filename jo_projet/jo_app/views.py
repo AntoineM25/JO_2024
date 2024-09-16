@@ -3,9 +3,11 @@ from .forms import UtilisateurForm, TicketForm, PaiementForm, ConnexionForm
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.views import LoginView, LogoutView
 from django.contrib import messages
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from django.urls import reverse_lazy, reverse
 from .models import Ticket, Sport, Utilisateur, Paiement, GenerationTicket
+from django.template.loader import render_to_string
+from weasyprint import HTML
 import locale
 
 # Création de 'home'
@@ -167,37 +169,6 @@ class DeconnexionView(LogoutView):
     next_page = 'home'
     
 # Vue pour le paiement
-# @login_required(login_url='connexion')
-# def paiement_view(request):
-#     utilisateur = request.user
-#     # Filtrer uniquement les tickets non achetés pour le calcul du paiement
-#     tickets = Ticket.objects.filter(utilisateur=utilisateur, est_achete=False)
-#     total = sum(ticket.get_prix() * ticket.quantite for ticket in tickets)  # Calcul du total avec les quantités
-
-#     if request.method == 'POST':
-#         # Simuler le paiement
-#         card_number = request.POST.get('cardNumber')
-#         expiry_date = request.POST.get('expiryDate')
-#         cvv = request.POST.get('cvv')
-        
-#         if card_number and expiry_date and cvv:  # Vérification basique pour le mock
-#             # Générer les billets et marquer les tickets comme achetés
-#             for ticket in tickets:
-#                 GenerationTicket.objects.create(ticket=ticket)
-#                 ticket.est_achete = True
-#                 ticket.save()
-            
-#             # Afficher un message de succès
-#             messages.success(request, 'Paiement réussi et billets générés !')
-            
-#             # Rediriger vers la page de confirmation
-#             return redirect('confirmation')
-#         else:
-#             messages.error(request, 'Veuillez remplir tous les champs pour le paiement.')
-
-#     return render(request, 'paiement.html', {'total': f"{total:.2f}€"})
-
-# Vue pour le paiement
 @login_required(login_url='connexion')
 def paiement_view(request):
     utilisateur = request.user
@@ -272,5 +243,22 @@ def mes_commandes_view(request):
     billets = GenerationTicket.objects.filter(ticket__utilisateur=utilisateur)
     
     return render(request, 'mes_commandes.html', {'tickets': tickets, 'billets': billets})
+
+# Vue pour télécharger le billet en PDF
+@login_required(login_url='connexion')
+def telecharger_billet_view(request, billet_id):
+    billet = get_object_or_404(GenerationTicket, id=billet_id, ticket__utilisateur=request.user)
+
+    # Générer le contenu HTML du billet
+    html_string = render_to_string('billet_pdf.html', {'billet': billet})
+    
+    # Générer le PDF
+    html = HTML(string=html_string)
+    pdf_file = html.write_pdf()
+
+    response = HttpResponse(pdf_file, content_type='application/pdf')
+    response['Content-Disposition'] = f'attachment; filename="billet_{billet_id}.pdf"'
+
+    return response
 
 

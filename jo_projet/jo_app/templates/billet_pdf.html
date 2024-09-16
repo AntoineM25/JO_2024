@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        .container {
+            border: 1px solid #000;
+            padding: 20px;
+            width: 500px;
+            margin: auto;
+        }
+        img {
+            width: 150px;
+            height: 150px;
+            display: block;
+            margin: 20px auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Billet pour {{ billet.ticket.sport.nom }}</h1>
+        <p>Acheteur : {{ billet.ticket.utilisateur.prenom }} {{ billet.ticket.utilisateur.nom }}</p>
+        <p>Type de Ticket : {{ billet.ticket.type_ticket }}</p>
+        <p>Prix : {{ billet.ticket.get_prix }} €</p>
+        <p>Date de l'événement : {{ billet.ticket.sport.date_evenement }}</p>
+        <img src="{{ billet.qr_code.url }}" alt="QR Code">
+    </div>
+</body>
+</html>

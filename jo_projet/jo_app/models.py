@@ -142,25 +142,25 @@ class GenerationTicket(models.Model):
     date_generation = models.DateTimeField(default=timezone.now)
 
     def save(self, *args, **kwargs):
-        # Génération de la clé sécurisée 2 si elle n'existe pas
         if not self.cle_securisee_2:
-            self.cle_securisee_2 = secrets.token_hex(32)  # Générer la clé sécurisée 2
+            self.cle_securisee_2 = secrets.token_hex(32)
 
         # Concaténation des clés sécurisées 1 et 2
         cle_finale = f"{self.ticket.utilisateur.cle_securisee_1}{self.cle_securisee_2}"
 
-        # Génération du QR Code basé sur la clé finale
-        qr = qrcode.QRCode(version=1, box_size=10, border=5) # Ajuster la taille du QR code
+        # Génération du QR Code
+        qr = qrcode.QRCode(version=1, box_size=10, border=5)
         qr.add_data(cle_finale)
         qr.make(fit=True)
 
-        # Sauvegarder le QR code comme fichier image
+        # Sauvegarde du QR code comme fichier image
         img = qr.make_image(fill='black', back_color='white')
         buffer = BytesIO()
         img.save(buffer, format="PNG")
         self.qr_code.save(f'qr_code_{self.ticket.id}.png', File(buffer), save=False)
 
         super().save(*args, **kwargs)
+
 
     def __str__(self):
         return f"{self.ticket} - {self.date_generation}"
