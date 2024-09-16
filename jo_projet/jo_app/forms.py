@@ -1,5 +1,5 @@
 from django import forms
-from .models import Utilisateur, Ticket, Paiement, validate_password
+from .models import Utilisateur, Ticket, Paiement, Sport, validate_password
 from django.contrib.auth.forms import AuthenticationForm
 from django.core.exceptions import ValidationError
 
@@ -64,6 +64,20 @@ class UtilisateurForm(forms.ModelForm):
             user.save()
         return user
 
+# # Formulaire choix de ticket
+# class TicketForm(forms.ModelForm):
+#     class Meta:
+#         model = Ticket
+#         fields = ['type_ticket', 'sport']  
+#         labels = {
+#             'type_ticket': "Choix de l'offre",
+#             'sport': "Sport choisi",
+#         }
+#         widgets = {
+#             'type_ticket': forms.Select(attrs={'class': 'form-control'}),
+#             'sport': forms.Select(attrs={'class': 'form-control'}),
+#         }
+
 # Formulaire choix de ticket
 class TicketForm(forms.ModelForm):
     class Meta:
@@ -71,19 +85,23 @@ class TicketForm(forms.ModelForm):
         fields = ['type_ticket', 'sport']  
         labels = {
             'type_ticket': "Choix de l'offre",
-            'sport': "Sport choisi",
+            'sport': "Choix du sport",
         }
         widgets = {
             'type_ticket': forms.Select(attrs={'class': 'form-control'}),
             'sport': forms.Select(attrs={'class': 'form-control'}),
         }
     
-# Formulaire du paiement
-# forms.py
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Ajouter "Choisissez votre sport !" pour le champ sport
+        self.fields['sport'].empty_label = "Choisissez votre sport !"
+        
+        # Remplacer les choix du champ type_ticket
+        self.fields['type_ticket'].choices = [('default', 'Choisissez votre offre !')] + list(Ticket.TYPE_TICKET_CHOICES)
 
-from django import forms
-from .models import Paiement
 
+    
 # Formulaire du paiement
 class PaiementForm(forms.ModelForm):
     METHODES_PAIEMENT_CHOICES = [
