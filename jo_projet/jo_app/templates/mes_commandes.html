@@ -17,8 +17,7 @@
                             <p class="card-text">
                                 Nom de l'acheteur du billet : {{ billet.ticket.utilisateur.prenom }} {{ billet.ticket.utilisateur.nom }}<br>
                                 Type de Ticket : {{ billet.ticket.type_ticket }}<br>
-                                Quantité : {{ billet.ticket.quantite }}<br>
-                                Prix : {{ billet.ticket.get_prix|floatformat:2 }} €<br>
+                                Prix unitaire : {{ billet.ticket.get_prix|floatformat:2 }} €<br>
                                 Date de l'événement : {{ billet.ticket.sport.date_evenement|date:"d/m/Y" }}<br>
                             </p>
                             <img src="{{ billet.qr_code.url }}" alt="QR Code" class="img-fluid">
@@ -32,3 +31,4 @@
     </div>
 </div>
 {% endblock %}
+
