@@ -6,7 +6,6 @@ from django.core.files import File
 from io import BytesIO
 import secrets, re, qrcode
 
-# Modèle utilisateur
 SEXE_CHOICES = [
     ('H', 'Homme'),
     ('F', 'Femme'),

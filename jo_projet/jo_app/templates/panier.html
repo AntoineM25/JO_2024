@@ -22,7 +22,7 @@
                         <li>
                             {{ ticket }}
                             <!-- Champ pour modifier la quantité -->
-                            <input type="number" name="quantite_{{ ticket.id }}" value="{{ ticket.quantite }}" min="1" class="form-control d-inline w-auto quantity-input" data-ticket-id="{{ ticket.id }}" data-ticket-price="{{ ticket.get_prix }}">
+                            <input  type="number" name="quantite_{{ ticket.id }}" value="{{ ticket.quantite }}" min="1" class="form-control d-inline w-auto quantity-input" data-ticket-id="{{ ticket.id }}" data-ticket-price="{{ ticket.get_prix }}">
                             <!-- Bouton de suppression -->
                             <button type="submit" name="action" value="delete_{{ ticket.id }}" class="btn btn-danger btn-sm"><i class="fa-solid fa-trash-can"></i></button>
                         </li>
