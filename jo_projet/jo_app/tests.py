@@ -14,7 +14,7 @@ class UtilisateurModelTest(TestCase):
             sexe='H',
             email='gilles.dupont@exemple.com',
             adresse='123 Rue Test',
-            code_postal='7500',
+            code_postal='75000',
             ville='Paris',
             date_de_naissance='1942-08-01'
         )
@@ -26,7 +26,7 @@ class UtilisateurModelTest(TestCase):
         self.assertEqual(utilisateur.prenom, 'Gilles')
         self.assertEqual(utilisateur.sexe, 'H')
         self.assertEqual(utilisateur.adresse, '123 Rue Test')
-        self.assertEqual(utilisateur.code_postal, '7500')
+        self.assertEqual(utilisateur.code_postal, '75000')
         self.assertEqual(utilisateur.ville, 'Paris')
         self.assertEqual(str(utilisateur.date_de_naissance), '1942-08-01')
 
