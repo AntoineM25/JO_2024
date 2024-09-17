@@ -3,10 +3,7 @@
 }
 
 .nav-item a,
-.nav-item button {
-    color: #fff;
-}
-
+.nav-item button,
 .nav-item a:hover,
 .nav-item button:hover {
     color: #fff;
@@ -18,12 +15,20 @@
     color: #d4c47c;
 }
 
-.nav-item i {
+.nav-item i,
+#logo-text,
+button,
+.btn {
     transition: color 0.3s ease;
 }
 
-.form-control {
-    text-align: center;
-    margin: auto;
-    width: 50%;
+.card-header {
+    background-color: rgba(4, 4, 4, 0.9);
+    color: #fff;
+}
+
+.btn:hover {
+    background-color: #d4c47c !important;
+    color: #000 !important;
+    border: solid 1px #d4c47c !important;
 }
