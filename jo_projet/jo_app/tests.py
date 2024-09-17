@@ -106,3 +106,44 @@ class SportModelTest(TestCase):
         self.assertEqual(sport.nom, 'Natation')
         self.assertEqual(str(sport.date_evenement), '2024-07-25')
         self.assertEqual(sport.description, 'Compétition de natation olympique.')
+
+# Test du modèle Paiement
+class PaiementModelTest(TestCase):
+
+    def setUp(self):
+        # Création d'un utilisateur, un sport, et un ticket pour le paiement
+        self.utilisateur = Utilisateur.objects.create(
+            nom='Dupont',
+            prenom='Gilles',
+            sexe='H',
+            email='gilles.dupont@exemple.com',
+            adresse='123 Rue Test',
+            code_postal='7500',
+            ville='Paris',
+            date_de_naissance='1942-08-01'
+        )
+        self.sport = Sport.objects.create(
+            nom='Football',
+            date_evenement='2024-09-15'
+        )
+        self.ticket = Ticket.objects.create(
+            utilisateur=self.utilisateur,
+            sport=self.sport,
+            type_ticket='famille',
+            quantite=1
+        )
+
+    def test_creation_paiement(self):
+        # Création d'un paiement pour le ticket
+        paiement = Paiement.objects.create(
+            ticket=self.ticket,
+            montant=self.ticket.get_prix(),
+            methode_paiement='Carte de crédit',
+            statut_paiement=True
+        )
+        # Vérification que le paiement a bien été créé avec les bons attributs
+        self.assertEqual(paiement.ticket, self.ticket)
+        self.assertEqual(paiement.montant, self.ticket.get_prix())
+        self.assertEqual(paiement.methode_paiement, 'Carte de crédit')
+        self.assertTrue(paiement.statut_paiement)
+
