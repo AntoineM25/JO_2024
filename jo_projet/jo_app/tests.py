@@ -88,3 +88,21 @@ class TicketModelTest(TestCase):
         )
         # Vérification du prix pour le type 'duo'
         self.assertEqual(ticket.get_prix(), 35.00)
+        
+# Test du modèle Sport
+class SportModelTest(TestCase):
+
+    def setUp(self):
+        # Création du sport pour les tests
+        self.sport = Sport.objects.create(
+            nom='Natation',
+            date_evenement='2024-07-25',
+            description='Compétition de natation olympique.'
+        )
+
+    def test_creation_sport(self):
+        # Vérification que le sport a bien été créé avec les bons attributs
+        sport = Sport.objects.get(nom='Natation')
+        self.assertEqual(sport.nom, 'Natation')
+        self.assertEqual(str(sport.date_evenement), '2024-07-25')
+        self.assertEqual(sport.description, 'Compétition de natation olympique.')
