@@ -9,6 +9,14 @@
     color: #fff;
 }
 
+.nav-item i {
+    margin-right: 4px !important;
+}
+
+.nav-item {
+    margin: 0 2px 0 2px;
+}
+
 .nav-item:hover i,
 .nav-item.active i,
 #logo-text:hover {

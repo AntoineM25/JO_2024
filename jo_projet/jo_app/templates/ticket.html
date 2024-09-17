@@ -1,27 +1,27 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="container text-center mt-5">
-    <div class="row justify-content-center">
-        <div class="col-md-6">
-            <h2 class="text-center mb-4">Choix du billet</h2>
-            <form method="POST">
-                {% csrf_token %}
-                {{ form.as_p }}
+<div class="card m-auto my-5 border-dark" style="max-width: 25%">
+    <div class="card-header">
+        <h2>Tickets</h2>
+    </div>
+    <div class="card-body">
+        <form class="card-text" method="POST">
+            {% csrf_token %}
+            {{ form.as_p }}
 
-                <!-- Paragraphe pour afficher la date de l'événement dynamiquement -->
-                {% if date_evenement is None %}
-                    <p id="date-evenement">Date de l'événement : Veuillez choisir votre sport</p>
-                {% else %}
-                    <p id="date-evenement">Date de l'événement : {{ date_evenement }}</p>
-                {% endif %}
+            <!-- Paragraphe pour afficher la date de l'événement dynamiquement -->
+            {% if date_evenement is None %}
+                <p id="date-evenement">Date de l'événement : Veuillez choisir votre sport</p>
+            {% else %}
+                <p id="date-evenement">Date de l'événement : {{ date_evenement }}</p>
+            {% endif %}
 
-                <!-- Paragraphe pour afficher le prix -->
-                <p id="prix">Prix : 20.00€</p> <!-- Le prix par défaut est pour le type "solo" -->
+            <!-- Paragraphe pour afficher le prix -->
+            <p id="prix">Prix : 20.00€</p> <!-- Le prix par défaut est pour le type "solo" -->
 
-                <button type="submit" class="btn btn-dark mt-3">Choisir</button>
-            </form>
-        </div>
+            <button type="submit" class="btn btn-dark mt-3">Choisir</button>
+        </form>
     </div>
 </div>
 
