@@ -251,3 +251,10 @@ def telecharger_billet_view(request, billet_id):
     html.write_pdf(response)
     
     return response
+
+# Vue ventes pour admin
+@login_required(login_url='connexion')
+def ventes_view(request):
+    billets = GenerationTicket.objects.all()
+    
+    return render(request, 'ventes.html', {'billets': billets})

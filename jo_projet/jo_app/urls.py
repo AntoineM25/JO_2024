@@ -23,4 +23,5 @@ urlpatterns = [
     path('confirmation/', views.confirmation_view, name='confirmation'),
     path('mes-commandes/', views.mes_commandes_view, name='mes_commandes'),
     path('telecharger-billet/<int:billet_id>/', telecharger_billet_view, name='telecharger_billet'),
+    path('ventes/', views.ventes_view, name='ventes'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

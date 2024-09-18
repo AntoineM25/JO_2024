@@ -40,6 +40,11 @@
                             <li class="nav-item {% if request.path == '/panier/' %}active{% endif %}">
                                 <a class="nav-link" href="{% url 'panier' %}"><i class="fa-solid fa-basket-shopping"></i> Panier</a>
                             </li>
+                                {% if user.is_superuser %}
+                                    <li class="nav-item {% if request.path == '/ventes/' %}active{% endif %}">
+                                        <a class="nav-link" href="{% url 'ventes' %}"><i class="fa-solid fa-file-invoice-dollar"></i> Ventes</a>
+                                    </li>
+                                {% endif %}
                             <li class="nav-item">
                                 <form action="{% url 'deconnexion' %}" method="post" style="display: inline">
                                     {% csrf_token %}

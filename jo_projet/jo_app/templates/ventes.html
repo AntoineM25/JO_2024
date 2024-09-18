@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="card m-auto my-5 border-dark" style="max-width: 50%">
+    <div class="card-header">
+        <h2>Ventes</h2>
+    </div>
+    <div class="card-body">
+        {% if billets %}
+            {{ billets }}
+        {% endif %}
+
+    </div>
+</div>
+{% endblock %}
