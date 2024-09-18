@@ -81,7 +81,14 @@ class TicketForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         # Ajouter "Choisissez votre sport !" pour le champ sport
+        self.fields['sport'].queryset = Sport.objects.all()
         self.fields['sport'].empty_label = "Choisissez votre sport !"
+        
+        # Ajouter la date de l’événement sur le champ sport
+        self.fields['sport'].choices = [('', 'Choisissez votre sport !')] + [
+            (sport.id, f"{sport.nom} - {sport.date_evenement.strftime('%d %B %Y')}")
+            for sport in Sport.objects.all()
+        ]
         
         # Ajouter "Choisissez votre offre !" pour le champ offre
         self.fields['offre'].empty_label = "Choisissez votre offre !"

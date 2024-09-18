@@ -10,16 +10,6 @@
             {% csrf_token %}
             {{ form.as_p }}
 
-            <!-- Paragraphe pour afficher la date de l'événement dynamiquement -->
-            {% if date_evenement is None %}
-                <p id="date-evenement">Date de l'événement : Veuillez choisir votre sport</p>
-            {% else %}
-                <p id="date-evenement">Date de l'événement : {{ date_evenement }}</p>
-            {% endif %}
-
-            <!-- Paragraphe pour afficher le prix -->
-            <p id="prix">Prix : 20.00€</p> <!-- Le prix par défaut est pour le type "solo" -->
-
             <button type="submit" class="btn btn-dark mt-3">Choisir</button>
         </form>
     </div>
@@ -27,45 +17,5 @@
 
 <!-- Script pour afficher le prix et la date dynamiquement -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
-<script>
-    // Changement du prix selon le type de billet sélectionné
-    {% comment %} document.getElementById("id_type_ticket").addEventListener("change", function() {
-        let prix;
-        switch (this.value) {
-            case "solo":
-                prix = "20.00€";
-                break;
-            case "duo":
-                prix = "35.00€";
-                break;
-            case "famille":
-                prix = "50.00€";
-                break;
-        }
-        document.getElementById("prix").innerText = "Prix : " + prix;
-    }); {% endcomment %}
-
-    // Requête AJAX pour mettre à jour la date en fonction du sport sélectionné
-    $('#id_sport').change(function() {
-        var sportId = $(this).val();
-        if (sportId) {
-            $.ajax({
-                url: '/get-sport-date/' + sportId + '/',  // URL définie dans urls.py
-                type: 'GET',
-                success: function(data) {
-                    if (data.date_evenement) {
-                        $('#date-evenement').text('Date de l\'événement : ' + data.date_evenement);
-                    } else {
-                        $('#date-evenement').text('Date non trouvée.');
-                    }
-                },
-                error: function() {
-                    $('#date-evenement').text('Erreur lors de la récupération de la date.');
-                }
-            });
-        }
-    });
-</script>
 
 {% endblock %}
