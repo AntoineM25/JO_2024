@@ -64,31 +64,17 @@ class UtilisateurForm(forms.ModelForm):
             user.save()
         return user
 
-# # Formulaire choix de ticket
-# class TicketForm(forms.ModelForm):
-#     class Meta:
-#         model = Ticket
-#         fields = ['type_ticket', 'sport']  
-#         labels = {
-#             'type_ticket': "Choix de l'offre",
-#             'sport': "Sport choisi",
-#         }
-#         widgets = {
-#             'type_ticket': forms.Select(attrs={'class': 'form-control'}),
-#             'sport': forms.Select(attrs={'class': 'form-control'}),
-#         }
-
 # Formulaire choix de ticket
 class TicketForm(forms.ModelForm):
     class Meta:
         model = Ticket
-        fields = ['type_ticket', 'sport']  
+        fields = ['offre', 'sport']  
         labels = {
-            'type_ticket': "Choix de l'offre",
+            'offre': "Choix de l'offre",
             'sport': "Choix du sport",
         }
         widgets = {
-            'type_ticket': forms.Select(attrs={'class': 'form-control'}),
+            'offre': forms.Select(attrs={'class': 'form-control'}),
             'sport': forms.Select(attrs={'class': 'form-control'}),
         }
     
@@ -97,9 +83,8 @@ class TicketForm(forms.ModelForm):
         # Ajouter "Choisissez votre sport !" pour le champ sport
         self.fields['sport'].empty_label = "Choisissez votre sport !"
         
-        # Remplacer les choix du champ type_ticket
-        self.fields['type_ticket'].choices = [('default', 'Choisissez votre offre !')] + list(Ticket.TYPE_TICKET_CHOICES)
-
+        # Ajouter "Choisissez votre offre !" pour le champ offre
+        self.fields['offre'].empty_label = "Choisissez votre offre !"
 
     
 # Formulaire du paiement

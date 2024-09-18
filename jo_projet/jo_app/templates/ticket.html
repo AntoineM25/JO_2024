@@ -30,7 +30,7 @@
 
 <script>
     // Changement du prix selon le type de billet sélectionné
-    document.getElementById("id_type_ticket").addEventListener("change", function() {
+    {% comment %} document.getElementById("id_type_ticket").addEventListener("change", function() {
         let prix;
         switch (this.value) {
             case "solo":
@@ -44,7 +44,7 @@
                 break;
         }
         document.getElementById("prix").innerText = "Prix : " + prix;
-    });
+    }); {% endcomment %}
 
     // Requête AJAX pour mettre à jour la date en fonction du sport sélectionné
     $('#id_sport').change(function() {

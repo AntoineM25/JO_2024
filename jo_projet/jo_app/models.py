@@ -79,7 +79,6 @@ class Utilisateur(AbstractBaseUser, PermissionsMixin):
     def __str__(self):
         return f"{self.prenom} {self.nom}"
 
-
 # Modèle sport
 from django.db import models
 
@@ -92,35 +91,28 @@ class Sport(models.Model):
     def __str__(self):
         return self.nom
 
+# Modèle offre
+class Offre(models.Model):
+    type = models.CharField(max_length=50)
+    prix = models.DecimalField(max_digits=10, decimal_places=2)
+    
+    def __str__(self):
+        return f"{self.type} - {self.prix}€"
+
 # Modèle ticket
 class Ticket(models.Model):
     utilisateur = models.ForeignKey(Utilisateur, on_delete=models.CASCADE, related_name="tickets")
-    TYPE_TICKET_CHOICES = [
-        ('solo', 'Solo'),
-        ('duo', 'Duo'),
-        ('famille', 'Famille'),
-    ]
-    type_ticket = models.CharField(max_length=10, choices=TYPE_TICKET_CHOICES)
-    prix_solo = models.DecimalField(max_digits=10, decimal_places=2, default=20.00)
-    prix_duo = models.DecimalField(max_digits=10, decimal_places=2, default=35.00)
-    prix_famille = models.DecimalField(max_digits=10, decimal_places=2, default=50.00)
+    offre = models.ForeignKey(Offre, on_delete=models.CASCADE)
     sport = models.ForeignKey(Sport, on_delete=models.CASCADE, default=1)
     quantite = models.PositiveIntegerField(default=1)  
     est_achete = models.BooleanField(default=False)
-
-    def get_prix(self):
-        if self.type_ticket == 'solo':
-            return self.prix_solo
-        elif self.type_ticket == 'duo':
-            return self.prix_duo
-        elif self.type_ticket == 'famille':
-            return self.prix_famille
-        else:
-            return 0
+    
+    def get_prix_total(self):
+        return self.offre.prix * self.quantite
 
     def __str__(self):
-        return f"{self.sport.nom} - {self.type_ticket}"
-    
+        return f"{self.sport.nom} - {self.offre.type} - Quantité: {self.quantite}"
+
 # Modèle paiement
 class Paiement(models.Model):
     ticket = models.ForeignKey(Ticket, on_delete=models.CASCADE, related_name="paiements")
@@ -160,7 +152,5 @@ class GenerationTicket(models.Model):
 
         super().save(*args, **kwargs)
 
-
     def __str__(self):
         return f"{self.ticket} - {self.date_generation}"
-

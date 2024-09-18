@@ -51,7 +51,6 @@ def ticket_create_view(request):
 
     return render(request, 'ticket.html', {'form': form, 'date_evenement': date_evenement})
 
-
 # Affichage de la liste des tickets
 @login_required(login_url='connexion')
 def ticket_list_view(request):
@@ -79,7 +78,6 @@ def ticket_delete_view(request, ticket_id):
         ticket.delete()  
         return redirect('panier')  
     return render(request, 'ticket_confirm_delete.html', {'ticket': ticket})
-
 
 #Récupérer la date de l'événement
 locale.setlocale(locale.LC_TIME, 'fr_FR.UTF-8')  
@@ -143,12 +141,10 @@ def panier_view(request):
             return redirect('paiement')
 
     # Recalculer le total après la mise à jour des quantités
-    total = sum(ticket.get_prix() * ticket.quantite for ticket in tickets)  # Calcul du total avec les quantités
+    total = sum(ticket.get_prix_total() for ticket in tickets)  # Calcul du total avec les quantités
     form = PaiementForm(initial={'montant': total})
 
     return render(request, 'panier.html', {'tickets': tickets, 'total': f"{total:.2f}€", 'form': form})
-
-
 
 # Vue pour la connexion
 class ConnexionView(LoginView):
@@ -167,14 +163,14 @@ class ConnexionView(LoginView):
 # Vue pour la déconnexion
 class DeconnexionView(LogoutView):
     next_page = 'home'
-    
+
 # Vue pour le paiement
 @login_required(login_url='connexion')
 def paiement_view(request):
     utilisateur = request.user
     # Filtrer uniquement les tickets non achetés pour le calcul du paiement
     tickets = Ticket.objects.filter(utilisateur=utilisateur, est_achete=False)
-    total = sum(ticket.get_prix() * ticket.quantite for ticket in tickets)  # Calcul du total avec les quantités
+    total = sum(ticket.get_prix_total() for ticket in tickets)  # Calcul du total avec les quantités
 
     if request.method == 'POST':
         # Simuler le paiement
@@ -200,7 +196,6 @@ def paiement_view(request):
 
     return render(request, 'paiement.html', {'total': f"{total:.2f}€"})
 
-
 # MAJ automatique des quantités du panier
 @login_required(login_url='connexion')
 def maj_quantite_view(request):
@@ -221,20 +216,19 @@ def maj_quantite_view(request):
 
         # Recalculer le total du panier après la mise à jour de la quantité
         tickets = Ticket.objects.filter(utilisateur=request.user, est_achete=False)  # Filtrer les tickets non achetés
-        total = sum(ticket.get_prix() * ticket.quantite for ticket in tickets)
+        total = sum(ticket.get_prix_total() for ticket in tickets)
         total_formatted = f"{total:.2f}€"  # Formater le total avec deux décimales
 
         return JsonResponse({'success': True, 'total': total_formatted})
 
     return JsonResponse({'success': False, 'message': 'Requête invalide.'})
 
-
 # Vue de confirmation du paiement
 def confirmation_view(request):
     return render(request, 'confirmation.html', {
         'message': 'Votre paiement a bien été effectué et vos billets ont été générés !'
     })
-    
+
 # Vue Mes commandes
 @login_required(login_url='connexion')
 def mes_commandes_view(request):
@@ -257,4 +251,3 @@ def telecharger_billet_view(request, billet_id):
     html.write_pdf(response)
     
     return response
-
