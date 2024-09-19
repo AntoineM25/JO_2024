@@ -424,3 +424,53 @@ class TicketListViewTest(TestCase):
         response = self.client.get(reverse('ticket_list'))
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, 'Football')  # Vérifie si le nom du sport est affiché dans la page
+
+# Test de la vue du panier
+class PanierViewTest(TestCase):
+    def setUp(self):
+        self.utilisateur = Utilisateur.objects.create_user(
+            email='gilles.dupont@exemple.com',
+            password='Test@123',
+            nom='Dupont',
+            prenom='Gilles'
+        )
+        self.sport = Sport.objects.create(
+            nom='Natation',
+            date_evenement='2024-07-25'
+        )
+        self.offre = Offre.objects.create(type='Standard', prix=50.0)
+        self.ticket = Ticket.objects.create(
+            utilisateur=self.utilisateur,
+            offre=self.offre,
+            sport=self.sport,
+            quantite=1
+        )
+        self.client.login(email='gilles.dupont@exemple.com', password='Test@123')
+
+    def test_acces_panier(self):
+        response = self.client.get(reverse('panier'))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'panier.html')
+        self.assertContains(response, 'Total du panier')
+
+    def test_mise_a_jour_quantite(self):
+        response = self.client.post(reverse('panier'), {
+            f'quantite_{self.ticket.id}': 3,
+            'action': 'update'
+        })
+        self.ticket.refresh_from_db()
+        self.assertEqual(self.ticket.quantite, 3)
+
+    def test_suppression_ticket(self):
+        response = self.client.post(reverse('panier'), {
+            'action': f'delete_{self.ticket.id}'
+        })
+        self.assertFalse(Ticket.objects.filter(id=self.ticket.id).exists())
+
+    def test_quantite_invalide(self):
+        response = self.client.post(reverse('panier'), {
+            f'quantite_{self.ticket.id}': -1,  # Quantité invalide
+            'action': 'update'
+        })
+        self.ticket.refresh_from_db()
+        self.assertNotEqual(self.ticket.quantite, -1)  # La quantité ne doit pas être mise à jour
