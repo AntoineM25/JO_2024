@@ -7,6 +7,7 @@ from django.http import JsonResponse, HttpResponse
 from django.urls import reverse_lazy, reverse
 from .models import Ticket, Sport, Utilisateur, Paiement, GenerationTicket
 from django.template.loader import render_to_string
+from django.db.models import Count
 from weasyprint import HTML
 import locale
 
@@ -263,4 +264,19 @@ def telecharger_billet_view(request, billet_id):
 def ventes_view(request):
     billets = GenerationTicket.objects.all()
     
-    return render(request, 'ventes.html', {'billets': billets})
+    # Calculer le nombre total des billets vendues
+    total_billets = billets.count()
+    
+    # Calculer le nombre total des billets vendues par sport
+    total_billets_par_sport = GenerationTicket.objects.values('ticket__sport__nom').annotate(total=Count('id'))
+
+    # Calculer le nombre total des billets vendues par offre
+    total_billets_par_offre = GenerationTicket.objects.values('ticket__offre__type').annotate(total=Count('id'))
+    
+    # Calculer le nombre total des billets vendues par sport et offre
+    total_billets_par_sport_et_offre = GenerationTicket.objects.values('ticket__sport__nom', 'ticket__offre__type').annotate(total=Count('id'))
+    
+    # Calculer le total par offre
+    total_par_offre = [(item['ticket__offre__type'], item['total']) for item in total_billets_par_offre]
+
+    return render(request, 'ventes.html', {'billets': billets, 'total_billets': total_billets, 'total_billets_par_sport': total_billets_par_sport, 'total_billets_par_offre': total_billets_par_offre, 'total_billets_par_sport_et_offre': total_billets_par_sport_et_offre, 'total_par_offre': total_par_offre,})

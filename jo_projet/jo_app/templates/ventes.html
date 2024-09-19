@@ -6,10 +6,58 @@
         <h2>Ventes</h2>
     </div>
     <div class="card-body">
-        {% if billets %}
-            {{ billets }}
-        {% endif %}
-
+        
+        <!-- Total des billets vendus -->
+        <p>Total de billets vendus : <span class="fw-bold">{{ total_billets }}</span></p>
+        <div class="table-responsive">
+            <table class="table table-bordered table-hover">
+                <thead>
+                    <tr>
+                        <th style="width: 20%;">Sport</th>
+                        {% for offre in total_billets_par_offre %}
+                            <th class="text-center" style="width: 15%;">{{ offre.ticket__offre__type }}</th>
+                        {% endfor %}
+                        <th class="text-end" style="width: 20%;">Total par sport</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for sport in total_billets_par_sport %}
+                        <tr>
+                            <!-- Nom du sport -->
+                            <td>{{ sport.ticket__sport__nom }}</td>
+    
+                            <!-- Total vendu par sport et par offre -->
+                            {% for offre in total_billets_par_offre %}
+                                <td class="text-center">
+                                    {% for item in total_billets_par_sport_et_offre %}
+                                        {% if item.ticket__sport__nom == sport.ticket__sport__nom and item.ticket__offre__type == offre.ticket__offre__type %}
+                                        {% if item.total > 0 %}
+                                                {{ item.total }}
+                                            {% endif %}
+                                        {% endif %}
+                                    {% endfor %}
+                                </td>
+                            {% endfor %}
+                            
+                            <!-- Total vendu par sport -->
+                            <td class="text-end">
+                                {{ sport.total }}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <!-- Total vendu par offre -->
+                        <th>Total par offre</th>
+                        {% for offer, total in total_par_offre %}
+                            <th class="text-center">{{ total }}</th>
+                        {% endfor %}
+                        <th class="text-end">{{ total_billets }}</th>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
     </div>
 </div>
 {% endblock %}
