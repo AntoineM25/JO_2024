@@ -604,3 +604,52 @@ class TicketFormTest(TestCase):
         form = TicketForm()
         self.assertEqual(form.fields['sport'].empty_label, "Choisissez votre sport !")
         self.assertEqual(form.fields['offre'].empty_label, "Choisissez votre offre !")
+
+# Test du formulaire paiement
+from django.test import TestCase
+from .forms import PaiementForm
+from .models import Ticket, Paiement, Offre, Sport, Utilisateur
+
+class PaiementFormTest(TestCase):
+    
+    def setUp(self):
+        # Créer des instances nécessaires pour le formulaire
+        self.utilisateur = Utilisateur.objects.create_user(
+            email='test@example.com', 
+            password='Test@123', 
+            nom='Test', 
+            prenom='Utilisateur'
+        )
+        self.offre = Offre.objects.create(type="VIP", prix=100.0)
+        self.sport = Sport.objects.create(nom="Tennis", date_evenement="2024-07-01")
+        self.ticket = Ticket.objects.create(utilisateur=self.utilisateur, offre=self.offre, sport=self.sport, quantite=2)
+
+    def test_paiement_form_valid_data(self):
+        # Test avec des données valides
+        form_data = {
+            'ticket': self.ticket.id,
+            'montant': self.ticket.get_prix_total(),
+            'methode_paiement': 'carte',
+        }
+        form = PaiementForm(data=form_data)
+        self.assertTrue(form.is_valid())
+
+    def test_paiement_form_invalid_data(self):
+        # Test avec des données invalides
+        form_data = {
+            'ticket': '',  
+            'montant': '',  
+            'methode_paiement': '',  
+        }
+        form = PaiementForm(data=form_data)
+        self.assertFalse(form.is_valid())
+        self.assertIn('ticket', form.errors)
+        self.assertIn('montant', form.errors)
+        self.assertIn('methode_paiement', form.errors)
+
+    def test_paiement_form_method_choices(self):
+        # Vérifier les choix de méthodes de paiement
+        form = PaiementForm()
+        self.assertIn(('carte', 'Carte de crédit'), form.fields['methode_paiement'].choices)
+        self.assertIn(('paypal', 'PayPal'), form.fields['methode_paiement'].choices)
+        self.assertIn(('virement', 'Virement bancaire'), form.fields['methode_paiement'].choices)
