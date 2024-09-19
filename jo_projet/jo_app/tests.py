@@ -139,6 +139,13 @@ class SportModelTest(TestCase):
         self.assertEqual(sport.nom, 'Natation')
         self.assertEqual(str(sport.date_evenement), '2024-07-25')
         self.assertEqual(sport.description, 'Compétition de natation olympique.')
+        # Vérifie que le champ image est vide par défaut
+        self.assertFalse(sport.image)  # Renvoie False si l'image n'a pas été définie
+
+    def test_str_representation(self):
+        # Vérification de la représentation en chaîne du modèle
+        self.assertEqual(str(self.sport), 'Natation')
+
 
 # Test du modèle Paiement
 class PaiementModelTest(TestCase):
