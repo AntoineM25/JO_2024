@@ -3,6 +3,8 @@ from jo_app.models import Utilisateur, Sport, Ticket, Paiement, GenerationTicket
 
 ## TEST DES MODELS ##
 
+from django.core.exceptions import ValidationError
+
 # Test du modèle Utilisateur
 class UtilisateurModelTest(TestCase):
 
@@ -43,6 +45,30 @@ class UtilisateurModelTest(TestCase):
                 ville='Paris',
                 date_de_naissance='1985-05-23'
             )
+
+    def test_cle_securisee_generation(self):
+        # Vérifie que la clé sécurisée est automatiquement générée
+        self.assertIsNotNone(self.utilisateur.cle_securisee_1)
+        self.assertEqual(len(self.utilisateur.cle_securisee_1), 64)
+
+    def test_champs_obligatoires(self):
+        # Vérifie que la création d'un utilisateur sans nom lève une exception
+        with self.assertRaises(ValidationError):
+            utilisateur = Utilisateur(
+                prenom='SansNom',
+                sexe='H',
+                email='sans.nom@example.com'
+            )
+            utilisateur.full_clean()  # Utilisé pour déclencher les validations
+
+    def test_validation_mot_de_passe(self):
+        # Vérifie la validation du mot de passe si tu utilises une fonction de validation
+        try:
+            self.utilisateur.set_password('MotdePasse1!')
+            self.utilisateur.full_clean()
+        except ValidationError as e:
+            self.fail(f"Le mot de passe n'a pas été validé correctement: {e}")
+
 
 # Test du modèle Ticket
 class TicketModelTest(TestCase):
