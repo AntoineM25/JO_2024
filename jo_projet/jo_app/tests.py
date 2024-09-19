@@ -166,10 +166,14 @@ class PaiementModelTest(TestCase):
             nom='Football',
             date_evenement='2024-09-15'
         )
+        self.offre = Offre.objects.create(
+            type='famille',
+            prix=50.00
+        )
         self.ticket = Ticket.objects.create(
             utilisateur=self.utilisateur,
             sport=self.sport,
-            type_ticket='famille',
+            offre=self.offre,
             quantite=1
         )
 
@@ -177,13 +181,24 @@ class PaiementModelTest(TestCase):
         # Création d'un paiement pour le ticket
         paiement = Paiement.objects.create(
             ticket=self.ticket,
-            montant=self.ticket.get_prix(),
+            montant=self.ticket.get_prix_total(),
             methode_paiement='Carte de crédit',
             statut_paiement=True
         )
         # Vérification que le paiement a bien été créé avec les bons attributs
         self.assertEqual(paiement.ticket, self.ticket)
-        self.assertEqual(paiement.montant, self.ticket.get_prix())
+        self.assertEqual(paiement.montant, self.ticket.get_prix_total())
         self.assertEqual(paiement.methode_paiement, 'Carte de crédit')
         self.assertTrue(paiement.statut_paiement)
+        self.assertIsNotNone(paiement.date_paiement)  # Vérifie que la date de paiement a été correctement définie
 
+    def test_str_representation(self):
+        # Création d'un paiement pour tester la méthode __str__
+        paiement = Paiement.objects.create(
+            ticket=self.ticket,
+            montant=self.ticket.get_prix_total(),
+            methode_paiement='Carte de crédit',
+            statut_paiement=True
+        )
+        # Vérification de la représentation en chaîne du paiement
+        self.assertEqual(str(paiement), f"{self.ticket} - {paiement.montant} - {paiement.date_paiement}")
