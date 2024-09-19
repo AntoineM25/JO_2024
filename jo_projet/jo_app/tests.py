@@ -1,5 +1,6 @@
 from django.test import TestCase
-from jo_app.models import Utilisateur, Sport, Ticket, Paiement, GenerationTicket, Offre
+from jo_app.models import Utilisateur, Sport, Ticket, Paiement, GenerationTicket, Offre, validate_password
+from django.core.exceptions import ValidationError
 
 ## TEST DES MODELS ##
 
@@ -246,3 +247,30 @@ class GenerationTicketModelTest(TestCase):
 
         # Vérifie que le QR code a été généré
         self.assertTrue(generation_ticket.qr_code.name.endswith('.png'))
+
+# Test de la fonction de validation du mot de passe
+class PasswordValidationTest(TestCase):
+
+    def test_password_too_short(self):
+        with self.assertRaises(ValidationError) as cm:
+            validate_password('Abc!12')
+        self.assertEqual(str(cm.exception), 'Le mot de passe doit contenir au moins 8 caractères.')
+
+    def test_password_no_uppercase(self):
+        with self.assertRaises(ValidationError) as cm:
+            validate_password('abcd1234!')
+        self.assertEqual(str(cm.exception), 'Le mot de passe doit contenir au moins une majuscule.')
+
+    def test_password_no_special_character(self):
+        with self.assertRaises(ValidationError) as cm:
+            validate_password('Abcdefgh')
+        self.assertEqual(str(cm.exception), 'Le mot de passe doit contenir au moins un caractère spécial.')
+
+    def test_valid_password(self):
+        try:
+            validate_password('Abcdefg!')
+        except ValidationError:
+            self.fail('La validation du mot de passe a échoué alors qu\'elle aurait dû réussir.')
+
+
+## EN COURS ##
