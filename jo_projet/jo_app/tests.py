@@ -3,7 +3,8 @@ from jo_app.models import Utilisateur, Sport, Ticket, Paiement, GenerationTicket
 from django.core.exceptions import ValidationError
 from django.urls import reverse
 from decimal import Decimal
-from jo_app.forms import UtilisateurForm
+from .forms import UtilisateurForm,TicketForm
+
 
 ## TEST DES MODELS ##
 
@@ -575,3 +576,31 @@ class UtilisateurFormTest(TestCase):
         self.assertIn('password2', form.errors)
 
 # Test du formulaire ticket
+class TicketFormTest(TestCase):
+    
+    def setUp(self):
+        # Création d'une offre et d'un sport pour les tests
+        self.offre = Offre.objects.create(type="Standard", prix=50.0)
+        self.sport = Sport.objects.create(nom="Football", date_evenement="2024-07-01")
+
+    def test_ticket_form_valid_data(self):
+        # Test avec des données valides
+        form_data = {
+            'offre': self.offre.id,
+            'sport': self.sport.id,
+        }
+        form = TicketForm(data=form_data)
+        self.assertTrue(form.is_valid())
+
+    def test_ticket_form_empty_data(self):
+        # Test avec des données vides
+        form = TicketForm(data={})
+        self.assertFalse(form.is_valid())
+        self.assertIn('offre', form.errors)
+        self.assertIn('sport', form.errors)
+
+    def test_ticket_form_initial_values(self):
+        # Vérifie si le formulaire initialise correctement les champs
+        form = TicketForm()
+        self.assertEqual(form.fields['sport'].empty_label, "Choisissez votre sport !")
+        self.assertEqual(form.fields['offre'].empty_label, "Choisissez votre offre !")
