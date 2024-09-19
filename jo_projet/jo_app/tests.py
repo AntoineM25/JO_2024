@@ -3,8 +3,8 @@ from jo_app.models import Utilisateur, Sport, Ticket, Paiement, GenerationTicket
 from django.core.exceptions import ValidationError
 from django.urls import reverse
 from decimal import Decimal
-from .forms import UtilisateurForm,TicketForm
-
+from .forms import UtilisateurForm,TicketForm, ConnexionForm
+from django.contrib.auth import get_user_model
 
 ## TEST DES MODELS ##
 
@@ -653,3 +653,35 @@ class PaiementFormTest(TestCase):
         self.assertIn(('carte', 'Carte de crédit'), form.fields['methode_paiement'].choices)
         self.assertIn(('paypal', 'PayPal'), form.fields['methode_paiement'].choices)
         self.assertIn(('virement', 'Virement bancaire'), form.fields['methode_paiement'].choices)
+
+# Test du formulaire de connexion
+class ConnexionFormTest(TestCase):
+
+    def setUp(self):
+        # Crée un utilisateur pour tester la connexion
+        self.user = get_user_model().objects.create_user(
+            email='testuser@example.com',
+            password='Test@123',
+            nom='Test',
+            prenom='Utilisateur'
+        )
+
+    def test_connexion_form_valid_data(self):
+        # Test avec des données valides
+        form_data = {
+            'username': 'testuser@example.com',
+            'password': 'Test@123',
+        }
+        form = ConnexionForm(data=form_data)
+        self.assertTrue(form.is_valid())
+
+    def test_connexion_form_invalid_data(self):
+        # Test avec des données invalides
+        form_data = {
+            'username': 'testuser@example.com',
+            'password': 'wrongpassword',
+        }
+        form = ConnexionForm(data=form_data)
+        self.assertFalse(form.is_valid())
+        # Vérifie que l'erreur est présente dans le formulaire
+        self.assertIn('__all__', form.errors)
