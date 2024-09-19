@@ -474,3 +474,45 @@ class PanierViewTest(TestCase):
         })
         self.ticket.refresh_from_db()
         self.assertNotEqual(self.ticket.quantite, -1)  # La quantité ne doit pas être mise à jour
+
+# Test de la vue pour le téléchargement du billet
+class TelechargerBilletViewTest(TestCase):
+    def setUp(self):
+        self.utilisateur = Utilisateur.objects.create_user(
+            email='gilles.dupont@exemple.com',
+            password='Test@123',
+            nom='Dupont',
+            prenom='Gilles'
+        )
+        self.sport = Sport.objects.create(
+            nom='Natation',
+            date_evenement='2024-07-25'
+        )
+        self.offre = Offre.objects.create(type='Standard', prix=50.0)
+        self.ticket = Ticket.objects.create(
+            utilisateur=self.utilisateur,
+            offre=self.offre,
+            sport=self.sport,
+            quantite=1
+        )
+        self.billet = GenerationTicket.objects.create(ticket=self.ticket)
+        self.client.login(email='gilles.dupont@exemple.com', password='Test@123')
+
+    def test_acces_telechargement_billet(self):
+        response = self.client.get(reverse('telecharger_billet', args=[self.billet.id]))
+        self.assertEqual(response.status_code, 200)
+
+    def test_acces_billet_non_existant(self):
+        response = self.client.get(reverse('telecharger_billet', args=[9999]))  # ID qui n'existe pas
+        self.assertEqual(response.status_code, 404)
+
+    def test_acces_billet_autre_utilisateur(self):
+        autre_utilisateur = Utilisateur.objects.create_user(
+            email='jean.dupont@exemple.com',
+            password='Test@123',
+            nom='Dupont',
+            prenom='Jean'
+        )
+        self.client.login(email='jean.dupont@exemple.com', password='Test@123')
+        response = self.client.get(reverse('telecharger_billet', args=[self.billet.id]))
+        self.assertEqual(response.status_code, 404)  # Doit renvoyer une erreur car ce n'est pas son billet
