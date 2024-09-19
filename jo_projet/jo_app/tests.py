@@ -344,3 +344,55 @@ class InscriptionViewTest(TestCase):
         self.assertRedirects(response, reverse('connexion'))
         self.assertTrue(Utilisateur.objects.filter(email='gilles.dupont@exemple.com').exists())
 
+# Test de la vue ticket (création de vue)
+class TicketCreateViewTest(TestCase):
+
+    def setUp(self):
+        # Création d'un utilisateur pour les tests
+        self.utilisateur = Utilisateur.objects.create_user(
+            email='gilles.dupont@exemple.com',
+            nom='Dupont',
+            prenom='Gilles',
+            password='Test@1234',
+            adresse='123 Rue Test',
+            code_postal='75000',
+            ville='Paris',
+            date_de_naissance='1942-08-01'
+        )
+        # Connexion de l'utilisateur
+        self.client.login(email='gilles.dupont@exemple.com', password='Test@1234')
+
+        # Création d'un sport et d'une offre pour les tests
+        self.sport = Sport.objects.create(
+            nom='Basketball',
+            date_evenement='2024-08-01'
+        )
+        self.offre = Offre.objects.create(
+            type='Solo',
+            prix=50.00
+        )
+
+    def test_ticket_create_view(self):
+        # Envoi d'une requête GET pour la vue de création de ticket
+        response = self.client.get(reverse('ticket_create') + f'?sport={self.sport.nom}')
+        self.assertEqual(response.status_code, 200)
+
+    def test_valid_ticket_creation(self):
+        # Envoi d'une requête POST pour créer un ticket
+        response = self.client.post(reverse('ticket_create'), {
+            'sport': self.sport.id,
+            'offre': self.offre.id,
+            'quantite': 1,
+        })
+        # Vérifier la redirection après la création du ticket
+        self.assertEqual(response.status_code, 302)
+        
+        # Vérifier si le ticket a été créé
+        self.assertEqual(Ticket.objects.count(), 1)
+        ticket = Ticket.objects.first()
+        self.assertEqual(ticket.utilisateur, self.utilisateur)
+        self.assertEqual(ticket.sport, self.sport)
+        self.assertEqual(ticket.offre, self.offre)
+        self.assertEqual(ticket.quantite, 1)
+
+
