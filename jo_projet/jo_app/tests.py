@@ -3,6 +3,7 @@ from jo_app.models import Utilisateur, Sport, Ticket, Paiement, GenerationTicket
 from django.core.exceptions import ValidationError
 from django.urls import reverse
 from decimal import Decimal
+from jo_app.forms import UtilisateurForm
 
 ## TEST DES MODELS ##
 
@@ -516,3 +517,61 @@ class TelechargerBilletViewTest(TestCase):
         self.client.login(email='jean.dupont@exemple.com', password='Test@123')
         response = self.client.get(reverse('telecharger_billet', args=[self.billet.id]))
         self.assertEqual(response.status_code, 404)  # Doit renvoyer une erreur car ce n'est pas son billet
+
+## Test des formulaires ##
+
+# Test du formulaire utilisateur
+
+class UtilisateurFormTest(TestCase):
+
+    def test_form_with_valid_data(self):
+        form = UtilisateurForm(data={
+            'nom': 'Dupont',
+            'prenom': 'Gilles',
+            'sexe': 'H',
+            'email': 'gilles.dupont@example.com',
+            'adresse': '123 Rue Test',
+            'code_postal': '75000',
+            'ville': 'Paris',
+            'date_de_naissance': '1990-01-01',
+            'password1': 'Password@123',
+            'password2': 'Password@123',
+        })
+        # Vérifie que le formulaire est valide avec les bonnes données
+        self.assertTrue(form.is_valid())
+
+    def test_form_with_invalid_password(self):
+        form = UtilisateurForm(data={
+            'nom': 'Dupont',
+            'prenom': 'Gilles',
+            'sexe': 'H',
+            'email': 'gilles.dupont@example.com',
+            'adresse': '123 Rue Test',
+            'code_postal': '75000',
+            'ville': 'Paris',
+            'date_de_naissance': '1990-01-01',
+            'password1': 'pass',
+            'password2': 'pass',
+        })
+        # Vérifie que le formulaire est invalide à cause d'un mot de passe incorrect
+        self.assertFalse(form.is_valid())
+        self.assertIn('password1', form.errors)
+
+    def test_form_with_mismatched_passwords(self):
+        form = UtilisateurForm(data={
+            'nom': 'Dupont',
+            'prenom': 'Gilles',
+            'sexe': 'H',
+            'email': 'gilles.dupont@example.com',
+            'adresse': '123 Rue Test',
+            'code_postal': '75000',
+            'ville': 'Paris',
+            'date_de_naissance': '1990-01-01',
+            'password1': 'Password@123',
+            'password2': 'Different@123',
+        })
+        # Vérifie que le formulaire est invalide à cause de mots de passe différents
+        self.assertFalse(form.is_valid())
+        self.assertIn('password2', form.errors)
+
+# Test du formulaire ticket
