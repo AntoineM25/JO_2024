@@ -320,3 +320,27 @@ class HomeViewTest(TestCase):
         response = self.client.get(reverse('home'))  # Assurez-vous d'avoir le bon nom d'URL
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'home.html')
+        
+# Test de la vue inscription
+class InscriptionViewTest(TestCase):
+    def test_inscription_view(self):
+        response = self.client.get(reverse('inscription'))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'inscription.html')
+
+    def test_valid_registration(self):
+        response = self.client.post(reverse('inscription'), {
+            'nom': 'Dupont',
+            'prenom': 'Gilles',
+            'sexe': 'H',
+            'email': 'gilles.dupont@exemple.com',
+            'adresse': '123 Rue Test',
+            'code_postal': '75000',
+            'ville': 'Paris',
+            'date_de_naissance': '1942-08-01',
+            'password1': 'Test@123',
+            'password2': 'Test@123',
+        })
+        self.assertRedirects(response, reverse('connexion'))
+        self.assertTrue(Utilisateur.objects.filter(email='gilles.dupont@exemple.com').exists())
+
