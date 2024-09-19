@@ -1,5 +1,5 @@
 from django.test import TestCase
-from jo_app.models import Utilisateur, Sport, Ticket, Paiement, GenerationTicket
+from jo_app.models import Utilisateur, Sport, Ticket, Paiement, GenerationTicket, Offre
 
 ## TEST DES MODELS ##
 
@@ -74,46 +74,53 @@ class UtilisateurModelTest(TestCase):
 class TicketModelTest(TestCase):
 
     def setUp(self):
-        # Création un utilisateur et un sport pour les tests
+        # Création d'un utilisateur, d'un sport et d'une offre pour les tests
         self.utilisateur = Utilisateur.objects.create(
             nom='Dupont',
             prenom='Gilles',
             sexe='H',
             email='gilles.dupont@exemple.com',
             adresse='123 Rue Test',
-            code_postal='7500',
+            code_postal='75000',
             ville='Paris',
             date_de_naissance='1942-08-01'
         )
+        
         self.sport = Sport.objects.create(
             nom='Basketball',
             date_evenement='2024-08-01'
         )
 
+        self.offre = Offre.objects.create(
+            type='solo',
+            prix=20.00
+        )
+
     def test_creation_ticket(self):
-        # Création du ticket pour l'utilisateur et le sport
+        # Création du ticket pour l'utilisateur, l'offre et le sport
         ticket = Ticket.objects.create(
             utilisateur=self.utilisateur,
             sport=self.sport,
-            type_ticket='solo',
+            offre=self.offre,
             quantite=2
         )
         # Vérification si le ticket a été créé avec les bons attributs
         self.assertEqual(ticket.utilisateur.email, 'gilles.dupont@exemple.com')
         self.assertEqual(ticket.sport.nom, 'Basketball')
-        self.assertEqual(ticket.type_ticket, 'solo')
+        self.assertEqual(ticket.offre.type, 'solo')
         self.assertEqual(ticket.quantite, 2)
 
-    def test_calcul_prix_ticket(self):
-        # Création du ticket pour tester le calcul du prix
+    def test_calcul_prix_total_ticket(self):
+        # Création du ticket pour tester le calcul du prix total
         ticket = Ticket.objects.create(
             utilisateur=self.utilisateur,
             sport=self.sport,
-            type_ticket='duo',
-            quantite=1
+            offre=self.offre,
+            quantite=3
         )
-        # Vérification du prix pour le type 'duo'
-        self.assertEqual(ticket.get_prix(), 35.00)
+        # Vérification du prix total
+        self.assertEqual(ticket.get_prix_total(), 60.00)  # 20.00 (prix de l'offre) * 3 (quantité)
+
         
 # Test du modèle Sport
 class SportModelTest(TestCase):
