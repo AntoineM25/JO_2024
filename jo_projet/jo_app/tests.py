@@ -1,6 +1,7 @@
 from django.test import TestCase
 from jo_app.models import Utilisateur, Sport, Ticket, Paiement, GenerationTicket, Offre, validate_password
 from django.core.exceptions import ValidationError
+from django.urls import reverse
 from decimal import Decimal
 
 ## TEST DES MODELS ##
@@ -344,7 +345,7 @@ class InscriptionViewTest(TestCase):
         self.assertRedirects(response, reverse('connexion'))
         self.assertTrue(Utilisateur.objects.filter(email='gilles.dupont@exemple.com').exists())
 
-# Test de la vue ticket (création de vue)
+# Test de la vue ticket (création ticket)
 class TicketCreateViewTest(TestCase):
 
     def setUp(self):
@@ -395,4 +396,31 @@ class TicketCreateViewTest(TestCase):
         self.assertEqual(ticket.offre, self.offre)
         self.assertEqual(ticket.quantite, 1)
 
+# Test de la vue ticket (liste ticket)
+class TicketListViewTest(TestCase):
+    def setUp(self):
+        # Création d'un utilisateur, d'un sport, et d'une offre pour les tickets
+        self.utilisateur = Utilisateur.objects.create_user(
+            email='gilles.dupont@exemple.com',
+            password='Test@123',
+            nom='Dupont',
+            prenom='Gilles'
+        )
+        self.sport = Sport.objects.create(nom='Football', date_evenement='2024-09-15')
+        self.offre = Offre.objects.create(type='Solo', prix=49.99)
+        
+        # Création d'un ticket
+        Ticket.objects.create(
+            utilisateur=self.utilisateur,
+            sport=self.sport,
+            offre=self.offre,
+            quantite=1
+        )
+        
+        # Connexion de l'utilisateur
+        self.client.login(email='gilles.dupont@exemple.com', password='Test@123')
 
+    def test_ticket_list_view(self):
+        response = self.client.get(reverse('ticket_list'))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'Football')  # Vérifie si le nom du sport est affiché dans la page

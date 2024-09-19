@@ -52,10 +52,16 @@ def ticket_create_view(request):
     return render(request, 'ticket.html', {'form': form, 'date_evenement': date_evenement})
 
 # Affichage de la liste des tickets
+# @login_required(login_url='connexion')
+# def ticket_list_view(request):
+#     tickets = Ticket.objects.all()
+#     return render(request, 'ticket_list.html', {'tickets': tickets})*
 @login_required(login_url='connexion')
 def ticket_list_view(request):
     tickets = Ticket.objects.all()
-    return render(request, 'ticket_list.html', {'tickets': tickets})
+    tickets_list = ', '.join([str(ticket) for ticket in tickets])
+    return HttpResponse(f"Liste des tickets: {tickets_list}")
+
 
 # Mise à jour d'un ticket
 @login_required(login_url='connexion')
