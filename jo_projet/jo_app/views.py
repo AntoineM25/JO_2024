@@ -7,7 +7,7 @@ from django.http import JsonResponse, HttpResponse
 from django.urls import reverse_lazy, reverse
 from .models import Ticket, Sport, Utilisateur, Paiement, GenerationTicket
 from django.template.loader import render_to_string
-from django.db.models import Count
+from django.db.models import Count, Sum, F
 from weasyprint import HTML
 import locale
 
@@ -53,10 +53,6 @@ def ticket_create_view(request):
     return render(request, 'ticket.html', {'form': form, 'date_evenement': date_evenement})
 
 # Affichage de la liste des tickets
-# @login_required(login_url='connexion')
-# def ticket_list_view(request):
-#     tickets = Ticket.objects.all()
-#     return render(request, 'ticket_list.html', {'tickets': tickets})*
 @login_required(login_url='connexion')
 def ticket_list_view(request):
     tickets = Ticket.objects.all()
@@ -264,19 +260,37 @@ def telecharger_billet_view(request, billet_id):
 def ventes_view(request):
     billets = GenerationTicket.objects.all()
     
-    # Calculer le nombre total des billets vendues
+    # Calculer le nombre total des billets vendus
     total_billets = billets.count()
     
-    # Calculer le nombre total des billets vendues par sport
-    total_billets_par_sport = GenerationTicket.objects.values('ticket__sport__nom').annotate(total=Count('id'))
+    # Calculer le nombre total et le prix total des billets vendus par sport
+    total_billets_par_sport = GenerationTicket.objects.values('ticket__sport__nom').annotate(
+        total=Count('id'),
+        total_prix=Sum(F('ticket__quantite') * F('ticket__offre__prix'))
+    )
 
-    # Calculer le nombre total des billets vendues par offre
-    total_billets_par_offre = GenerationTicket.objects.values('ticket__offre__type').annotate(total=Count('id'))
+    # Calculer le nombre total et le prix total des billets vendus par offre
+    total_billets_par_offre = GenerationTicket.objects.values('ticket__offre__type').annotate(
+        total=Count('id'),
+        total_prix=Sum(F('ticket__quantite') * F('ticket__offre__prix'))
+    )
     
-    # Calculer le nombre total des billets vendues par sport et offre
-    total_billets_par_sport_et_offre = GenerationTicket.objects.values('ticket__sport__nom', 'ticket__offre__type').annotate(total=Count('id'))
-    
-    # Calculer le total par offre
-    total_par_offre = [(item['ticket__offre__type'], item['total']) for item in total_billets_par_offre]
+    # Calculer le nombre total et le prix total des billets vendus par sport et offre
+    total_billets_par_sport_et_offre = GenerationTicket.objects.values(
+        'ticket__sport__nom', 
+        'ticket__offre__type'
+    ).annotate(
+        total=Count('id'),
+        total_prix=Sum(F('ticket__quantite') * F('ticket__offre__prix'))
+    )
+        
+    # Calculer le prix total global
+    total_prix_global = sum(item['total_prix'] for item in total_billets_par_offre)
 
-    return render(request, 'ventes.html', {'billets': billets, 'total_billets': total_billets, 'total_billets_par_sport': total_billets_par_sport, 'total_billets_par_offre': total_billets_par_offre, 'total_billets_par_sport_et_offre': total_billets_par_sport_et_offre, 'total_par_offre': total_par_offre,})
+    return render(request, 'ventes.html', {'billets': billets,
+                                           'total_billets': total_billets,
+                                           'total_billets_par_sport': total_billets_par_sport,
+                                           'total_billets_par_offre': total_billets_par_offre,
+                                           'total_billets_par_sport_et_offre': total_billets_par_sport_et_offre,
+                                           'total_prix_global': total_prix_global
+                                           })
