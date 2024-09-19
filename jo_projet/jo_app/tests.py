@@ -202,3 +202,47 @@ class PaiementModelTest(TestCase):
         )
         # Vérification de la représentation en chaîne du paiement
         self.assertEqual(str(paiement), f"{self.ticket} - {paiement.montant} - {paiement.date_paiement}")
+
+# Test du modèle Génération de ticket
+class GenerationTicketModelTest(TestCase):
+
+    def setUp(self):
+        # Création d'un utilisateur, d'un sport et d'une offre pour le test
+        self.utilisateur = Utilisateur.objects.create(
+            nom='Dupont',
+            prenom='Gilles',
+            sexe='H',
+            email='gilles.dupont@exemple.com',
+            adresse='123 Rue Test',
+            code_postal='7500',
+            ville='Paris',
+            date_de_naissance='1942-08-01'
+        )
+        self.sport = Sport.objects.create(
+            nom='Natation',
+            date_evenement='2024-07-25'
+        )
+        self.offre = Offre.objects.create(
+            type='famille',
+            prix=50.00
+        )
+        self.ticket = Ticket.objects.create(
+            utilisateur=self.utilisateur,
+            sport=self.sport,
+            offre=self.offre,
+            quantite=1
+        )
+
+    def test_generation_ticket_creation(self):
+        # Création d'un GenerationTicket pour le ticket
+        generation_ticket = GenerationTicket.objects.create(
+            ticket=self.ticket,
+            quantite_vendue=1
+        )
+
+        # Vérifie que la clé sécurisée 2 a été générée
+        self.assertIsNotNone(generation_ticket.cle_securisee_2)
+        self.assertEqual(len(generation_ticket.cle_securisee_2), 64)
+
+        # Vérifie que le QR code a été généré
+        self.assertTrue(generation_ticket.qr_code.name.endswith('.png'))
