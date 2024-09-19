@@ -1,6 +1,7 @@
 from django.test import TestCase
 from jo_app.models import Utilisateur, Sport, Ticket, Paiement, GenerationTicket, Offre, validate_password
 from django.core.exceptions import ValidationError
+from decimal import Decimal
 
 ## TEST DES MODELS ##
 
@@ -271,6 +272,41 @@ class PasswordValidationTest(TestCase):
             validate_password('Abcdefg!')
         except ValidationError:
             self.fail('La validation du mot de passe a échoué alors qu\'elle aurait dû réussir.')
+
+# Test du modèle Offre
+class OffreModelTest(TestCase):
+
+    def setUp(self):
+        # Création d'une offre pour les tests
+        self.offre = Offre.objects.create(
+            type='Famille',
+            prix=Decimal('49.99')
+        )
+
+    def test_creation_offre(self):
+        # Vérification que l'offre a bien été créée avec les bons attributs
+        offre = Offre.objects.get(type='Famille')
+        self.assertEqual(offre.type, 'Famille')
+        self.assertEqual(offre.prix, Decimal('49.99'))
+
+
+# Test de la fonction de validation du mot de passe
+class PasswordValidationTest(TestCase):
+
+    def test_password_too_short(self):
+        with self.assertRaises(ValidationError) as cm:
+            validate_password('short')
+        self.assertEqual(cm.exception.messages, ['Le mot de passe doit contenir au moins 8 caractères.'])
+
+    def test_password_no_uppercase(self):
+        with self.assertRaises(ValidationError) as cm:
+            validate_password('lowercase1!')
+        self.assertEqual(cm.exception.messages, ['Le mot de passe doit contenir au moins une majuscule.'])
+
+    def test_password_no_special_character(self):
+        with self.assertRaises(ValidationError) as cm:
+            validate_password('NoSpecialCharacter1')
+        self.assertEqual(cm.exception.messages, ['Le mot de passe doit contenir au moins un caractère spécial.'])
 
 
 ## EN COURS ##
