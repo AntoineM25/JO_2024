@@ -1,34 +1,36 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="container text-center mt-5">
-    <h2 class="mb-4">Mes Commandes</h2>
-
-    <!-- Afficher les billets générés -->
-    <div class="row justify-content-center">
-        {% if billets %}
-            {% for billet in billets %}
-                <div class="col-md-4 mb-2">
-                    <div class="card">
-                        <div class="card-header" style="background-color: #f5f5f5;">
-                            <h5 class="card-title">{{ billet.ticket.sport.nom }}</h5>
+<div class="card m-auto my-5 border-dark" style="max-width: 55%">
+    <div class="card-header">
+        <h2>Mes Commandes</h2>
+    </div>
+    <div class="card-body px-4">
+        <!-- Afficher les billets générés -->
+        <div class="row justify-content-center">
+            {% if billets %}
+                {% for billet in billets %}
+                    <div class="col-md-4 p-3">
+                        <div class="card">
+                            <div id="" class="card-header text-bg-light">
+                                <h5 class="card-title">{{ billet.ticket.sport.nom }}</h5>
+                            </div>
+                            <div class="card-body text-center">
+                                <p class="card-text">
+                                    Acheteur : {{ billet.ticket.utilisateur.prenom }} {{ billet.ticket.utilisateur.nom }}<br>
+                                    Ticket : {{ billet.ticket.offre }}<br>
+                                    Date de l'événement : {{ billet.ticket.sport.date_evenement|date:"d/m/Y" }}<br>
+                                </p>
+                                <img src="{{ billet.qr_code.url }}" alt="QR Code" class="img-fluid" style="width: 150px; height: 150px;">   
+                            </div>
+                            <a href="{% url 'telecharger_billet' billet.id %}" class="btn btn-dark">Télécharger le billet</a>
                         </div>
-                        <div class="card-body">
-                            <p class="card-text">
-                                Acheteur du billet : {{ billet.ticket.utilisateur.prenom }} {{ billet.ticket.utilisateur.nom }}<br>
-                                Type de Ticket : {{ billet.ticket.type_ticket }}<br>
-                                Prix unitaire : {{ billet.ticket.get_prix|floatformat:2 }} €<br>
-                                Date de l'événement : {{ billet.ticket.sport.date_evenement|date:"d/m/Y" }}<br>
-                            </p>
-                            <img src="{{ billet.qr_code.url }}" alt="QR Code" class="img-fluid" style="width: 150px; height: 150px;">   
-                        </div>
-                        <a href="{% url 'telecharger_billet' billet.id %}" class="btn btn-dark">Télécharger le billet</a>
                     </div>
-                </div>
-            {% endfor %}
-        {% else %}
-            <p>Vous n'avez aucune commande.</p>
-        {% endif %}
+                {% endfor %}
+            {% else %}
+                <p class="card-text">Vous n'avez aucune commande.</p>
+            {% endif %}
+        </div>
     </div>
 </div>
 {% endblock %}

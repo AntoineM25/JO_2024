@@ -6,15 +6,6 @@
         <h2>Panier</h2>
     </div>
     <div class="card-body">
-        <!-- Messages de confirmation -->
-        {% if messages %}
-            <div class="alert alert-info" role="alert">
-                {% for message in messages %}
-                    <p class="mb-0">{{ message }}</p>
-                {% endfor %}
-            </div>
-        {% endif %}
-
         <form class="card-text" method="POST" action="{% url 'panier' %}">
             {% csrf_token %}
             <ul class="list-group">
