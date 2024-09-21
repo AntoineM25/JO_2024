@@ -1,5 +1,10 @@
 .navbar {
-    background-color: rgba(4, 4, 4, 0.9) !important;
+    background-color: #1a1a1a !important;
+    height: 100px;
+}
+
+main {
+    margin-top: 150px;
 }
 
 .nav-item a,
@@ -31,12 +36,12 @@ button,
 }
 
 .card-header {
-    background-color: rgba(4, 4, 4, 0.9);
+    background-color: #1a1a1a;
     color: #fff;
 }
 
 .btn:hover {
     background-color: #d4c47c !important;
-    color: #000 !important;
+    color: #1a1a1a !important;
     border: solid 1px #d4c47c !important;
 }
