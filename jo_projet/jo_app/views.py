@@ -11,6 +11,9 @@ from django.db.models import Count, Sum, F
 from weasyprint import HTML
 import locale
 
+# Parametrage de la locale en français
+locale.setlocale(locale.LC_ALL, 'fr_FR.UTF-8')
+
 # Création de 'home'
 def home(request):
     return render(request, 'home.html')
@@ -82,9 +85,6 @@ def ticket_delete_view(request, ticket_id):
         return redirect('panier')  
     return render(request, 'ticket_confirm_delete.html', {'ticket': ticket})
 
-#Récupérer la date de l'événement
-locale.setlocale(locale.LC_TIME, 'fr_FR.UTF-8')  
-
 def get_sport_date(request, sport_id):
     try:
         sport = Sport.objects.get(id=sport_id)
@@ -147,7 +147,7 @@ def panier_view(request):
     total = sum(ticket.get_prix_total() for ticket in tickets)  # Calcul du total avec les quantités
     form = PaiementForm(initial={'montant': total})
 
-    return render(request, 'panier.html', {'tickets': tickets, 'total': f"{total:.2f}€", 'form': form})
+    return render(request, 'panier.html', {'tickets': tickets, 'total': total, 'form': form})
 
 # Vue pour la connexion
 class ConnexionView(LoginView):
@@ -197,7 +197,7 @@ def paiement_view(request):
         else:
             messages.error(request, 'Veuillez remplir tous les champs pour le paiement.')
 
-    return render(request, 'paiement.html', {'total': f"{total:.2f}€"})
+    return render(request, 'paiement.html', {'total': total})
 
 # MAJ automatique des quantités du panier
 @login_required(login_url='connexion')
@@ -220,9 +220,8 @@ def maj_quantite_view(request):
         # Recalculer le total du panier après la mise à jour de la quantité
         tickets = Ticket.objects.filter(utilisateur=request.user, est_achete=False)  # Filtrer les tickets non achetés
         total = sum(ticket.get_prix_total() for ticket in tickets)
-        total_formatted = f"{total:.2f}€"  # Formater le total avec deux décimales
 
-        return JsonResponse({'success': True, 'total': total_formatted})
+        return JsonResponse({'success': True, 'total': total})
 
     return JsonResponse({'success': False, 'message': 'Requête invalide.'})
 
@@ -247,7 +246,8 @@ def telecharger_billet_view(request, billet_id):
     billet = get_object_or_404(GenerationTicket, id=billet_id, ticket__utilisateur=request.user)
     nom_fichier = f"Billet_{billet.ticket.sport.nom}_{billet.ticket.utilisateur.prenom}_{billet.ticket.utilisateur.nom}.pdf"
     qr_code_url = request.build_absolute_uri(billet.qr_code.url)
-    html_string = render(request, 'billet_pdf.html', {'billet': billet, 'qr_code_url': qr_code_url}).content.decode('utf-8')
+    offre_formate = f"{billet.ticket.offre.type} - {locale.format_string('%.2f', billet.ticket.offre.prix, grouping=True)} €"
+    html_string = render(request, 'billet_pdf.html', {'billet': billet, 'qr_code_url': qr_code_url, 'offre_formate': offre_formate}).content.decode('utf-8')
     html = HTML(string=html_string)
     response = HttpResponse(content_type='application/pdf')
     response['Content-Disposition'] = f'attachment; filename="{nom_fichier}"'

@@ -1,5 +1,6 @@
 from django import forms
-from .models import Utilisateur, Ticket, Paiement, Sport, validate_password
+from django.utils import formats
+from .models import Utilisateur, Ticket, Paiement, Sport, Offre, validate_password
 from django.contrib.auth.forms import AuthenticationForm
 from django.core.exceptions import ValidationError
 
@@ -74,25 +75,23 @@ class TicketForm(forms.ModelForm):
             'sport': "Choix du sport",
         }
         widgets = {
-            'offre': forms.Select(attrs={'class': 'form-control'}),
+            'offre': forms.Select(attrs={'class': 'form-control', 'localize': True}),
             'sport': forms.Select(attrs={'class': 'form-control'}),
         }
     
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        # Ajouter "Choisissez votre sport !" pour le champ sport
-        self.fields['sport'].queryset = Sport.objects.all()
-        self.fields['sport'].empty_label = "Choisissez votre sport !"
-        
-        # Ajouter la date de l’événement sur le champ sport
+        # Ajouter défaut et date de l’événement sur le champ sport
         self.fields['sport'].choices = [('', 'Choisissez votre sport !')] + [
             (sport.id, f"{sport.nom} - {sport.date_evenement.strftime('%d %B %Y')}")
             for sport in Sport.objects.all()
         ]
         
-        # Ajouter "Choisissez votre offre !" pour le champ offre
-        self.fields['offre'].empty_label = "Choisissez votre offre !"
-
+        # Ajouter défaut et date de l’événement sur le champ offre
+        self.fields['offre'].choices = [('', 'Choisissez votre offre !')] + [
+            (offre.id, f"{offre.type} - {formats.localize_input(offre.prix)}€")
+            for offre in Offre.objects.all()
+        ]
     
 # Formulaire du paiement
 class PaiementForm(forms.ModelForm):

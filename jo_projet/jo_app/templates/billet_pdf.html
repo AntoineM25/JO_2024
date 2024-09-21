@@ -40,7 +40,7 @@
         </div>
         <div class="card-body">
             <p>Acheteur : {{ billet.ticket.utilisateur.prenom }} {{ billet.ticket.utilisateur.nom }}</p>
-            <p>Ticket : {{ billet.ticket.offre }}</p>
+            <p>Ticket : {{ offre_formate }}</p>
             <p>Date de l'événement : {{ billet.ticket.sport.date_evenement }}</p>
             <img src="{{ qr_code_url }}" alt="QR Code" width="150" height="150">    
         </div>
