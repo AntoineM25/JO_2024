@@ -3,10 +3,6 @@
     height: 100px;
 }
 
-main {
-    margin-top: 150px;
-}
-
 .nav-item a,
 .nav-item button,
 .nav-item a:hover,
@@ -33,6 +29,29 @@ main {
 button,
 .btn {
     transition: color 0.3s ease;
+}
+
+main {
+    position: relative;
+    min-height: 100vh;
+    padding-top: 150px;
+    padding-bottom: 50px;
+}
+
+main::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: url('../images/tour_eiffel.jpg');
+    background-size: cover;
+    background-position: center center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    opacity: 0.8;
+    z-index: -1;
 }
 
 .card-header {
