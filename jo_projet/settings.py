@@ -85,7 +85,8 @@ WSGI_APPLICATION = 'jo_projet.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
-DATABASES = {
+if DEBUG:
+    DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'jo_database',
@@ -95,6 +96,17 @@ DATABASES = {
         'PORT': '3306',
     }
 }
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.mysql',
+            'NAME': os.getenv('DJANGO_DB_NAME'),
+            'USER': os.getenv('DJANGO_DB_USER'),
+            'PASSWORD': os.getenv('DJANGO_DB_PASSWORD'),
+            'HOST': os.getenv('DJANGO_DB_HOST'),
+            'PORT': os.getenv('DJANGO_DB_PORT', default='3306'),
+        }
+    }
 
 
 # Password validation
