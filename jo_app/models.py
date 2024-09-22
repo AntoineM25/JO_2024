@@ -4,7 +4,7 @@ from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, Permis
 from django.core.exceptions import ValidationError
 from django.core.files import File
 from io import BytesIO
-import secrets, re, qrcode
+import secrets, re, qrcode, logging
 
 SEXE_CHOICES = [
     ('H', 'Homme'),
@@ -124,11 +124,16 @@ class Paiement(models.Model):
     def __str__(self):
         return f"{self.ticket} - {self.montant} - {self.date_paiement}"
 
-# Modèle génération_ticket
+
+
+# Modèle generation_ticket
+
+logger = logging.getLogger(__name__)
+
 class GenerationTicket(models.Model):
     ticket = models.ForeignKey('Ticket', on_delete=models.CASCADE, related_name="generation_tickets")
     qr_code = models.ImageField(upload_to='qr_codes/', blank=True)
-    cle_securisee_2 = models.CharField(max_length=64, blank=True, editable=False)  
+    cle_securisee_2 = models.CharField(max_length=64, blank=True, editable=False)
     quantite_vendue = models.IntegerField(default=0)
     date_generation = models.DateTimeField(default=timezone.now)
 
@@ -148,7 +153,13 @@ class GenerationTicket(models.Model):
         img = qr.make_image(fill='black', back_color='white')
         buffer = BytesIO()
         img.save(buffer, format="PNG")
-        self.qr_code.save(f'qr_code_{self.ticket.id}.png', File(buffer), save=False)
+
+        # Nom du fichier de QR code
+        filename = f'qr_code_{self.ticket.id}.png'
+        logger.info(f"Saving QR code to {filename}")
+
+        # Enregistrement du fichier dans le champ qr_code
+        self.qr_code.save(filename, File(buffer), save=False)
 
         super().save(*args, **kwargs)
 
