@@ -35,7 +35,7 @@ if DEBUG:
     ALLOWED_HOSTS = ['localhost', '127.0.0.1', '[::1]']
 else:
     SECRET_KEY = env('DJANGO_SECRET_KEY')
-    ALLOWED_HOSTS = env('DJANGO_ALLOWED_HOSTS', 'localhost').split(',')
+    ALLOWED_HOSTS = env.list('DJANGO_ALLOWED_HOSTS', default=['localhost'])
     
 
 # Application definition
