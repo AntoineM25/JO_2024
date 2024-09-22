@@ -103,7 +103,6 @@ python manage.py runserver
 -   Vues : Liste des tickets : Vérifie si la liste des tickets est correctement affichée pour un utilisateur connecté.
 -   Vues : Panier : Vérifie l'accès au panier, la mise à jour des quantités de tickets et la suppression des tickets du panier.
 -   Vues : Téléchargement de billet : Vérifie l'accès et le téléchargement des billets générés sous forme de fichier PDF avec le QR code.
--   En cours
 
 #### Exécution des Tests
 
