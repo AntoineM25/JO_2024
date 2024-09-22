@@ -12,7 +12,10 @@ from weasyprint import HTML
 import locale
 
 # Parametrage de la locale en français
-locale.setlocale(locale.LC_ALL, 'fr_FR.UTF-8')
+try:
+    locale.setlocale(locale.LC_ALL, 'fr_FR.UTF-8')
+except locale.Error:
+    locale.setlocale(locale.LC_ALL, 'C.UTF-8')
 
 # Création de 'home'
 def home(request):
