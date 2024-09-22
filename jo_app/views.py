@@ -15,7 +15,7 @@ import locale
 try:
     locale.setlocale(locale.LC_ALL, 'fr_FR.UTF-8')
 except locale.Error:
-    locale.setlocale(locale.LC_ALL, 'C.UTF-8')
+    locale.setlocale(locale.LC_ALL, '')
 
 # Création de 'home'
 def home(request):
