@@ -25,8 +25,8 @@
                                     {% endlocalize %}
                                     Date de l'événement : {{ billet.ticket.sport.date_evenement|date:"d/m/Y" }}<br>
                                 </p>
-                                <img src="{{ billet.qr_code_url }}" alt="QR Code" class="img-fluid" style="width: 150px; height: 150px;">
-                                <p>Code URL : {{ billet.qr_code_url }}</p>
+                                <img src="{{ billet.qr_code.url }}" alt="QR Code" class="img-fluid" style="width: 150px; height: 150px;">
+                                <p>Code URL : {{ billet.qr_code.url }}</p>
                             </div>
                             <a href="{% url 'telecharger_billet' billet.id %}" class="btn btn-dark">Télécharger le billet</a>
                         </div>

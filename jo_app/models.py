@@ -129,57 +129,6 @@ class Paiement(models.Model):
 
 
 # Modèle generation_ticket
-
-
-
-
-
-# # Client ID Imgur
-# CLIENT_ID = 'a77c39804471c6e'
-
-# logger = logging.getLogger(__name__)
-
-# class GenerationTicket(models.Model):
-#     ticket = models.ForeignKey('Ticket', on_delete=models.CASCADE, related_name="generation_tickets")
-#     qr_code_url = models.URLField(blank=True)  # Remplace ImageField par un URLField pour l'URL d'Imgur
-#     cle_securisee_2 = models.CharField(max_length=64, blank=True, editable=False)
-#     quantite_vendue = models.IntegerField(default=0)
-#     date_generation = models.DateTimeField(default=timezone.now)
-
-#     def save(self, *args, **kwargs):
-#         if not self.cle_securisee_2:
-#             self.cle_securisee_2 = secrets.token_hex(32)
-
-#         # Concaténation des clés sécurisées 1 et 2
-#         cle_finale = f"{self.ticket.utilisateur.cle_securisee_1}{self.cle_securisee_2}"
-
-#         # Génération du QR Code
-#         qr = qrcode.QRCode(version=1, box_size=10, border=5)
-#         qr.add_data(cle_finale)
-#         qr.make(fit=True)
-
-#         # Sauvegarde du QR code dans un buffer
-#         img = qr.make_image(fill='black', back_color='white')
-#         buffer = BytesIO()
-#         img.save(buffer, format="PNG")
-#         buffer.seek(0)  # Réinitialise le pointeur du buffer
-
-#         # Connexion à Imgur et upload du QR code
-#         im = pyimgur.Imgur(CLIENT_ID)
-#         uploaded_image = im.upload_image(buffer, title=f"QR Code Ticket {self.ticket.id}")
-
-#         # Sauvegarde de l'URL d'Imgur dans le champ qr_code_url
-#         self.qr_code_url = uploaded_image.link
-
-#         # Log pour le débogage
-#         logger.info(f"QR Code uploaded to Imgur: {self.qr_code_url}")
-
-#         super().save(*args, **kwargs)
-
-#     def __str__(self):
-#         return f"{self.ticket} - {self.date_generation}"
-
-
 class GenerationTicket(models.Model):
     ticket = models.ForeignKey('Ticket', on_delete=models.CASCADE, related_name="generation_tickets")
     qr_code = models.ImageField(blank=True, upload_to='qr_codes/')
