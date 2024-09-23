@@ -182,7 +182,7 @@ class Paiement(models.Model):
 
 class GenerationTicket(models.Model):
     ticket = models.ForeignKey('Ticket', on_delete=models.CASCADE, related_name="generation_tickets")
-    qr_code = models.ImageField(blank=True)
+    qr_code = models.ImageField(blank=True, upload_to='qr_codes/')
     cle_securisee_2 = models.CharField(max_length=64, blank=True, editable=False)
     quantite_vendue = models.IntegerField(default=0)
     date_generation = models.DateTimeField(auto_now_add=True)
@@ -203,8 +203,7 @@ class GenerationTicket(models.Model):
         img.save(buffer, format="PNG")
         buffer.seek(0)
 
-        # Upload de l'image QR code vers Cloudinary
-        response = cloudinary.uploader.upload(buffer, folder="qr_codes")
-        self.qr_code = response['secure_url']
+         # Utiliser ImageField pour sauvegarder le fichier sur Cloudinary
+        self.qr_code.save(f'qr_code_{self.ticket.id}.png', File(buffer), save=False)
 
         super().save(*args, **kwargs)

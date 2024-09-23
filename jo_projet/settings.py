@@ -11,8 +11,9 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
 from pathlib import Path
-import os, environ, cloudinary,cloudinary.uploader,cloudinary.api
-# from cloudinary_storage.storage import MediaCloudinaryStorage, CloudinaryStorage
+# import os, environ, cloudinary,cloudinary.uploader,cloudinary.api
+import os, environ
+
 
 # Initialize environment variables
 env = environ.Env(
@@ -45,22 +46,11 @@ INSTALLED_APPS = [
     "django.contrib.contenttypes",
     "django.contrib.sessions",
     "django.contrib.messages",
+    "cloudinary_storage",
     "django.contrib.staticfiles",
     "jo_app",
-    'cloudinary',
-    'cloudinary_storage',
+    "cloudinary",
 ]
-
-# Configurer Cloudinary
-CLOUDINARY_STORAGE = {
-    'CLOUD_NAME': 'dugtndap',  
-    'API_KEY': '128369441933595', 
-    'API_SECRET': 'Tn8xdE5nhRpP-kAOGC-lMJiILhY',  
-}
-
-DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
-
-
 
 MIDDLEWARE = [
     'whitenoise.middleware.WhiteNoiseMiddleware',
@@ -166,7 +156,21 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 if not DEBUG:
-    STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+    # STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+    STATICFILES_STORAGE = 'cloudinary_storage.storage.StaticHashedCloudinaryStorage'
+    DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+
+
+# # Configurer Cloudinary
+# CLOUDINARY_STORAGE = {
+#     'CLOUD_NAME': 'dugtndap',  
+#     'API_KEY': '128369441933595', 
+#     'API_SECRET': 'Tn8xdE5nhRpP-kAOGC-lMJiILhY',  
+# }
+
+# DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+
+
 
 
 # Default primary key field type

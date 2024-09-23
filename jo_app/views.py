@@ -248,7 +248,8 @@ def mes_commandes_view(request):
 def telecharger_billet_view(request, billet_id):
     billet = get_object_or_404(GenerationTicket, id=billet_id, ticket__utilisateur=request.user)
     nom_fichier = f"Billet_{billet.ticket.sport.nom}_{billet.ticket.utilisateur.prenom}_{billet.ticket.utilisateur.nom}.pdf"
-    qr_code_url = request.build_absolute_uri(billet.qr_code.url)
+    # qr_code_url = request.build_absolute_url(billet.qr_code.url)
+    qr_code_url = billet.qr_code.url  
     offre_formate = f"{billet.ticket.offre.type} - {locale.format_string('%.2f', billet.ticket.offre.prix, grouping=True)} €"
     html_string = render(request, 'billet_pdf.html', {'billet': billet, 'qr_code_url': qr_code_url, 'offre_formate': offre_formate}).content.decode('utf-8')
     html = HTML(string=html_string)
