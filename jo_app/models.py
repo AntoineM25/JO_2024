@@ -139,7 +139,7 @@ class GenerationTicket(models.Model):
     cle_securisee_2 = models.CharField(max_length=64, blank=True, editable=False)
     quantite_vendue = models.IntegerField(default=0)
     date_generation = models.DateTimeField(auto_now_add=True)
-    qr_code = CloudinaryField('image', blank=True)
+    qr_code = models.ImageField('image', blank=True)
 
     def save(self, *args, **kwargs):
         if not self.cle_securisee_2:
