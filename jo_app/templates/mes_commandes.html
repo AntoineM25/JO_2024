@@ -26,7 +26,6 @@
                                     Date de l'événement : {{ billet.ticket.sport.date_evenement|date:"d/m/Y" }}<br>
                                 </p>
                                 <img src="https://res.cloudinary.com/{{ CLOUDINARY_CLOUD_NAME }}/image/upload/qr_codes/{{ billet.qr_code }}.png" alt="QR Code" class="img-fluid" style="width: 150px; height: 150px;">
-                                <p>Code URL : https://res.cloudinary.com/{{ CLOUDINARY_CLOUD_NAME }}/image/upload/qr_codes/{{ billet.qr_code }}.png</p>
                             </div>
                             <a href="{% url 'telecharger_billet' billet.id %}" class="btn btn-dark">Télécharger le billet</a>
                         </div>
