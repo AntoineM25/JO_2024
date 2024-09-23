@@ -149,18 +149,22 @@ class GenerationTicket(models.Model):
             self.cle_securisee_2 = secrets.token_hex(32)
 
         cle_finale = f"{self.ticket.utilisateur.cle_securisee_1}{self.cle_securisee_2}"
+        print(f"Generating QR code with data: {cle_finale}")
 
         # Génération du QR code
         qr = qrcode.QRCode(version=1, box_size=10, border=5)
         qr.add_data(cle_finale)
         qr.make(fit=True)
+        print("QR code generated successfully.")
 
         img = qr.make_image(fill='black', back_color='white')
         buffer = BytesIO()
         img.save(buffer, format="PNG")
         buffer.seek(0)
+        print("QR code image saved to buffer.")
 
          # Sauvegarder le fichier sur Cloudinary
-        self.qr_code.save(None, ContentFile(buffer.getvalue()), save=False)
+        self.qr_code.save(f'qr_code_{self.ticket.id}.png', ContentFile(buffer), save=False)
+        print("QR code successfully uploaded to Cloudinary.")
 
         super().save(*args, **kwargs)
