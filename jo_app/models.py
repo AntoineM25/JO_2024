@@ -4,7 +4,7 @@ from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, Permis
 from django.core.exceptions import ValidationError
 from django.core.files import File
 from io import BytesIO
-import secrets, re, qrcode, pyimgur, os, logging, cloudinary.uploader
+import secrets, re, qrcode, os, logging, cloudinary.uploader
 
 
 

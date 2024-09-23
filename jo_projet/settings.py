@@ -12,7 +12,7 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 
 from pathlib import Path
 import os, environ, cloudinary,cloudinary.uploader,cloudinary.api
-from cloudinary_storage.storage import MediaCloudinaryStorage, CloudinaryStorage
+# from cloudinary_storage.storage import MediaCloudinaryStorage, CloudinaryStorage
 
 # Initialize environment variables
 env = environ.Env(
