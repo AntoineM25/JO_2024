@@ -13,12 +13,18 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 from pathlib import Path
 import os, environ, cloudinary, cloudinary.uploader, cloudinary.api
 
+# cloudinary.config(
+#     cloud_name=os.getenv('dugtndapo'),
+#     api_key=os.getenv('128369441933595'),
+#     api_secret=os.getenv('Tn8xdE5nhRpP-kAOGC-lMJiILhY'),
+#     secure=True,
+#     logging_level='DEBUG'
+# )
 cloudinary.config(
-    cloud_name=os.getenv('dugtndapo'),
-    api_key=os.getenv('128369441933595'),
-    api_secret=os.getenv('Tn8xdE5nhRpP-kAOGC-lMJiILhY'),
-    secure=True,
-    logging_level='DEBUG'
+    cloud_name=os.getenv('CLOUDINARY_CLOUD_NAME'),
+    api_key=os.getenv('CLOUDINARY_API_KEY'),
+    api_secret=os.getenv('CLOUDINARY_API_SECRET'),
+    secure=True
 )
 
 # Initialize environment variables
@@ -115,6 +121,10 @@ else:
             'PORT': os.getenv('DJANGO_DB_PORT', default='3306'),
         }
     }
+
+# Vérifier que les variables d'environnement critiques sont définies
+    if not all([os.getenv('DJANGO_DB_NAME'), os.getenv('DJANGO_DB_USER'), os.getenv('DJANGO_DB_PASSWORD'), os.getenv('DJANGO_DB_HOST')]):
+        raise ValueError("Les variables d'environnement de la base de données ne sont pas toutes définies en production.")
 
 
 # Password validation
