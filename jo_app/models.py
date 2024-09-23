@@ -139,12 +139,7 @@ class GenerationTicket(models.Model):
     cle_securisee_2 = models.CharField(max_length=64, blank=True, editable=False)
     quantite_vendue = models.IntegerField(default=0)
     date_generation = models.DateTimeField(auto_now_add=True)
-    # Choix du type de champ si en développement ou en production
-    if settings.DEBUG:  # développement
-        qr_code = models.ImageField(blank=True, upload_to='qr_codes/')
-    else: # production
-        from cloudinary.models import CloudinaryField
-        qr_code = CloudinaryField('image', blank=True)
+    qr_code = CloudinaryField('image', blank=True)
 
     def save(self, *args, **kwargs):
         if not self.cle_securisee_2:
