@@ -14,9 +14,9 @@ from pathlib import Path
 import os, environ, cloudinary
 
 cloudinary.config(
-    cloud_name=os.getenv('CLOUDINARY_CLOUD_NAME'),
-    api_key=os.getenv('CLOUDINARY_API_KEY'),
-    api_secret=os.getenv('CLOUDINARY_API_SECRET'),
+    cloud_name=os.getenv('dugtndapo'),
+    api_key=os.getenv('128369441933595'),
+    api_secret=os.getenv('Tn8xdE5nhRpP-kAOGC-lMJiILhY'),
     secure=True,
     logging_level='DEBUG'
 )
