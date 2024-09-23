@@ -10,6 +10,7 @@ from django.template.loader import render_to_string
 from django.db.models import Count, Sum, F
 from weasyprint import HTML
 import locale
+from django.conf import settings
 
 # Parametrage de la locale en français
 try:
@@ -241,7 +242,7 @@ def mes_commandes_view(request):
     tickets = Ticket.objects.filter(utilisateur=utilisateur, est_achete=True)  # Filtrer uniquement les tickets achetés
     billets = GenerationTicket.objects.filter(ticket__utilisateur=utilisateur)
     
-    return render(request, 'mes_commandes.html', {'tickets': tickets, 'billets': billets})
+    return render(request, 'mes_commandes.html', {'tickets': tickets, 'billets': billets, 'CLOUDINARY_CLOUD_NAME': settings.CLOUDINARY_CLOUD_NAME})
 
 # Vue pour télécharger le billet en PDF
 @login_required(login_url='connexion')
