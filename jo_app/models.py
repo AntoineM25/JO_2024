@@ -134,42 +134,78 @@ class Paiement(models.Model):
 
 
 # Modèle generation_ticket
+# class GenerationTicket(models.Model):
+#     ticket = models.ForeignKey('Ticket', on_delete=models.CASCADE, related_name="generation_tickets")
+#     cle_securisee_2 = models.CharField(max_length=64, blank=True, editable=False)
+#     quantite_vendue = models.IntegerField(default=0)
+#     date_generation = models.DateTimeField(auto_now_add=True)
+#     qr_code = models.ImageField('image', blank=True)
+
+#     def save(self, *args, **kwargs):
+#         if not self.cle_securisee_2:
+#             self.cle_securisee_2 = secrets.token_hex(32)
+
+#         cle_finale = f"{self.ticket.utilisateur.cle_securisee_1}{self.cle_securisee_2}"
+#         print(f"Generating QR code with data: {cle_finale}")
+
+#         # Génération du QR code
+#         qr = qrcode.QRCode(version=1, box_size=10, border=5)
+#         qr.add_data(cle_finale)
+#         qr.make(fit=True)
+#         print("QR code generated successfully.")
+
+#         img = qr.make_image(fill='black', back_color='white')
+#         buffer = BytesIO()
+#         img.save(buffer, format="PNG")
+#         buffer.seek(0)
+#         print("QR code image saved to buffer.")
+
+#         try:
+#             # Sauvegarder le fichier sur Cloudinary
+#             # self.qr_code.save(f'qr_code_{self.ticket.id}.png', ContentFile(buffer.getvalue()), save=False)
+#             nom_fichier = f'qr_code_{self.ticket.id}.png'
+#             contenu_fichier = ContentFile(buffer.getvalue(), name=nom_fichier)
+#             self.qr_code = contenu_fichier
+#             print("QR code successfully uploaded to Cloudinary.")
+#         except Exception as e:
+#             logger.error(f"Error saving QR code to Cloudinary: {str(e)}")
+#             traceback.print_exc()  # This will print the full error traceback to the logs
+#             raise e  # Re-raise the exception to see it in the Heroku logs
+
+#         super().save(*args, **kwargs)
+
 class GenerationTicket(models.Model):
     ticket = models.ForeignKey('Ticket', on_delete=models.CASCADE, related_name="generation_tickets")
     cle_securisee_2 = models.CharField(max_length=64, blank=True, editable=False)
     quantite_vendue = models.IntegerField(default=0)
     date_generation = models.DateTimeField(auto_now_add=True)
-    qr_code = models.ImageField('image', blank=True)
+    qr_code = models.CharField(max_length=255, blank=True, null=True)  # Sauvegarde du public ID Cloudinary
 
     def save(self, *args, **kwargs):
+        # Générer une clé sécurisée si elle n'existe pas encore
         if not self.cle_securisee_2:
             self.cle_securisee_2 = secrets.token_hex(32)
 
         cle_finale = f"{self.ticket.utilisateur.cle_securisee_1}{self.cle_securisee_2}"
-        print(f"Generating QR code with data: {cle_finale}")
-
-        # Génération du QR code
+        
+        # Générer le QR code
         qr = qrcode.QRCode(version=1, box_size=10, border=5)
         qr.add_data(cle_finale)
         qr.make(fit=True)
-        print("QR code generated successfully.")
-
+        
         img = qr.make_image(fill='black', back_color='white')
         buffer = BytesIO()
         img.save(buffer, format="PNG")
         buffer.seek(0)
-        print("QR code image saved to buffer.")
 
+        # Essayer d'uploader le fichier vers Cloudinary
         try:
-            # Sauvegarder le fichier sur Cloudinary
-            # self.qr_code.save(f'qr_code_{self.ticket.id}.png', ContentFile(buffer.getvalue()), save=False)
-            nom_fichier = f'qr_code_{self.ticket.id}.png'
-            contenu_fichier = ContentFile(buffer.getvalue(), name=nom_fichier)
-            self.qr_code = contenu_fichier
-            print("QR code successfully uploaded to Cloudinary.")
+            result = cloudinary.uploader.upload(buffer, folder="qr_codes", public_id=f'qr_code_{self.ticket.id}')
+            # Stocker le public ID de Cloudinary dans le champ qr_code
+            self.qr_code = result['public_id']
         except Exception as e:
-            logger.error(f"Error saving QR code to Cloudinary: {str(e)}")
-            traceback.print_exc()  # This will print the full error traceback to the logs
-            raise e  # Re-raise the exception to see it in the Heroku logs
+            logger.error(f"Error uploading QR code to Cloudinary: {str(e)}")
+            traceback.print_exc()
+            raise e
 
         super().save(*args, **kwargs)
