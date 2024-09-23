@@ -8,6 +8,8 @@ from django.conf import settings
 from io import BytesIO
 import secrets, re, qrcode, os, logging, cloudinary.uploader
 from cloudinary.models import CloudinaryField
+from cloudinary.uploader import upload
+from cloudinary.exceptions import Error as CloudinaryError
 
 logger = logging.getLogger(__name__)
 
@@ -163,8 +165,12 @@ class GenerationTicket(models.Model):
         buffer.seek(0)
         print("QR code image saved to buffer.")
 
-         # Sauvegarder le fichier sur Cloudinary
-        self.qr_code.save(f'qr_code_{self.ticket.id}.png', ContentFile(buffer), save=False)
-        print("QR code successfully uploaded to Cloudinary.")
+        try:
+            # Sauvegarder le fichier sur Cloudinary
+            self.qr_code.save(f'qr_code_{self.ticket.id}.png', ContentFile(buffer), save=False)
+            print("QR code successfully uploaded to Cloudinary.")
+        except CloudinaryError as e:
+            print(f"Error saving QR code to Cloudinary: {e}")
+            raise e
 
         super().save(*args, **kwargs)
