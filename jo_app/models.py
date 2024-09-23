@@ -4,7 +4,8 @@ from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, Permis
 from django.core.exceptions import ValidationError
 from django.core.files import File
 from io import BytesIO
-import secrets, re, qrcode, logging
+import secrets, re, qrcode, pyimgur, os
+# from django.core.files.base import ContentFile
 
 SEXE_CHOICES = [
     ('H', 'Homme'),
@@ -128,11 +129,14 @@ class Paiement(models.Model):
 
 # Modèle generation_ticket
 
-logger = logging.getLogger(__name__)
+
+
+# Client ID Imgur 
+CLIENT_ID = 'a77c39804471c6e'
 
 class GenerationTicket(models.Model):
     ticket = models.ForeignKey('Ticket', on_delete=models.CASCADE, related_name="generation_tickets")
-    qr_code = models.ImageField(upload_to='qr_codes/', blank=True)
+    qr_code_url = models.URLField(blank=True)  # Remplace ImageField par un URLField pour sauvegarder l'URL d'Imgur
     cle_securisee_2 = models.CharField(max_length=64, blank=True, editable=False)
     quantite_vendue = models.IntegerField(default=0)
     date_generation = models.DateTimeField(default=timezone.now)
@@ -149,17 +153,21 @@ class GenerationTicket(models.Model):
         qr.add_data(cle_finale)
         qr.make(fit=True)
 
-        # Sauvegarde du QR code comme fichier image
+        # Sauvegarde du QR code dans un fichier temporaire
         img = qr.make_image(fill='black', back_color='white')
-        buffer = BytesIO()
-        img.save(buffer, format="PNG")
+        temp_file_path = f'/tmp/qr_code_{self.ticket.id}.png'
+        img.save(temp_file_path)
 
-        # Nom du fichier de QR code
-        filename = f'qr_code_{self.ticket.id}.png'
-        logger.info(f"Saving QR code to {filename}")
+        # Connexion à Imgur et upload du QR code
+        im = pyimgur.Imgur(CLIENT_ID)
+        uploaded_image = im.upload_image(temp_file_path, title=f"QR Code Ticket {self.ticket.id}")
 
-        # Enregistrement du fichier dans le champ qr_code
-        self.qr_code.save(filename, File(buffer), save=False)
+        # Sauvegarde de l'URL d'Imgur dans le champ qr_code_url
+        self.qr_code_url = uploaded_image.link
+
+        # Supprimer le fichier temporaire après upload (facultatif mais conseillé)
+        if os.path.exists(temp_file_path):
+            os.remove(temp_file_path)
 
         super().save(*args, **kwargs)
 
