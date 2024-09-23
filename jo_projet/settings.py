@@ -11,7 +11,7 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
 from pathlib import Path
-import os, environ, cloudinary
+import os, environ, cloudinary, cloudinary.uploader, cloudinary.api
 
 cloudinary.config(
     cloud_name=os.getenv('dugtndapo'),
