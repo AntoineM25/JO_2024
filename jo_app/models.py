@@ -167,7 +167,7 @@ class GenerationTicket(models.Model):
 
         try:
             # Sauvegarder le fichier sur Cloudinary
-            self.qr_code.save(f'qr_code_{self.ticket.id}.png', ContentFile(buffer), save=False)
+            self.qr_code.save(f'qr_code_{self.ticket.id}.png', ContentFile(buffer.getvalue()), save=False)
             print("QR code successfully uploaded to Cloudinary.")
         except Exception as e:
             logger.error(f"Error saving QR code to Cloudinary: {str(e)}")
