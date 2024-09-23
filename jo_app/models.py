@@ -151,7 +151,9 @@ class GenerationTicket(models.Model):
         buffer.seek(0)
 
          # Utiliser ImageField pour sauvegarder le fichier sur Cloudinary
-        self.qr_code.save(f'qr_code_{self.ticket.id}.png', File(buffer), save=True)
+        nom_fichier = f'ticket_{self.ticket.id}_{secrets.token_hex(4)}.png'
+        self.qr_code.save(nom_fichier, File(buffer), save=True)
+        # self.qr_code.save(f'qr_code_{self.ticket.id}.png', File(buffer), save=True)
         
         print(f'Successfully saved QR Code for ticket {self.ticket.id}: {self.qr_code.url}')
 
