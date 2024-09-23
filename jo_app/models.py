@@ -6,7 +6,7 @@ from django.core.files import File
 from django.core.files.base import ContentFile
 from django.conf import settings
 from io import BytesIO
-import secrets, re, qrcode, os, logging, cloudinary.uploader
+import secrets, re, qrcode, os, logging, cloudinary.uploader, traceback
 from cloudinary.models import CloudinaryField
 from cloudinary.uploader import upload
 from cloudinary.exceptions import Error as CloudinaryError
@@ -169,8 +169,9 @@ class GenerationTicket(models.Model):
             # Sauvegarder le fichier sur Cloudinary
             self.qr_code.save(f'qr_code_{self.ticket.id}.png', ContentFile(buffer), save=False)
             print("QR code successfully uploaded to Cloudinary.")
-        except CloudinaryError as e:
-            print(f"Error saving QR code to Cloudinary: {e}")
-            raise e
+        except Exception as e:
+            logger.error(f"Error saving QR code to Cloudinary: {str(e)}")
+            traceback.print_exc()  # This will print the full error traceback to the logs
+            raise e  # Re-raise the exception to see it in the Heroku logs
 
         super().save(*args, **kwargs)
