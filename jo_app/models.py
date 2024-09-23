@@ -2,9 +2,11 @@ from django.db import models
 from django.utils import timezone
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 from django.core.exceptions import ValidationError
-from django.core.files import File
+from django.core.files import File, ContentFile
 from io import BytesIO
 import secrets, re, qrcode, os, logging, cloudinary.uploader
+
+logger = logging.getLogger(__name__)
 
 SEXE_CHOICES = [
     ('H', 'Homme'),
@@ -151,10 +153,21 @@ class GenerationTicket(models.Model):
         buffer.seek(0)
 
          # Utiliser ImageField pour sauvegarder le fichier sur Cloudinary
-        nom_fichier = f'ticket_{self.ticket.id}_{secrets.token_hex(4)}.png'
-        self.qr_code.save(nom_fichier, File(buffer), save=True)
+        self.qr_code.save(None, ContentFile(buffer.getvalue()), save=False)
+        # nom_fichier = f'ticket_{self.ticket.id}_{secrets.token_hex(4)}.png'
+        # self.qr_code.save(nom_fichier, File(buffer), save=True)
         # self.qr_code.save(f'qr_code_{self.ticket.id}.png', File(buffer), save=True)
         
+        if not self.qr_code:
+                raise ValueError("QR Code image was not saved to Cloudinary.")
+
+        logger.info(f"Successfully saved QR Code for ticket {self.ticket.id}: {self.qr_code.url}")
+        
         print(f'Successfully saved QR Code for ticket {self.ticket.id}: {self.qr_code.url}')
+        
+    # except Exception as e:
+    #     # Catch and log any error that occurs during the save process
+    #     logger.error(f"Error saving QR Code for ticket {self.ticket.id}: {str(e)}")
+    #     raise e
 
         super().save(*args, **kwargs)
