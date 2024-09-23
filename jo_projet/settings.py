@@ -11,7 +11,6 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
 from pathlib import Path
-# import os, environ, cloudinary,cloudinary.uploader,cloudinary.api
 import os, environ
 
 
@@ -53,7 +52,6 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
-    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -156,21 +154,8 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 if not DEBUG:
-    # STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
     STATICFILES_STORAGE = 'cloudinary_storage.storage.StaticHashedCloudinaryStorage'
     DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
-
-
-# # Configurer Cloudinary
-# CLOUDINARY_STORAGE = {
-#     'CLOUD_NAME': 'dugtndap',  
-#     'API_KEY': '128369441933595', 
-#     'API_SECRET': 'Tn8xdE5nhRpP-kAOGC-lMJiILhY',  
-# }
-
-# DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
-
-
 
 
 # Default primary key field type
@@ -190,14 +175,3 @@ SESSION_SAVE_EVERY_REQUEST = True
 CSRF_COOKIE_SECURE = not DEBUG
 CSRF_COOKIE_HTTPONLY = True
 CSRF_COOKIE_SAMESITE = 'Lax'
-
-# #Configurer Django pour utiliser S3
-# DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
-# AWS_ACCESS_KEY_ID = env('AWS_ACCESS_KEY_ID')
-# AWS_SECRET_ACCESS_KEY = env('AWS_SECRET_ACCESS_KEY')
-# AWS_STORAGE_BUCKET_NAME = 'nom-du-bucket'
-# AWS_S3_FILE_OVERWRITE = False
-# AWS_DEFAULT_ACL = None
-# AWS_S3_REGION_NAME = 'eu-west-1'  # Région S3, adapte-la selon ta configuration
-# AWS_QUERYSTRING_AUTH = False
-
