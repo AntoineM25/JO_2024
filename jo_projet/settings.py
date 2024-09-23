@@ -11,9 +11,8 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
 from pathlib import Path
-import os
-import environ
-
+import os, environ, cloudinary,cloudinary.uploader,cloudinary.api
+from cloudinary_storage.storage import MediaCloudinaryStorage, CloudinaryStorage
 
 # Initialize environment variables
 env = environ.Env(
@@ -48,7 +47,20 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "jo_app",
+    'cloudinary',
+    'cloudinary_storage',
 ]
+
+# Configurer Cloudinary
+CLOUDINARY_STORAGE = {
+    'CLOUD_NAME': 'dugtndap',  
+    'API_KEY': '128369441933595', 
+    'API_SECRET': 'Tn8xdE5nhRpP-kAOGC-lMJiILhY',  
+}
+
+DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+
+
 
 MIDDLEWARE = [
     'whitenoise.middleware.WhiteNoiseMiddleware',
