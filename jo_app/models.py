@@ -6,8 +6,6 @@ from django.core.files import File
 from io import BytesIO
 import secrets, re, qrcode, os, logging, cloudinary.uploader
 
-
-
 SEXE_CHOICES = [
     ('H', 'Homme'),
     ('F', 'Femme'),
@@ -154,5 +152,7 @@ class GenerationTicket(models.Model):
 
          # Utiliser ImageField pour sauvegarder le fichier sur Cloudinary
         self.qr_code.save(f'qr_code_{self.ticket.id}.png', File(buffer), save=False)
+        
+        print(f'Successfully saved QR Code for ticket {self.ticket.id}: {self.qr_code.url}')
 
         super().save(*args, **kwargs)
