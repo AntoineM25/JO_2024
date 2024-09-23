@@ -4,8 +4,10 @@ from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, Permis
 from django.core.exceptions import ValidationError
 from django.core.files import File
 from django.core.files.base import ContentFile
+from django.conf import settings
 from io import BytesIO
 import secrets, re, qrcode, os, logging, cloudinary.uploader
+from cloudinary.models import CloudinaryField
 
 logger = logging.getLogger(__name__)
 
@@ -132,10 +134,15 @@ class Paiement(models.Model):
 # Modèle generation_ticket
 class GenerationTicket(models.Model):
     ticket = models.ForeignKey('Ticket', on_delete=models.CASCADE, related_name="generation_tickets")
-    qr_code = models.ImageField(blank=True, upload_to='qr_codes/')
     cle_securisee_2 = models.CharField(max_length=64, blank=True, editable=False)
     quantite_vendue = models.IntegerField(default=0)
     date_generation = models.DateTimeField(auto_now_add=True)
+    # Choix du type de champ si en développement ou en production
+    if settings.DEBUG:  # développement
+        qr_code = models.ImageField(blank=True, upload_to='qr_codes/')
+    else: # production
+        from cloudinary.models import CloudinaryField
+        qr_code = CloudinaryField('image', blank=True)
 
     def save(self, *args, **kwargs):
         if not self.cle_securisee_2:
@@ -153,22 +160,7 @@ class GenerationTicket(models.Model):
         img.save(buffer, format="PNG")
         buffer.seek(0)
 
-         # Utiliser ImageField pour sauvegarder le fichier sur Cloudinary
+         # Sauvegarder le fichier sur Cloudinary
         self.qr_code.save(None, ContentFile(buffer.getvalue()), save=False)
-        # nom_fichier = f'ticket_{self.ticket.id}_{secrets.token_hex(4)}.png'
-        # self.qr_code.save(nom_fichier, File(buffer), save=True)
-        # self.qr_code.save(f'qr_code_{self.ticket.id}.png', File(buffer), save=True)
-        
-        if not self.qr_code:
-                raise ValueError("QR Code image was not saved to Cloudinary.")
-
-        logger.info(f"Successfully saved QR Code for ticket {self.ticket.id}: {self.qr_code.url}")
-        
-        print(f'Successfully saved QR Code for ticket {self.ticket.id}: {self.qr_code.url}')
-        
-    # except Exception as e:
-    #     # Catch and log any error that occurs during the save process
-    #     logger.error(f"Error saving QR Code for ticket {self.ticket.id}: {str(e)}")
-    #     raise e
 
         super().save(*args, **kwargs)
