@@ -97,17 +97,17 @@ python manage.py runserver
 - **Modèles : Création d'un sport** : Vérifie la création d'un sport et la cohérence de ses attributs.
 - **Modèles : Paiement** : Vérifie la création d'un paiement et que le statut du paiement soit correctement enregistré.
 - **Modèles : Génération d'un ticket** : Vérification de la concaténation des clés sécurisées dans les QR codes.
--   Fonction : Validation du mot de passe : Vérifie que la validation du mot de passe impose un mot de passe de 8 caractères minimum, avec au moins une majuscule et un caractère spécial.
--   Formulaires : Inscription d'un utilisateur : Vérifie que le formulaire d'inscription d'un utilisateur est valide avec des données correctes et que les mots de passe sont vérifiés et hashés correctement.
--   Formulaires : Création d'un ticket : Vérifie si le formulaire de création de ticket initialise correctement les valeurs et valide les entrées utilisateur.
--   Formulaires : Paiement : Vérifie si le formulaire de paiement accepte des données valides et vérifie les choix de méthode de paiement.
--   Formulaires : Connexion : Teste la validation du formulaire de connexion avec des données valides et invalides.
--   Vues : Affichage de la page d'accueil : Vérifie que la page d'accueil est accessible et qu'elle utilise le bon template.
--   Vues : Inscription d'un utilisateur : Vérifie que l'utilisateur peut s'inscrire et qu'il est redirigé vers la page de connexion après une inscription réussie.
--   Vues : Création d'un ticket : Teste si un utilisateur connecté peut accéder à la vue de création de ticket et créer un ticket avec des données valides.
--   Vues : Liste des tickets : Vérifie si la liste des tickets est correctement affichée pour un utilisateur connecté.
--   Vues : Panier : Vérifie l'accès au panier, la mise à jour des quantités de tickets et la suppression des tickets du panier.
--   Vues : Téléchargement de billet : Vérifie l'accès et le téléchargement des billets générés sous forme de fichier PDF avec le QR code.
+- **Fonction : Validation du mot de passe** : Vérifie que la validation du mot de passe impose un mot de passe de 8 caractères minimum, avec au moins une majuscule et un caractère spécial.
+- **Formulaires : Inscription d'un utilisateur** : Vérifie que le formulaire d'inscription d'un utilisateur est valide avec des données correctes et que les mots de passe sont vérifiés et hashés correctement.
+- **Formulaires : Création d'un ticket** : Vérifie si le formulaire de création de ticket initialise correctement les valeurs et valide les entrées utilisateur.
+- **Formulaires : Paiement** : Vérifie si le formulaire de paiement accepte des données valides et vérifie les choix de méthode de paiement.
+- **Formulaires : Connexion** : Teste la validation du formulaire de connexion avec des données valides et invalides.
+- **Vues : Affichage de la page d'accueil** : Vérifie que la page d'accueil est accessible et qu'elle utilise le bon template.
+- **Vues : Inscription d'un utilisateur** : Vérifie que l'utilisateur peut s'inscrire et qu'il est redirigé vers la page de connexion après une inscription réussie.
+- **Vues : Création d'un ticket** : Teste si un utilisateur connecté peut accéder à la vue de création de ticket et créer un ticket avec des données valides.
+- **Vues : Liste des tickets** : Vérifie si la liste des tickets est correctement affichée pour un utilisateur connecté.
+- **Vues : Panier** : Vérifie l'accès au panier, la mise à jour des quantités de tickets et la suppression des tickets du panier.
+- **Vues : Téléchargement de billet** : Vérifie l'accès et le téléchargement des billets générés sous forme de fichier PDF avec le QR code.
 
 #### Exécution des Tests
 
@@ -142,7 +142,7 @@ Destroying test database for alias 'default'...
 
 Ce bug a été résolu en ajoutant la validation du mot de passe lors de l'inscription dans le model Utilisateur et "clean_password1" dans le formulaire d'inscription.
 
-- Bug d'affichage des images dans la page Sport. Solution : ajout de {% load static %} dans le code
+- Bug d'affichage des images dans la page Sport. Solution : ajout de {% load static %} dans le code.
 
 ### ***Views***
 
@@ -152,11 +152,11 @@ Ce bug a été résolu en ajoutant la validation du mot de passe lors de l'inscr
 
 -   Problème de somme dans le Panier. Il y avait un doublon dans les calculs du prix des billets entre le "Model" et la "View". Solution : MAJ du model Ticket.
 
-## __Améliorations__
+-   Bug pour implementer la sauvegarde des QR code sur Cloudinary en production. Solution : changement du "ImageField" en "URLField".
 
-### ***Paiement***
+### ***Forms***
 
--   Pour ce rendu je suis parti sur une simulation de paiement pour une carte bancaire. Pour améliorer la partie Paiement du site, il serait intéressant d'ajouter les fonctionnalités pour Paypal et pour un Virement bancaire.
+-   Non prise en charge de la date au format français en production. Solution : Mise en place de "DATE_FORMAT = "d F Y"" dans settings.py, import de "localize" dans forms.py.
 
 ## __Technologies utilisées__
 
@@ -188,6 +188,13 @@ Ce bug a été résolu en ajoutant la validation du mot de passe lors de l'inscr
 
 ## __Améliorations futures__
 
--   Intégration des paiements via PayPal ou virement bancaire.
+-   Pour ce rendu je suis parti sur une simulation de paiement pour une carte bancaire. Pour améliorer la partie Paiement du site, il serait intéressant d'ajouter les fonctionnalités pour Paypal et pour un virement bancaire.
 -   Tests d'intégration supplémentaires pour les flux de paiement.
--   Amélioration de l'expérience utilisateur pour la gestion des billets.
+-   Mise en place d'un profil utilisateur pour qu'il puisse modifier ou supprimer ses données personnelles.
+-   Il serait intéressant de proposer un téléchargement du manuel d'utilisation via le site web.
+-   Mettre en place un système de single sign on pour se connecter (avec Google par exemple).
+
+## __Documentation supplémentaire__
+
+-   [Manuel utilisateur](MANUEL_UTILISATION_JO_2024.pdf) : Ce manuel explique en détail les étapes pour s'inscrire, réserver des billets, et utiliser les fonctionnalités principales du site.
+
