@@ -1,37 +1,44 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="card m-auto border-dark" style="max-width: 70%">
-    <div class="card-header text-center">
-        <h2>Bienvenue sur le site officiel des Jeux Olympiques Paris 2024 !</h2>
-    </div>
-    <div class="card-body d-flex flex-wrap justify-content-between">
-        <div class="card p-2 m-4">
-            <div class="row g-0">
-              <div class="col-md-4">
-                <img src="../static/images/jeux_olympiques_anciennes.png" class="img-fluid rounded" alt="Jeux olympiques en Grece antique">
-              </div>
-              <div class="col-md-8">
-                <div class="card-body mx-2">
-                  <h3 class="card-title mb-4">L'histoire des Jeux Olympiques depuis la Grece antique</h3>
-                  <p class="card-text">Les Jeux Olympiques Paris 2024 seront la 33e édition des Jeux Olympiques d'été de l'ère moderne. Ils se dérouleront du 26 juillet au 11 août 2024 à Paris, en France. C'est la troisième fois que la ville de Paris accueille cet événement mondial, après les éditions de 1900 et 1924. Pendant ces quelques semaines, la capitale française sera le théâtre d’exploits sportifs et de moments inoubliables, réunissant plus de 10 000 athlètes issus de plus de 200 pays. Paris 2024 s'est fixé pour objectif de proposer des Jeux durables et innovants, en mettant l'accent sur le respect de l'environnement et l'inclusion sociale. Les compétitions auront lieu dans des lieux emblématiques, tels que le Stade de France, le Grand Palais et même les bords de la Seine, offrant un mélange unique de patrimoine culturel et de modernité. Au-delà des performances sportives, ces Jeux seront l'occasion de promouvoir les valeurs universelles du sport, comme l’amitié, le respect et l’excellence. La fête s’annonce grandiose, avec des cérémonies d’ouverture et de clôture spectaculaires, et des millions de spectateurs attendus pour célébrer ensemble cet événement planétaire.</p>
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-12">
+            <div class="card border-dark">
+                <div class="card-header text-center">
+                    <h2>Bienvenue sur le site officiel des Jeux Olympiques Paris 2024 !</h2>
                 </div>
-              </div>
-            </div>
-          </div>
-          <div class="card p-2 m-4">
-            <div class="row g-0">
-              <div class="col-md-4">
-                <img src="../static/images/jeux_olympiques_modernes.png" class="img-fluid rounded" alt="Jeux olympiques modernes">
-              </div>
-              <div class="col-md-8">
-                <div class="card-body mx-2">
-                  <h3 class="card-title mb-4">L'histoire des Jeux Olympiques modernes</h3>
-                  <p class="card-text">Les Jeux Olympiques modernes, inspirés des jeux sportifs de la Grèce antique, ont été réintroduits en 1896 à Athènes, grâce à l'initiative visionnaire du Baron Pierre de Coubertin. Depuis lors, tous les quatre ans, les meilleurs athlètes du monde se rassemblent pour incarner l'esprit olympique, fondé sur le dépassement de soi, le fair-play et l'amitié entre les nations. Les premières éditions étaient modestes, mais le mouvement olympique a grandi pour devenir l'événement sportif le plus suivi de la planète. Aujourd’hui, les Jeux Olympiques sont bien plus qu’une simple compétition sportive : ils représentent une célébration de la diversité et de la fraternité mondiale. Paris, ville hôte en 1900 et 1924, se prépare à accueillir à nouveau les Jeux avec un programme riche et des innovations comme l’égalité de genre dans toutes les disciplines. Cette édition sera marquée par une volonté forte d'intégrer le sport dans le développement durable, en créant des infrastructures respectueuses de l’environnement et en encourageant la participation de tous. Paris 2024 sera l'occasion de célébrer le passé, de vivre pleinement le présent et de construire un futur harmonieux autour des valeurs olympiques.</p>
+                <div class="card-body px-4">
+                    <div class="card mb-4 p-3">
+                        <div class="row g-0">
+                            <div class="col-lg-4">
+                                <img src="../static/images/jeux_olympiques_anciennes.png" class="img-fluid w-100 rounded-start" alt="Jeux olympiques en Grece antique">
+                            </div>
+                            <div class="col-lg-8">
+                                <div class="card-body">
+                                    <h3 class="card-title">L'histoire des Jeux Olympiques depuis la Grèce antique</h3>
+                                    <p class="card-text">Les Jeux Olympiques Paris 2024 seront la 33e édition des Jeux Olympiques d'été de l'ère moderne. Ils se dérouleront du 26 juillet au 11 août 2024 à Paris, en France. C'est la troisième fois que la ville de Paris accueille cet événement mondial, après les éditions de 1900 et 1924. Pendant ces quelques semaines, la capitale française sera le théâtre d’exploits sportifs et de moments inoubliables, réunissant plus de 10 000 athlètes issus de plus de 200 pays. Paris 2024 s'est fixé pour objectif de proposer des Jeux durables et innovants, en mettant l'accent sur le respect de l'environnement et l'inclusion sociale. Les compétitions auront lieu dans des lieux emblématiques, tels que le Stade de France, le Grand Palais et même les bords de la Seine, offrant un mélange unique de patrimoine culturel et de modernité. Au-delà des performances sportives, ces Jeux seront l'occasion de promouvoir les valeurs universelles du sport, comme l’amitié, le respect et l’excellence. La fête s’annonce grandiose, avec des cérémonies d’ouverture et de clôture spectaculaires, et des millions de spectateurs attendus pour célébrer ensemble cet événement planétaire.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card p-3">
+                        <div class="row g-0">
+                            <div class="col-lg-4">
+                                <img src="../static/images/jeux_olympiques_modernes.png" class="img-fluid w-100 rounded-start" alt="Jeux olympiques modernes">
+                            </div>
+                            <div class="col-lg-8">
+                                <div class="card-body">
+                                    <h3 class="card-title">L'histoire des Jeux Olympiques modernes</h3>
+                                    <p class="card-text">Les Jeux Olympiques modernes, inspirés des jeux sportifs de la Grèce antique, ont été réintroduits en 1896 à Athènes, grâce à l'initiative visionnaire du Baron Pierre de Coubertin. Depuis lors, tous les quatre ans, les meilleurs athlètes du monde se rassemblent pour incarner l'esprit olympique, fondé sur le dépassement de soi, le fair-play et l'amitié entre les nations. Les premières éditions étaient modestes, mais le mouvement olympique a grandi pour devenir l'événement sportif le plus suivi de la planète. Aujourd’hui, les Jeux Olympiques sont bien plus qu’une simple compétition sportive : ils représentent une célébration de la diversité et de la fraternité mondiale. Paris, ville hôte en 1900 et 1924, se prépare à accueillir à nouveau les Jeux avec un programme riche et des innovations comme l’égalité de genre dans toutes les disciplines. Cette édition sera marquée par une volonté forte d'intégrer le sport dans le développement durable, en créant des infrastructures respectueuses de l’environnement et en encourageant la participation de tous. Paris 2024 sera l'occasion de célébrer le passé, de vivre pleinement le présent et de construire un futur harmonieux autour des valeurs olympiques.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-              </div>
             </div>
-          </div>
+        </div>
     </div>
 </div>
+
 {% endblock %}
