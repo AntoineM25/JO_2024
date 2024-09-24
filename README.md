@@ -83,10 +83,7 @@ python manage.py runserver
 ### ***Tests qualité du code***
 
 #### Tests avec pylint
--   Amélioration de la note du code sous pylint : Your code has been rated at 3.11/10 (previous run: 2.90/10, +0.21)
--   Amélioration de la note du code sous pylint : Your code has been rated at 3.20/10 (previous run: 3.11/10, +0.09)
--   Amélioration de la note du code sous pylint : Your code has been rated at 3.66/10 (previous run: 3.40/10, +0.25)
--   Amélioration de la note du code sous pylint : Your code has been rated at 3.97/10 (previous run: 3.72/10, +0.25)
+-   Amélioration de la note du code sous pylint avec l'implémentation des docstrings et filtres d'erreurs non pertinentes E1101.
 
 ### ***Tests unitaires***
 
@@ -183,4 +180,14 @@ Ce bug a été résolu en ajoutant la validation du mot de passe lors de l'inscr
 
 -   [Font Awesome](https://fontawesome.com/)
 -   [FontIcon](https://gauger.io/fonticon/)
--   [GPT image generator ](https://chatgpt.com/g/g-pmuQfob8d-image-generator)
+-   [GPT image generator](https://chatgpt.com/g/g-pmuQfob8d-image-generator)
+
+## __Contributeurs__
+
+-   [L'image](https://unsplash.com/fr/photos/photo-de-la-tour-eiffel-EQhpvZWdr5s) de font (Tour Eiffel) vient de Malgorzata Frej
+
+## __Améliorations futures__
+
+-   Intégration des paiements via PayPal ou virement bancaire.
+-   Tests d'intégration supplémentaires pour les flux de paiement.
+-   Amélioration de l'expérience utilisateur pour la gestion des billets.

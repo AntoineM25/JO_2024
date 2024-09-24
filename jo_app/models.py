@@ -98,11 +98,17 @@ class Utilisateur(AbstractBaseUser, PermissionsMixin):
     objects = UtilisateurManager()
 
     def save(self, *args, **kwargs):
+        """
+        Génère une clé sécurisée pour l'utilisateur s'il n'en a pas déjà une.
+        """
         if not self.cle_securisee_1:
             self.cle_securisee_1 = secrets.token_hex(32)
         super().save(*args, **kwargs)
 
     def __str__(self):
+        """
+        Retourne le nom complet de l'utilisateur.
+        """
         return f"{self.prenom} {self.nom}"
 
 
@@ -117,6 +123,9 @@ class Sport(models.Model):
     description = models.TextField(blank=True)
 
     def __str__(self):
+        """
+        Retourne le nom de l'événement sportif.
+        """
         return self.nom
 
 
@@ -129,6 +138,9 @@ class Offre(models.Model):
     prix = models.DecimalField(max_digits=10, decimal_places=2)
 
     def __str__(self):
+        """
+        Retourne le type et le prix de l'offre.
+        """
         return f"{self.type} - {self.prix}€"
 
 
@@ -146,9 +158,15 @@ class Ticket(models.Model):
     est_achete = models.BooleanField(default=False)
 
     def get_prix_total(self):
+        """
+        Retourne le prix total du ticket.
+        """
         return self.offre.prix * self.quantite
 
     def __str__(self):
+        """
+        Retourne une chaîne de caractères représentant le ticket.
+        """
         return f"{self.sport.nom} - {self.offre.type} - Quantité: {self.quantite}"
 
 
@@ -166,6 +184,9 @@ class Paiement(models.Model):
     date_paiement = models.DateTimeField(default=timezone.now)
 
     def __str__(self):
+        """
+        Retourne une chaîne de caractères représentant le
+        """
         return f"{self.ticket} - {self.montant} - {self.date_paiement}"
 
 
@@ -183,6 +204,9 @@ class GenerationTicket(models.Model):
     qr_code = models.URLField(max_length=500, blank=True, null=True)
 
     def save(self, *args, **kwargs):
+        """
+        Génère un QR code pour le ticket s'il n'en a pas déjà un.
+        """
         if not self.cle_securisee_2:
             self.cle_securisee_2 = secrets.token_hex(32)
 

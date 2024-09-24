@@ -89,6 +89,9 @@ class UtilisateurForm(forms.ModelForm):
         }
 
     def clean_password1(self):
+        """
+        Vérifie que le mot de passe respecte les critères de sécurité.
+        """
         password1 = self.cleaned_data.get("password1")
         try:
             validate_password(password1)
@@ -97,6 +100,9 @@ class UtilisateurForm(forms.ModelForm):
         return password1
 
     def clean(self):
+        """
+        Vérifie que les mots de passe correspondent.
+        """
         cleaned_data = super().clean()
         password1 = cleaned_data.get("password1")
         password2 = cleaned_data.get("password2")
@@ -107,6 +113,9 @@ class UtilisateurForm(forms.ModelForm):
         return cleaned_data
 
     def save(self, commit=True):
+        """
+        Enregistre l'utilisateur dans la base de données.
+        """
         user = super().save(commit=False)
         user.set_password(self.cleaned_data["password1"])
         if commit:
@@ -120,6 +129,10 @@ class TicketForm(forms.ModelForm):
     """
 
     class Meta:
+        """
+        Classe Meta pour le formulaire TicketForm.
+        """
+
         model = Ticket
         fields = ["offre", "sport"]
         labels = {
@@ -132,6 +145,9 @@ class TicketForm(forms.ModelForm):
         }
 
     def __init__(self, *args, **kwargs):
+        """
+        Initialise les champs du formulaire avec les offres et les sports disponibles.
+        """
         super().__init__(*args, **kwargs)
         self.fields["sport"].choices = [("", "Choisissez votre sport !")] + [
             (sport.id, f"{sport.nom} - {sport.date_evenement}")
@@ -162,6 +178,10 @@ class PaiementForm(forms.ModelForm):
     )
 
     class Meta:
+        """
+        Classe Meta pour le formulaire PaiementForm.
+        """
+
         model = Paiement
         fields = ["ticket", "montant", "methode_paiement"]
         labels = {
