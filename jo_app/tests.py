@@ -6,16 +6,23 @@ from django.core.exceptions import ValidationError
 from django.test import TestCase
 from django.urls import reverse
 
-from jo_app.models import (GenerationTicket, Offre, Paiement, Sport, Ticket,
-                           Utilisateur, validate_password)
+from jo_app.models import (
+    GenerationTicket,
+    Offre,
+    Paiement,
+    Sport,
+    Ticket,
+    Utilisateur,
+    validate_password,
+)
 
 from .forms import ConnexionForm, PaiementForm, TicketForm, UtilisateurForm
 
-## TEST DES MODELS ##
 
-
-# Test du modèle Utilisateur
 class UtilisateurModelTest(TestCase):
+    """
+    Test du modèle Utilisateur.
+    """
 
     def setUp(self):
         self.utilisateur = Utilisateur.objects.create(
@@ -71,8 +78,10 @@ class UtilisateurModelTest(TestCase):
             self.fail(f"Le mot de passe n'a pas été validé correctement: {e}")
 
 
-# Test du modèle Ticket
 class TicketModelTest(TestCase):
+    """
+    Test du modèle Ticket.
+    """
 
     def setUp(self):
         self.utilisateur = Utilisateur.objects.create(
@@ -106,8 +115,10 @@ class TicketModelTest(TestCase):
         self.assertEqual(ticket.get_prix_total(), 60.00)
 
 
-# Test du modèle Sport
 class SportModelTest(TestCase):
+    """
+    Test du modèle Sport.
+    """
 
     def setUp(self):
         self.sport = Sport.objects.create(
@@ -127,8 +138,10 @@ class SportModelTest(TestCase):
         self.assertEqual(str(self.sport), "Natation")
 
 
-# Test du modèle Paiement
 class PaiementModelTest(TestCase):
+    """
+    Test du modèle Paiement.
+    """
 
     def setUp(self):
         self.utilisateur = Utilisateur.objects.create(
@@ -174,6 +187,9 @@ class PaiementModelTest(TestCase):
 
 
 class GenerationTicketModelTest(TestCase):
+    """
+    Test du modèle GenerationTicket.
+    """
 
     def setUp(self):
         self.utilisateur = Utilisateur.objects.create(
@@ -208,8 +224,10 @@ class GenerationTicketModelTest(TestCase):
         )
 
 
-# Test de la fonction de validation du mot de passe
 class PasswordValidationTest(TestCase):
+    """
+    Test de la fonction de validation du mot de passe.
+    """
 
     def test_password_too_short(self):
         with self.assertRaises(ValidationError) as cm:
@@ -244,8 +262,10 @@ class PasswordValidationTest(TestCase):
             )
 
 
-# Test du modèle Offre
 class OffreModelTest(TestCase):
+    """
+    Test du modèle Offre.
+    """
 
     def setUp(self):
         self.offre = Offre.objects.create(type="Famille", prix=Decimal("49.99"))
@@ -256,21 +276,22 @@ class OffreModelTest(TestCase):
         self.assertEqual(offre.prix, Decimal("49.99"))
 
 
-## Test des vues ##
-
-
-# Test de la vue home
 class HomeViewTest(TestCase):
+    """
+    Test de la vue home.
+    """
+
     def test_home_view(self):
-        response = self.client.get(
-            reverse("home")
-        )  # Assurez-vous d'avoir le bon nom d'URL
+        response = self.client.get(reverse("home"))
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, "home.html")
 
 
-# Test de la vue inscription
 class InscriptionViewTest(TestCase):
+    """
+    Test de la vue d'inscription.
+    """
+
     def test_inscription_view(self):
         response = self.client.get(reverse("inscription"))
         self.assertEqual(response.status_code, 200)
@@ -298,8 +319,10 @@ class InscriptionViewTest(TestCase):
         )
 
 
-# Test de la vue ticket (création ticket)
 class TicketCreateViewTest(TestCase):
+    """
+    Test de la vue de création de ticket.
+    """
 
     def setUp(self):
         self.utilisateur = Utilisateur.objects.create_user(
@@ -342,8 +365,11 @@ class TicketCreateViewTest(TestCase):
         self.assertEqual(ticket.quantite, 1)
 
 
-# Test de la vue ticket (liste ticket)
 class TicketListViewTest(TestCase):
+    """
+    Test de la vue de la liste des tickets.
+    """
+
     def setUp(self):
         self.utilisateur = Utilisateur.objects.create_user(
             email="gilles.dupont@exemple.com",
@@ -366,8 +392,11 @@ class TicketListViewTest(TestCase):
         self.assertContains(response, "Football")
 
 
-# Test de la vue du panier
 class PanierViewTest(TestCase):
+    """
+    Test de la vue du panier.
+    """
+
     def setUp(self):
         self.utilisateur = Utilisateur.objects.create_user(
             email="gilles.dupont@exemple.com",
@@ -410,8 +439,11 @@ class PanierViewTest(TestCase):
         self.assertNotEqual(self.ticket.quantite, -1)
 
 
-# Test de la vue pour le téléchargement du billet
 class TelechargerBilletViewTest(TestCase):
+    """
+    Test de la vue pour le téléchargement du billet.
+    """
+
     def setUp(self):
         self.utilisateur = Utilisateur.objects.create_user(
             email="gilles.dupont@exemple.com",
@@ -453,11 +485,10 @@ class TelechargerBilletViewTest(TestCase):
         self.assertEqual(response.status_code, 404)
 
 
-## Test des formulaires ##
-
-
-# Test du formulaire utilisateur
 class UtilisateurFormTest(TestCase):
+    """
+    Test du formulaire UtilisateurForm.
+    """
 
     def test_form_with_valid_data(self):
         form = UtilisateurForm(
@@ -513,8 +544,10 @@ class UtilisateurFormTest(TestCase):
         self.assertIn("password2", form.errors)
 
 
-# Test du formulaire ticket
 class TicketFormTest(TestCase):
+    """
+    Test du formulaire TicketForm.
+    """
 
     def setUp(self):
         self.offre = Offre.objects.create(type="Standard", prix=50.0)
@@ -544,8 +577,10 @@ class TicketFormTest(TestCase):
         )
 
 
-# Test du formulaire paiement
 class PaiementFormTest(TestCase):
+    """
+    Test du formulaire PaiementForm.
+    """
 
     def setUp(self):
         self.utilisateur = Utilisateur.objects.create_user(
@@ -592,8 +627,10 @@ class PaiementFormTest(TestCase):
         )
 
 
-# Test du formulaire de connexion
 class ConnexionFormTest(TestCase):
+    """
+    Test du formulaire ConnexionForm.
+    """
 
     def setUp(self):
         self.user = get_user_model().objects.create_user(

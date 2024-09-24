@@ -1,14 +1,20 @@
+"""
+Ce module gère les formulaires de l'application. Dont les formulaires UtilisateurForm, TicketForm, PaiementForm et ConnexionForm.
+"""
+
 from django import forms
 from django.contrib.auth.forms import AuthenticationForm
 from django.core.exceptions import ValidationError
 from django.utils import formats
 
-from .models import (Offre, Paiement, Sport, Ticket, Utilisateur,
-                     validate_password)
+from .models import Offre, Paiement, Sport, Ticket, Utilisateur, validate_password
 
 
-# Formulaire d'inscription
 class UtilisateurForm(forms.ModelForm):
+    """
+    Formulaire d'inscription pour créer un nouvel utilisateur.
+    """
+
     password1 = forms.CharField(
         label="Mot de passe",
         widget=forms.PasswordInput(
@@ -26,6 +32,10 @@ class UtilisateurForm(forms.ModelForm):
     )
 
     class Meta:
+        """
+        Classe Meta pour le formulaire UtilisateurForm.
+        """
+
         model = Utilisateur
         fields = [
             "nom",
@@ -104,8 +114,11 @@ class UtilisateurForm(forms.ModelForm):
         return user
 
 
-# Formulaire choix de ticket
 class TicketForm(forms.ModelForm):
+    """
+    Formulaire pour choisir un ticket.
+    """
+
     class Meta:
         model = Ticket
         fields = ["offre", "sport"]
@@ -131,8 +144,11 @@ class TicketForm(forms.ModelForm):
         ]
 
 
-# Formulaire du paiement
 class PaiementForm(forms.ModelForm):
+    """
+    Formulaire pour effectuer un paiement.
+    """
+
     METHODES_PAIEMENT_CHOICES = [
         ("carte", "Carte de crédit"),
         ("paypal", "PayPal"),
@@ -158,8 +174,11 @@ class PaiementForm(forms.ModelForm):
         }
 
 
-# Formulaire de connexion
 class ConnexionForm(AuthenticationForm):
+    """
+    Formulaire de connexion pour les utilisateurs existants.
+    """
+
     username = forms.EmailField(
         widget=forms.EmailInput(
             attrs={"class": "form-control", "placeholder": "Entrez votre adresse email"}

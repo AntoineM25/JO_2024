@@ -1,3 +1,8 @@
+"""
+Ce module contient les modèles de données de l'application. 
+Il contient les classes Utilisateur, Sport, Offre, Ticket, Paiement et GenerationTicket.
+"""
+
 import logging
 import os
 import re
@@ -7,8 +12,11 @@ from io import BytesIO
 
 import cloudinary.uploader
 import qrcode
-from django.contrib.auth.models import (AbstractBaseUser, BaseUserManager,
-                                        PermissionsMixin)
+from django.contrib.auth.models import (
+    AbstractBaseUser,
+    BaseUserManager,
+    PermissionsMixin,
+)
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils import timezone
@@ -22,8 +30,10 @@ SEXE_CHOICES = [
 ]
 
 
-# Fonction de validation du mot de passe
 def validate_password(value):
+    """
+    Ce validateur vérifie que le mot de passe contient au moins 8 caractères, une majuscule et un caractère spécial.
+    """
     if len(value) < 8:
         raise ValidationError("Le mot de passe doit contenir au moins 8 caractères.")
     if not re.search(r"[A-Z]", value):
@@ -34,19 +44,19 @@ def validate_password(value):
         )
 
 
-# Gestionnaire personnalisé d'utilisateur
 class UtilisateurManager(BaseUserManager):
     def create_user(self, email, nom, prenom, password=None, **extra_fields):
-        """Crée et enregistre un utilisateur normal."""
+        """
+        Crée et enregistre un utilisateur normal.
+        """
         if not email:
             raise ValueError("Les utilisateurs doivent avoir une adresse email")
         email = self.normalize_email(email)
         user = self.model(email=email, nom=nom, prenom=prenom, **extra_fields)
 
-        # Valider le mot de passe avant de le définir
         if password:
             validate_password(password)
-            user.set_password(password)  # Hacher le mot de passe
+            user.set_password(password)
         else:
             raise ValueError("Le mot de passe est obligatoire")
 
@@ -54,15 +64,20 @@ class UtilisateurManager(BaseUserManager):
         return user
 
     def create_superuser(self, email, nom, prenom, password=None, **extra_fields):
-        """Crée et enregistre un superutilisateur."""
+        """
+        Crée et enregistre un superutilisateur.
+        """
         extra_fields.setdefault("is_staff", True)
         extra_fields.setdefault("is_superuser", True)
 
         return self.create_user(email, nom, prenom, password, **extra_fields)
 
 
-# Modèle utilisateur
 class Utilisateur(AbstractBaseUser, PermissionsMixin):
+    """
+    Ce modèle représente un utilisateur de l'application.
+    """
+
     nom = models.CharField(max_length=50)
     prenom = models.CharField(max_length=50)
     sexe = models.CharField(max_length=5, choices=SEXE_CHOICES, default="H")
@@ -74,15 +89,12 @@ class Utilisateur(AbstractBaseUser, PermissionsMixin):
     date_d_inscription = models.DateField(auto_now_add=True)
     cle_securisee_1 = models.CharField(max_length=64, blank=True, editable=False)
 
-    # Champs nécessaires pour le système d'authentification
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
 
-    # Déclaration du champ utilisé pour la connexion
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = ["nom", "prenom"]
 
-    # Utilisation du manager personnalisé
     objects = UtilisateurManager()
 
     def save(self, *args, **kwargs):
@@ -94,11 +106,11 @@ class Utilisateur(AbstractBaseUser, PermissionsMixin):
         return f"{self.prenom} {self.nom}"
 
 
-# Modèle sport
-from django.db import models
-
-
 class Sport(models.Model):
+    """
+    Ce modèle représente un événement sportif.
+    """
+
     nom = models.CharField(max_length=100)
     date_evenement = models.DateField()
     image = models.ImageField(upload_to="images/sports/", blank=True)
@@ -108,8 +120,11 @@ class Sport(models.Model):
         return self.nom
 
 
-# Modèle offre
 class Offre(models.Model):
+    """
+    Ce modèle représente une offre de ticket pour un événement sportif.
+    """
+
     type = models.CharField(max_length=50)
     prix = models.DecimalField(max_digits=10, decimal_places=2)
 
@@ -117,8 +132,11 @@ class Offre(models.Model):
         return f"{self.type} - {self.prix}€"
 
 
-# Modèle ticket
 class Ticket(models.Model):
+    """
+    Ce modèle représente un ticket acheté par un utilisateur.
+    """
+
     utilisateur = models.ForeignKey(
         Utilisateur, on_delete=models.CASCADE, related_name="tickets"
     )
@@ -134,8 +152,11 @@ class Ticket(models.Model):
         return f"{self.sport.nom} - {self.offre.type} - Quantité: {self.quantite}"
 
 
-# Modèle paiement
 class Paiement(models.Model):
+    """
+    Ce modèle représente un paiement effectué pour un ticket.
+    """
+
     ticket = models.ForeignKey(
         Ticket, on_delete=models.CASCADE, related_name="paiements"
     )
@@ -148,8 +169,11 @@ class Paiement(models.Model):
         return f"{self.ticket} - {self.montant} - {self.date_paiement}"
 
 
-# Modèle generation_ticket
 class GenerationTicket(models.Model):
+    """
+    Ce modèle représente un ticket généré pour un utilisateur.
+    """
+
     ticket = models.ForeignKey(
         "Ticket", on_delete=models.CASCADE, related_name="generation_tickets"
     )
@@ -159,13 +183,11 @@ class GenerationTicket(models.Model):
     qr_code = models.URLField(max_length=500, blank=True, null=True)
 
     def save(self, *args, **kwargs):
-        # Générer une clé sécurisée si elle n'existe pas encore
         if not self.cle_securisee_2:
             self.cle_securisee_2 = secrets.token_hex(32)
 
         cle_finale = f"{self.ticket.utilisateur.cle_securisee_1}{self.cle_securisee_2}"
 
-        # Générer le QR code
         qr = qrcode.QRCode(version=1, box_size=10, border=5)
         qr.add_data(cle_finale)
         qr.make(fit=True)
@@ -175,12 +197,10 @@ class GenerationTicket(models.Model):
         img.save(buffer, format="PNG")
         buffer.seek(0)
 
-        # Essayer d'uploader le fichier vers Cloudinary
         try:
             result = cloudinary.uploader.upload(
                 buffer, folder="qr_codes", public_id=f"qr_code_{self.ticket.id}"
             )
-            # Stocker le public ID de Cloudinary dans le champ qr_code
             self.qr_code = result["secure_url"]
         except Exception as e:
             logger.error(f"Error uploading QR code to Cloudinary: {str(e)}")

@@ -1,10 +1,5 @@
-import os
 from pathlib import Path
-
-import cloudinary
-import cloudinary.api
-import cloudinary.uploader
-import environ
+import os, environ, cloudinary, cloudinary.uploader, cloudinary.api
 
 cloudinary.config(
     cloud_name=os.getenv('CLOUDINARY_CLOUD_NAME'),
