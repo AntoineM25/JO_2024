@@ -79,13 +79,12 @@ class UtilisateurForm(forms.ModelForm):
 
     def clean_password1(self):
         password1 = self.cleaned_data.get("password1")
-        # Valider le mot de passe en utilisant la fonction validate_password
         try:
             validate_password(password1)
         except ValidationError as e:
             self.add_error(
                 "password1", e
-            )  # Ajoute les erreurs de validation du mot de passe
+            )  
         return password1
 
     def clean(self):
@@ -100,7 +99,7 @@ class UtilisateurForm(forms.ModelForm):
 
     def save(self, commit=True):
         user = super().save(commit=False)
-        user.set_password(self.cleaned_data["password1"])  # Hachage du mot de passe
+        user.set_password(self.cleaned_data["password1"])  
         if commit:
             user.save()
         return user
@@ -122,13 +121,11 @@ class TicketForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        # Ajouter défaut et date de l’événement sur le champ sport
         self.fields["sport"].choices = [("", "Choisissez votre sport !")] + [
             (sport.id, f"{sport.nom} - {sport.date_evenement}")
             for sport in Sport.objects.all()
         ]
 
-        # Ajouter défaut et date de l’événement sur le champ offre
         self.fields["offre"].choices = [("", "Choisissez votre offre !")] + [
             (offre.id, f"{offre.type} - {formats.localize_input(offre.prix)}€")
             for offre in Offre.objects.all()
