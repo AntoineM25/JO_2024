@@ -179,7 +179,7 @@ class GenerationTicket(models.Model):
     cle_securisee_2 = models.CharField(max_length=64, blank=True, editable=False)
     quantite_vendue = models.IntegerField(default=0)
     date_generation = models.DateTimeField(auto_now_add=True)
-    qr_code = models.CharField(max_length=255, blank=True, null=True)  # Sauvegarde du public ID Cloudinary
+    qr_code = models.URLField(max_length=500, blank=True, null=True)
 
     def save(self, *args, **kwargs):
         # Générer une clé sécurisée si elle n'existe pas encore
@@ -202,7 +202,7 @@ class GenerationTicket(models.Model):
         try:
             result = cloudinary.uploader.upload(buffer, folder="qr_codes", public_id=f'qr_code_{self.ticket.id}')
             # Stocker le public ID de Cloudinary dans le champ qr_code
-            self.qr_code = result['public_id']
+            self.qr_code = result['secure_url']
         except Exception as e:
             logger.error(f"Error uploading QR code to Cloudinary: {str(e)}")
             traceback.print_exc()
