@@ -123,7 +123,8 @@ AUTHENTICATION_BACKENDS = ['django.contrib.auth.backends.ModelBackend']
 # Internationalization
 # https://docs.djangoproject.com/en/5.1/topics/i18n/
 LANGUAGE_CODE = 'fr-fr'
-DATE_INPUT_FORMATS = ['%Y-%m-%d']  
+DATE_INPUT_FORMATS = ['%Y-%m-%d']
+DATE_FORMAT = "d F Y"
 TIME_ZONE = 'UTC'
 USE_I18N = True
 USE_TZ = True

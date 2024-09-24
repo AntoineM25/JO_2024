@@ -6,7 +6,7 @@ from django import forms
 from django.contrib.auth.forms import AuthenticationForm
 from django.core.exceptions import ValidationError
 from django.utils import formats
-
+from django.utils.formats import localize
 from .models import Offre, Paiement, Sport, Ticket, Utilisateur, validate_password
 
 
@@ -150,7 +150,7 @@ class TicketForm(forms.ModelForm):
         """
         super().__init__(*args, **kwargs)
         self.fields["sport"].choices = [("", "Choisissez votre sport !")] + [
-            (sport.id, f"{sport.nom} - {formats.localize_input(sport.date_evenement.strftime("%d %B %Y"))}")
+            (sport.id, f"{sport.nom} - {formats.localize(sport.date_evenement)}")
             for sport in Sport.objects.all()
         ]
 
