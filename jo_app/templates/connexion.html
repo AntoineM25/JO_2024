@@ -1,20 +1,27 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="card m-auto border-dark" style="max-width: 25%">
-    <div class="card-header text-center">
-        <h2>Connexion</h2>
-    </div>
-    <div class="card-body">
-        <form class="card-text" method="POST" action="{% url 'connexion' %}">
-            {% csrf_token %}
-            {{ form.as_p }}
-            <input type="hidden" name="next" value="{{ request.GET.next }}">
-            <button type="submit" class="btn btn-dark mt-3">Se connecter</button>
-        </form>
-        <p class="card-text mt-4">Pas encore de compte ?
-            <a class="card-link" href="{% url 'inscription' %}">S'inscrire</a>
-        </p>
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-12 col-md-6">
+            <div class="card border-dark">
+                <div class="card-header text-center">
+                    <h2>Connexion</h2>
+                </div>
+                <div class="card-body">
+                    <form class="card-text" method="POST" action="{% url 'connexion' %}">
+                        {% csrf_token %}
+                        {{ form.as_p }}
+                        <input type="hidden" name="next" value="{{ request.GET.next }}">
+                        <button type="submit" class="btn btn-dark mt-3">Se connecter</button>
+                    </form>
+                    <p class="card-text mt-4">Pas encore de compte ?
+                        <a class="card-link" href="{% url 'inscription' %}">S'inscrire</a>
+                    </p>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
+
 {% endblock %}
