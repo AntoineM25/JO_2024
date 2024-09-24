@@ -4,7 +4,7 @@
 {% block content %}
 <div class="container">
     <div class="row justify-content-center">
-        <div class="col-12 col-md-6">
+        <div class="col-12 col-md-9">
             <div class="card border-dark">
                 <div class="card-header text-center">
                     <h2>Mes Commandes</h2>
@@ -14,7 +14,7 @@
                     <div class="row justify-content-center">
                         {% if billets %}
                             {% for billet in billets %}
-                                <div class="col-12 col-md-6 p-3">
+                                <div class="col-12 col-md-6 col-lg-4 p-3">
                                     <div class="card">
                                         <div class="card-header text-bg-light">
                                             <h5 class="card-title">{{ billet.ticket.sport.nom }}</h5>
