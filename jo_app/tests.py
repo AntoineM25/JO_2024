@@ -29,6 +29,9 @@ class UtilisateurModelTest(TestCase):
     """
 
     def setUp(self):
+        """
+        Création d'un utilisateur pour les tests.
+        """
         self.utilisateur = Utilisateur.objects.create(
             nom="Dupont",
             prenom="Gilles",
@@ -41,6 +44,9 @@ class UtilisateurModelTest(TestCase):
         )
 
     def test_creation_utilisateur(self):
+        """
+        Test de la création d'un utilisateur.
+        """
         utilisateur = Utilisateur.objects.get(email="gilles.dupont@exemple.com")
         self.assertEqual(utilisateur.nom, "Dupont")
         self.assertEqual(utilisateur.prenom, "Gilles")
@@ -51,6 +57,9 @@ class UtilisateurModelTest(TestCase):
         self.assertEqual(str(utilisateur.date_de_naissance), "1942-08-01")
 
     def test_email_unique(self):
+        """
+        Test de l'unicité de l'adresse email de l'utilisateur.
+        """
         with self.assertRaises(Exception):
             Utilisateur.objects.create(
                 nom="Dupont",
@@ -64,10 +73,16 @@ class UtilisateurModelTest(TestCase):
             )
 
     def test_cle_securisee_generation(self):
+        """
+        Test de la génération de la clé sécurisée 1.
+        """
         self.assertIsNotNone(self.utilisateur.cle_securisee_1)
         self.assertEqual(len(self.utilisateur.cle_securisee_1), 64)
 
     def test_champs_obligatoires(self):
+        """
+        Test de la validation des champs obligatoires.
+        """
         with self.assertRaises(ValidationError):
             utilisateur = Utilisateur(
                 prenom="SansNom", sexe="H", email="sans.nom@example.com"
@@ -75,6 +90,9 @@ class UtilisateurModelTest(TestCase):
             utilisateur.full_clean()
 
     def test_validation_mot_de_passe(self):
+        """
+        Test de la validation du mot de passe.
+        """
         try:
             self.utilisateur.set_password("MotdePasse1!")
             self.utilisateur.full_clean()
@@ -88,6 +106,9 @@ class TicketModelTest(TestCase):
     """
 
     def setUp(self):
+        """
+        Création d'un utilisateur, d'un sport et d'une offre pour les tests.
+        """
         self.utilisateur = Utilisateur.objects.create(
             nom="Dupont",
             prenom="Gilles",
@@ -104,6 +125,9 @@ class TicketModelTest(TestCase):
         self.offre = Offre.objects.create(type="solo", prix=20.00)
 
     def test_creation_ticket(self):
+        """
+        Test de la création d'un ticket.
+        """
         ticket = Ticket.objects.create(
             utilisateur=self.utilisateur, sport=self.sport, offre=self.offre, quantite=2
         )
@@ -113,6 +137,9 @@ class TicketModelTest(TestCase):
         self.assertEqual(ticket.quantite, 2)
 
     def test_calcul_prix_total_ticket(self):
+        """
+        Test du calcul du prix total d'un ticket.
+        """
         ticket = Ticket.objects.create(
             utilisateur=self.utilisateur, sport=self.sport, offre=self.offre, quantite=3
         )
@@ -125,6 +152,9 @@ class SportModelTest(TestCase):
     """
 
     def setUp(self):
+        """
+        Création d'un sport pour les tests.
+        """
         self.sport = Sport.objects.create(
             nom="Natation",
             date_evenement="2024-07-25",
@@ -132,6 +162,9 @@ class SportModelTest(TestCase):
         )
 
     def test_creation_sport(self):
+        """
+        Test de la création d'un sport.
+        """
         sport = Sport.objects.get(nom="Natation")
         self.assertEqual(sport.nom, "Natation")
         self.assertEqual(str(sport.date_evenement), "2024-07-25")
@@ -139,6 +172,9 @@ class SportModelTest(TestCase):
         self.assertFalse(sport.image)
 
     def test_str_representation(self):
+        """
+        Test de la représentation en chaîne de caractères d'un sport.
+        """
         self.assertEqual(str(self.sport), "Natation")
 
 
@@ -148,6 +184,9 @@ class PaiementModelTest(TestCase):
     """
 
     def setUp(self):
+        """
+        Création d'un utilisateur, d'un sport, d'une offre et d'un ticket pour
+        """
         self.utilisateur = Utilisateur.objects.create(
             nom="Dupont",
             prenom="Gilles",
@@ -165,6 +204,9 @@ class PaiementModelTest(TestCase):
         )
 
     def test_creation_paiement(self):
+        """
+        Test de la création d'un paiement.
+        """
         paiement = Paiement.objects.create(
             ticket=self.ticket,
             montant=self.ticket.get_prix_total(),
@@ -178,6 +220,9 @@ class PaiementModelTest(TestCase):
         self.assertIsNotNone(paiement.date_paiement)
 
     def test_str_representation(self):
+        """
+        Test de la représentation en chaîne de caractères d'un paiement.
+        """
         paiement = Paiement.objects.create(
             ticket=self.ticket,
             montant=self.ticket.get_prix_total(),
@@ -196,6 +241,9 @@ class GenerationTicketModelTest(TestCase):
     """
 
     def setUp(self):
+        """
+        Création d'un utilisateur, d'un sport, d'une offre, d'un ticket et d'un billet de génération pour les tests.
+        """
         self.utilisateur = Utilisateur.objects.create(
             nom="Dupont",
             prenom="Gilles",
@@ -214,6 +262,9 @@ class GenerationTicketModelTest(TestCase):
 
     @patch("cloudinary.uploader.upload")
     def test_generation_ticket_creation(self, mock_upload):
+        """
+        Test de la création d'un billet de génération.
+        """
         mock_upload.return_value = {"secure_url": "http://example.com/fake_qrcode.png"}
 
         generation_ticket = GenerationTicket.objects.create(
@@ -234,6 +285,9 @@ class PasswordValidationTest(TestCase):
     """
 
     def test_password_too_short(self):
+        """
+        Test de la validation d'un mot de passe trop court.
+        """
         with self.assertRaises(ValidationError) as cm:
             validate_password("Abc!12")
         self.assertEqual(
@@ -242,6 +296,9 @@ class PasswordValidationTest(TestCase):
         )
 
     def test_password_no_uppercase(self):
+        """
+        Test de la validation d'un mot de passe sans majuscule.
+        """
         with self.assertRaises(ValidationError) as cm:
             validate_password("abcd1234!")
         self.assertEqual(
@@ -250,6 +307,9 @@ class PasswordValidationTest(TestCase):
         )
 
     def test_password_no_special_character(self):
+        """
+        Test de la validation d'un mot de passe sans caractère spécial.
+        """
         with self.assertRaises(ValidationError) as cm:
             validate_password("Abcdefgh")
         self.assertEqual(
@@ -258,6 +318,9 @@ class PasswordValidationTest(TestCase):
         )
 
     def test_valid_password(self):
+        """
+        Test de la validation d'un mot de passe valide.
+        """
         try:
             validate_password("Abcdefg!")
         except ValidationError:
@@ -272,9 +335,15 @@ class OffreModelTest(TestCase):
     """
 
     def setUp(self):
+        """
+        Création d'une offre pour les tests.
+        """
         self.offre = Offre.objects.create(type="Famille", prix=Decimal("49.99"))
 
     def test_creation_offre(self):
+        """
+        Test de la création d'une offre.
+        """
         offre = Offre.objects.get(type="Famille")
         self.assertEqual(offre.type, "Famille")
         self.assertEqual(offre.prix, Decimal("49.99"))
@@ -286,6 +355,9 @@ class HomeViewTest(TestCase):
     """
 
     def test_home_view(self):
+        """
+        Test de l'accès à la page d'accueil.
+        """
         response = self.client.get(reverse("home"))
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, "home.html")
@@ -297,11 +369,17 @@ class InscriptionViewTest(TestCase):
     """
 
     def test_inscription_view(self):
+        """
+        Test de l'accès à la page d'inscription.
+        """
         response = self.client.get(reverse("inscription"))
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, "inscription.html")
 
     def test_valid_registration(self):
+        """
+        Test de l'inscription d'un utilisateur valide.
+        """
         response = self.client.post(
             reverse("inscription"),
             {
@@ -329,6 +407,9 @@ class TicketCreateViewTest(TestCase):
     """
 
     def setUp(self):
+        """
+        Création d'un utilisateur, d'un sport et d'une offre pour les tests.
+        """
         self.utilisateur = Utilisateur.objects.create_user(
             email="gilles.dupont@exemple.com",
             nom="Dupont",
@@ -345,12 +426,18 @@ class TicketCreateViewTest(TestCase):
         self.offre = Offre.objects.create(type="Solo", prix=50.00)
 
     def test_ticket_create_view(self):
+        """
+        Test de l'accès à la page de création de ticket.
+        """
         response = self.client.get(
             reverse("ticket_create") + f"?sport={self.sport.nom}"
         )
         self.assertEqual(response.status_code, 200)
 
     def test_valid_ticket_creation(self):
+        """
+        Test de la création d'un ticket valide.
+        """
         response = self.client.post(
             reverse("ticket_create"),
             {
@@ -375,6 +462,9 @@ class TicketListViewTest(TestCase):
     """
 
     def setUp(self):
+        """
+        Création d'un utilisateur, d'un sport, d'une offre et d'un ticket pour
+        """
         self.utilisateur = Utilisateur.objects.create_user(
             email="gilles.dupont@exemple.com",
             password="Test@123",
@@ -391,6 +481,9 @@ class TicketListViewTest(TestCase):
         self.client.login(email="gilles.dupont@exemple.com", password="Test@123")
 
     def test_ticket_list_view(self):
+        """
+        Test de l'accès à la liste des tickets.
+        """
         response = self.client.get(reverse("ticket_list"))
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Football")
@@ -402,6 +495,9 @@ class PanierViewTest(TestCase):
     """
 
     def setUp(self):
+        """
+        Création d'un utilisateur, d'un sport, d'une offre, d'un ticket et connexion de l'utilisateur pour les tests.
+        """
         self.utilisateur = Utilisateur.objects.create_user(
             email="gilles.dupont@exemple.com",
             password="Test@123",
@@ -416,25 +512,42 @@ class PanierViewTest(TestCase):
         self.client.login(email="gilles.dupont@exemple.com", password="Test@123")
 
     def test_acces_panier(self):
+        """
+        Test de l'accès à la page du panier.
+        """
         response = self.client.get(reverse("panier"))
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, "panier.html")
         self.assertContains(response, "Total du panier")
 
     def test_mise_a_jour_quantite(self):
+        """
+        Test de la mise à jour de la quantité d'un ticket dans le panier.
+        """
         response = self.client.post(
-            reverse("panier"), {f"quantite_{self.ticket.id}": 3, "action": "update"}
+            reverse("panier"),
+            {
+                f"quantite_{
+                    self.ticket.id}": 3,
+                "action": "update",
+            },
         )
         self.ticket.refresh_from_db()
         self.assertEqual(self.ticket.quantite, 3)
 
     def test_suppression_ticket(self):
+        """
+        Test de la suppression d'un ticket du panier.
+        """
         response = self.client.post(
             reverse("panier"), {"action": f"delete_{self.ticket.id}"}
         )
         self.assertFalse(Ticket.objects.filter(id=self.ticket.id).exists())
 
     def test_quantite_invalide(self):
+        """
+        Test de la mise à jour de la quantité avec une valeur invalide.
+        """
         response = self.client.post(
             reverse("panier"),
             {f"quantite_{self.ticket.id}": -1, "action": "update"},
@@ -449,6 +562,9 @@ class TelechargerBilletViewTest(TestCase):
     """
 
     def setUp(self):
+        """
+        Création d'un utilisateur, d'un sport, d'une offre, d'un ticket et d'un billet pour les tests.
+        """
         self.utilisateur = Utilisateur.objects.create_user(
             email="gilles.dupont@exemple.com",
             password="Test@123",
@@ -468,15 +584,24 @@ class TelechargerBilletViewTest(TestCase):
         self.client.login(email="gilles.dupont@exemple.com", password="Test@123")
 
     def test_acces_telechargement_billet(self):
+        """
+        Test de l'accès au téléchargement du billet.
+        """
         response = self.client.get(reverse("telecharger_billet", args=[self.billet.id]))
         self.assertEqual(response.status_code, 200)
         self.assertIn("application/pdf", response["Content-Type"])
 
     def test_acces_billet_non_existant(self):
+        """
+        Test de l'accès à un billet inexistant.
+        """
         response = self.client.get(reverse("telecharger_billet", args=[9999]))
         self.assertEqual(response.status_code, 404)
 
     def test_acces_billet_autre_utilisateur(self):
+        """
+        Test de l'accès à un billet d'un autre utilisateur.
+        """
         autre_utilisateur = Utilisateur.objects.create_user(
             email="jean.dupont@exemple.com",
             password="Test@123",
@@ -495,6 +620,9 @@ class UtilisateurFormTest(TestCase):
     """
 
     def test_form_with_valid_data(self):
+        """
+        Test de la validation du formulaire avec des données valides.
+        """
         form = UtilisateurForm(
             data={
                 "nom": "Dupont",
@@ -512,6 +640,9 @@ class UtilisateurFormTest(TestCase):
         self.assertTrue(form.is_valid())
 
     def test_form_with_invalid_password(self):
+        """
+        Test de la validation du formulaire avec un mot de passe trop court.
+        """
         form = UtilisateurForm(
             data={
                 "nom": "Dupont",
@@ -530,6 +661,9 @@ class UtilisateurFormTest(TestCase):
         self.assertIn("password1", form.errors)
 
     def test_form_with_mismatched_passwords(self):
+        """
+        Test de la validation du formulaire avec des mots de passe non identiques.
+        """
         form = UtilisateurForm(
             data={
                 "nom": "Dupont",
@@ -554,10 +688,16 @@ class TicketFormTest(TestCase):
     """
 
     def setUp(self):
+        """
+        Création d'une offre et d'un sport pour les tests.
+        """
         self.offre = Offre.objects.create(type="Standard", prix=50.0)
         self.sport = Sport.objects.create(nom="Football", date_evenement="2024-07-01")
 
     def test_ticket_form_valid_data(self):
+        """
+        Test de la validation du formulaire avec des données valid
+        """
         form_data = {
             "offre": self.offre.id,
             "sport": self.sport.id,
@@ -566,12 +706,18 @@ class TicketFormTest(TestCase):
         self.assertTrue(form.is_valid())
 
     def test_ticket_form_empty_data(self):
+        """
+        Test de la validation du formulaire avec des données vides.
+        """
         form = TicketForm(data={})
         self.assertFalse(form.is_valid())
         self.assertIn("offre", form.errors)
         self.assertIn("sport", form.errors)
 
     def test_ticket_form_initial_values(self):
+        """
+        Test des valeurs initiales des champs du formulaire.
+        """
         form = TicketForm()
         self.assertEqual(
             form.fields["sport"].choices[0], ("", "Choisissez votre sport !")
@@ -587,6 +733,9 @@ class PaiementFormTest(TestCase):
     """
 
     def setUp(self):
+        """
+        Création d'un utilisateur, d'une offre, d'un sport et d'un ticket pour les tests.
+        """
         self.utilisateur = Utilisateur.objects.create_user(
             email="test@example.com",
             password="Test@123",
@@ -600,6 +749,9 @@ class PaiementFormTest(TestCase):
         )
 
     def test_paiement_form_valid_data(self):
+        """
+        Test de la validation du formulaire avec des données valid
+        """
         form_data = {
             "ticket": self.ticket.id,
             "montant": self.ticket.get_prix_total(),
@@ -609,6 +761,9 @@ class PaiementFormTest(TestCase):
         self.assertTrue(form.is_valid())
 
     def test_paiement_form_invalid_data(self):
+        """
+        Test de la validation du formulaire avec des données invalides.
+        """
         form_data = {
             "ticket": "",
             "montant": "",
@@ -621,6 +776,9 @@ class PaiementFormTest(TestCase):
         self.assertIn("methode_paiement", form.errors)
 
     def test_paiement_form_method_choices(self):
+        """
+        Test des choix possibles pour la méthode de paiement.
+        """
         form = PaiementForm()
         self.assertIn(
             ("carte", "Carte de crédit"), form.fields["methode_paiement"].choices
@@ -637,6 +795,9 @@ class ConnexionFormTest(TestCase):
     """
 
     def setUp(self):
+        """
+        Création d'un utilisateur pour les tests.
+        """
         self.user = get_user_model().objects.create_user(
             email="testuser@example.com",
             password="Test@123",
@@ -645,6 +806,9 @@ class ConnexionFormTest(TestCase):
         )
 
     def test_connexion_form_valid_data(self):
+        """
+        Test de la validation du formulaire avec des données valides
+        """
         form_data = {
             "username": "testuser@example.com",
             "password": "Test@123",
@@ -653,6 +817,9 @@ class ConnexionFormTest(TestCase):
         self.assertTrue(form.is_valid())
 
     def test_connexion_form_invalid_data(self):
+        """
+        Test de la validation du formulaire avec des données invalid
+        """
         form_data = {
             "username": "testuser@example.com",
             "password": "wrongpassword",

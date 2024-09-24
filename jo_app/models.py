@@ -1,5 +1,5 @@
 """
-Ce module contient les modèles de données de l'application. 
+Ce module contient les modèles de données de l'application.
 Il contient les classes Utilisateur, Sport, Offre, Ticket, Paiement et GenerationTicket.
 """
 
@@ -186,7 +186,9 @@ class GenerationTicket(models.Model):
         if not self.cle_securisee_2:
             self.cle_securisee_2 = secrets.token_hex(32)
 
-        cle_finale = f"{self.ticket.utilisateur.cle_securisee_1}{self.cle_securisee_2}"
+        cle_finale = f"{
+            self.ticket.utilisateur.cle_securisee_1}{
+            self.cle_securisee_2}"
 
         qr = qrcode.QRCode(version=1, box_size=10, border=5)
         qr.add_data(cle_finale)
@@ -199,7 +201,10 @@ class GenerationTicket(models.Model):
 
         try:
             result = cloudinary.uploader.upload(
-                buffer, folder="qr_codes", public_id=f"qr_code_{self.ticket.id}"
+                buffer,
+                folder="qr_codes",
+                public_id=f"qr_code_{
+                    self.ticket.id}",
             )
             self.qr_code = result["secure_url"]
         except Exception as e:

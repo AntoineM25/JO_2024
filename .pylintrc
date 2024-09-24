@@ -1,0 +1,9 @@
+[MESSAGES CONTROL]
+# Désactive les erreurs spécifiques à Django ORM (comme 'objects' non détectés)
+disable=E1101
+
+# Seulement afficher les erreurs de niveau "HIGH" et les erreurs d'inférence
+confidence=HIGH
+
+
+

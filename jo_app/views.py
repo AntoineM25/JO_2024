@@ -1,9 +1,9 @@
 """
-Ce module contient les vues de l'application. 
-Il contient les vues home, inscription, ticket_create_view, 
-ticket_list_view, ticket_update_view, ticket_delete_view, 
-get_sport_date, sport_list_view, panier_view, ConnexionView, 
-DeconnexionView, paiement_view, maj_quantite_view, confirmation_view, 
+Ce module contient les vues de l'application.
+Il contient les vues home, inscription, ticket_create_view,
+ticket_list_view, ticket_update_view, ticket_delete_view,
+get_sport_date, sport_list_view, panier_view, ConnexionView,
+DeconnexionView, paiement_view, maj_quantite_view, confirmation_view,
 mes_commandes_view, telecharger_billet_view, ventes_view.
 """
 
@@ -191,6 +191,7 @@ class ConnexionView(LoginView):
     """
     Vue pour l'authentification.
     """
+
     template_name = "connexion.html"
     form_class = ConnexionForm
 
@@ -213,6 +214,7 @@ class DeconnexionView(LogoutView):
     """
     Vue pour la déconnexion.
     """
+
     next_page = "home"
 
 
@@ -312,9 +314,17 @@ def telecharger_billet_view(request, billet_id):
     billet = get_object_or_404(
         GenerationTicket, id=billet_id, ticket__utilisateur=request.user
     )
-    nom_fichier = f"Billet_{billet.ticket.sport.nom}_{billet.ticket.utilisateur.prenom}_{billet.ticket.utilisateur.nom}.pdf"
+    nom_fichier = f"Billet_{
+        billet.ticket.sport.nom}_{
+        billet.ticket.utilisateur.prenom}_{
+            billet.ticket.utilisateur.nom}.pdf"
     qr_code_url = billet.qr_code
-    offre_formate = f"{billet.ticket.offre.type} - {locale.format_string('%.2f', billet.ticket.offre.prix, grouping=True)} €"
+    offre_formate = f"{
+        billet.ticket.offre.type} - {
+        locale.format_string(
+            '%.2f',
+            billet.ticket.offre.prix,
+            grouping=True)} €"
     html_string = render(
         request,
         "billet_pdf.html",
