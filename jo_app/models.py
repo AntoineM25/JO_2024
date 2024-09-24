@@ -1,24 +1,11 @@
-import logging
-import os
-import re
-import secrets
-import traceback
+import logging, os, re, secrets, traceback, cloudinary.uploader, qrcode
 from io import BytesIO
-
-import cloudinary.uploader
-import qrcode
-from cloudinary.exceptions import Error as CloudinaryError
-from cloudinary.models import CloudinaryField
-from cloudinary.uploader import upload
-from django.conf import settings
 from django.contrib.auth.models import (
     AbstractBaseUser,
     BaseUserManager,
     PermissionsMixin,
 )
 from django.core.exceptions import ValidationError
-from django.core.files import File
-from django.core.files.base import ContentFile
 from django.db import models
 from django.utils import timezone
 
