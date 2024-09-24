@@ -83,7 +83,7 @@ class TicketForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         # Ajouter défaut et date de l’événement sur le champ sport
         self.fields['sport'].choices = [('', 'Choisissez votre sport !')] + [
-            (sport.id, f"{sport.nom} - {sport.date_evenement.strftime('%d %B %Y')}")
+            (sport.id, f"{sport.nom} - {sport.date_evenement}")
             for sport in Sport.objects.all()
         ]
         
