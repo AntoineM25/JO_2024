@@ -75,13 +75,4 @@ main::before {
     .navbar {
         height: auto;
     }
-    main {
-        padding-top: 430px;
-    }
-}
-
-@media (max-width: 576px) {
-    main {
-        padding-top: 470px;
-    }
 }

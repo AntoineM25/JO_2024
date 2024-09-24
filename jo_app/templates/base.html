@@ -15,7 +15,7 @@
                 <div class="container-fluid">
                     <a class="navbar-brand" href="{% url 'home' %}">
                         <img src="{% static 'images/logo.png' %}" alt="Logo" width="75" height="75" class="d-inline-block align-text-center"/>
-                        <span id="logo-text"> Jeux Olympiques Paris 2024</span>
+                        <span id="logo-text" class="d-none d-md-inline"> Jeux Olympiques Paris 2024</span>
                     </a>
                     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                         <span class="navbar-toggler-icon"></span>
@@ -78,5 +78,20 @@
 
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
         <script src="https://kit.fontawesome.com/ad14203a9f.js" crossorigin="anonymous"></script>
+        <!-- Menu burger -->
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                var navbarCollapse = document.getElementById('navbarNav');
+                var mainContent = document.querySelector('main');
+
+                navbarCollapse.addEventListener('shown.bs.collapse', function () {
+                    mainContent.style.paddingTop = '430px'; // Menu ouvert
+                });
+
+                navbarCollapse.addEventListener('hidden.bs.collapse', function () {
+                    mainContent.style.paddingTop = '150px'; // Menu fermé
+                });
+            });
+        </script>
     </body>
 </html>
