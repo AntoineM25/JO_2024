@@ -61,7 +61,7 @@ python manage.py runserver
 -   Vérification de la création d'un QR code avec la clé sécurisé 1 et 2 (Résultat : OK).
 -   Test du QR code récupération de la clé sécurisée 1 de l'utilisateur Guillaume Masson. Récupération de toutes les clés sécurisées 2 de l'utilisateur Guillaume Masson. Vérification de la bonne concaténation dans le QR code (Résultat : OK).
 
-![Test QR code](/jo_projet/jo_app/static/images/tests/test_qr_code.png)
+![Test QR code](/jo_app/static/images/tests/test_qr_code.png)
 
 #### ***Templates***
 
@@ -133,7 +133,7 @@ Destroying test database for alias 'default'...
 
 - Impossible de se connecter une fois inscrit : 
 
-![Bug Connexion](/jo_projet/jo_app/static/images/bugs/bug_connexion.png)
+![Bug Connexion](/jo_app/static/images/bugs/bug_connexion.png)
 
 Ce bug a été résolu en ajoutant la validation du mot de passe lors de l'inscription dans le model Utilisateur et "clean_password1" dans le formulaire d'inscription.
 
