@@ -5,6 +5,8 @@ from django.urls import reverse
 from decimal import Decimal
 from .forms import UtilisateurForm,TicketForm, ConnexionForm
 from django.contrib.auth import get_user_model
+from unittest.mock import patch
+
 
 ## TEST DES MODELS ##
 
@@ -208,7 +210,6 @@ class PaiementModelTest(TestCase):
         # Vérification de la représentation en chaîne du paiement
         self.assertEqual(str(paiement), f"{self.ticket} - {paiement.montant} - {paiement.date_paiement}")
 
-# Test du modèle Génération de ticket
 class GenerationTicketModelTest(TestCase):
 
     def setUp(self):
@@ -219,7 +220,7 @@ class GenerationTicketModelTest(TestCase):
             sexe='H',
             email='gilles.dupont@exemple.com',
             adresse='123 Rue Test',
-            code_postal='7500',
+            code_postal='75000',
             ville='Paris',
             date_de_naissance='1942-08-01'
         )
@@ -238,7 +239,13 @@ class GenerationTicketModelTest(TestCase):
             quantite=1
         )
 
-    def test_generation_ticket_creation(self):
+    @patch('cloudinary.uploader.upload')  # Mock l'upload vers Cloudinary
+    def test_generation_ticket_creation(self, mock_upload):
+        # Simuler un retour d'URL après upload vers Cloudinary
+        mock_upload.return_value = {
+            'secure_url': 'http://example.com/fake_qrcode.png'
+        }
+
         # Création d'un GenerationTicket pour le ticket
         generation_ticket = GenerationTicket.objects.create(
             ticket=self.ticket,
@@ -249,8 +256,8 @@ class GenerationTicketModelTest(TestCase):
         self.assertIsNotNone(generation_ticket.cle_securisee_2)
         self.assertEqual(len(generation_ticket.cle_securisee_2), 64)
 
-        # Vérifie que le QR code a été généré
-        self.assertTrue(generation_ticket.qr_code.name.endswith('.png'))
+        # Vérifie que le QR code a été généré et que l'URL est celle du mock
+        self.assertEqual(generation_ticket.qr_code, 'http://example.com/fake_qrcode.png')
 
 # Test de la fonction de validation du mot de passe
 class PasswordValidationTest(TestCase):
@@ -258,17 +265,18 @@ class PasswordValidationTest(TestCase):
     def test_password_too_short(self):
         with self.assertRaises(ValidationError) as cm:
             validate_password('Abc!12')
-        self.assertEqual(str(cm.exception), 'Le mot de passe doit contenir au moins 8 caractères.')
+        # Récupérer le premier message d'erreur
+        self.assertEqual(cm.exception.messages[0], 'Le mot de passe doit contenir au moins 8 caractères.')
 
     def test_password_no_uppercase(self):
         with self.assertRaises(ValidationError) as cm:
             validate_password('abcd1234!')
-        self.assertEqual(str(cm.exception), 'Le mot de passe doit contenir au moins une majuscule.')
+        self.assertEqual(cm.exception.messages[0], 'Le mot de passe doit contenir au moins une majuscule.')
 
     def test_password_no_special_character(self):
         with self.assertRaises(ValidationError) as cm:
             validate_password('Abcdefgh')
-        self.assertEqual(str(cm.exception), 'Le mot de passe doit contenir au moins un caractère spécial.')
+        self.assertEqual(cm.exception.messages[0], 'Le mot de passe doit contenir au moins un caractère spécial.')
 
     def test_valid_password(self):
         try:
@@ -291,26 +299,6 @@ class OffreModelTest(TestCase):
         offre = Offre.objects.get(type='Famille')
         self.assertEqual(offre.type, 'Famille')
         self.assertEqual(offre.prix, Decimal('49.99'))
-
-
-# Test de la fonction de validation du mot de passe
-class PasswordValidationTest(TestCase):
-
-    def test_password_too_short(self):
-        with self.assertRaises(ValidationError) as cm:
-            validate_password('short')
-        self.assertEqual(cm.exception.messages, ['Le mot de passe doit contenir au moins 8 caractères.'])
-
-    def test_password_no_uppercase(self):
-        with self.assertRaises(ValidationError) as cm:
-            validate_password('lowercase1!')
-        self.assertEqual(cm.exception.messages, ['Le mot de passe doit contenir au moins une majuscule.'])
-
-    def test_password_no_special_character(self):
-        with self.assertRaises(ValidationError) as cm:
-            validate_password('NoSpecialCharacter1')
-        self.assertEqual(cm.exception.messages, ['Le mot de passe doit contenir au moins un caractère spécial.'])
-
 
 ## Test des vues ##
 
@@ -480,44 +468,60 @@ class PanierViewTest(TestCase):
 # Test de la vue pour le téléchargement du billet
 class TelechargerBilletViewTest(TestCase):
     def setUp(self):
+        # Création d'un utilisateur pour le test
         self.utilisateur = Utilisateur.objects.create_user(
             email='gilles.dupont@exemple.com',
             password='Test@123',
             nom='Dupont',
             prenom='Gilles'
         )
+        # Création d'un sport et d'une offre pour le test
         self.sport = Sport.objects.create(
             nom='Natation',
             date_evenement='2024-07-25'
         )
         self.offre = Offre.objects.create(type='Standard', prix=50.0)
+        # Création d'un ticket pour l'utilisateur
         self.ticket = Ticket.objects.create(
             utilisateur=self.utilisateur,
             offre=self.offre,
             sport=self.sport,
             quantite=1
         )
-        self.billet = GenerationTicket.objects.create(ticket=self.ticket)
+
+        # Utilisation du mock pour Cloudinary
+        with patch('jo_app.models.cloudinary.uploader.upload') as mock_upload:
+            mock_upload.return_value = {'secure_url': 'http://test.com/qr_code.png'}
+            self.billet = GenerationTicket.objects.create(ticket=self.ticket)
+
+        # Connexion de l'utilisateur
         self.client.login(email='gilles.dupont@exemple.com', password='Test@123')
 
     def test_acces_telechargement_billet(self):
+        # Teste si l'utilisateur peut accéder à son propre billet
         response = self.client.get(reverse('telecharger_billet', args=[self.billet.id]))
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)  # Statut 200 attendu si tout va bien
+        self.assertIn('application/pdf', response['Content-Type'])  # Vérifie si le PDF est bien généré
 
     def test_acces_billet_non_existant(self):
+        # Teste si l'accès à un billet non existant renvoie une 404
         response = self.client.get(reverse('telecharger_billet', args=[9999]))  # ID qui n'existe pas
         self.assertEqual(response.status_code, 404)
 
     def test_acces_billet_autre_utilisateur(self):
+        # Création d'un autre utilisateur
         autre_utilisateur = Utilisateur.objects.create_user(
             email='jean.dupont@exemple.com',
             password='Test@123',
             nom='Dupont',
             prenom='Jean'
         )
+        # Connexion de l'autre utilisateur
         self.client.login(email='jean.dupont@exemple.com', password='Test@123')
+        
+        # Teste si l'autre utilisateur ne peut pas accéder au billet de l'utilisateur principal
         response = self.client.get(reverse('telecharger_billet', args=[self.billet.id]))
-        self.assertEqual(response.status_code, 404)  # Doit renvoyer une erreur car ce n'est pas son billet
+        self.assertEqual(response.status_code, 404)  # Doit renvoyer une 404 car ce n'est pas son billet
 
 ## Test des formulaires ##
 
@@ -602,8 +606,9 @@ class TicketFormTest(TestCase):
     def test_ticket_form_initial_values(self):
         # Vérifie si le formulaire initialise correctement les champs
         form = TicketForm()
-        self.assertEqual(form.fields['sport'].empty_label, "Choisissez votre sport !")
-        self.assertEqual(form.fields['offre'].empty_label, "Choisissez votre offre !")
+        self.assertEqual(form.fields['sport'].choices[0], ('', "Choisissez votre sport !"))
+        self.assertEqual(form.fields['offre'].choices[0], ('', "Choisissez votre offre !"))
+
 
 # Test du formulaire paiement
 from django.test import TestCase
