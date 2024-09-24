@@ -193,6 +193,9 @@ Ce bug a été résolu en ajoutant la validation du mot de passe lors de l'inscr
 -   Mise en place d'un profil utilisateur pour qu'il puisse modifier ou supprimer ses données personnelles.
 -   Il serait intéressant de proposer un téléchargement du manuel d'utilisation via le site web.
 -   Mettre en place un système de single sign on pour se connecter (avec Google par exemple).
+-   Gestion multi-langues : Ajouter une fonctionnalité de gestion multilingue pour permettre aux utilisateurs de choisir la langue du site, avec des traductions des éléments de l'interface et des emails.
+-   Application mobile dédiée : Développer une application mobile complémentaire pour améliorer l'expérience utilisateur et permettre une gestion plus fluide des billets via un smartphone.
+-   Amélioration de l'accessibilité : Rendre le site plus accessible aux personnes handicapées (ajout de la compatibilité avec des lecteurs d'écran, options de contrastes de couleurs, navigation par clavier, etc.).
 
 ## __Documentation supplémentaire__
 
