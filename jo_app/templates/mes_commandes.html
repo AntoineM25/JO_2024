@@ -23,7 +23,7 @@
                                     {% localize on %}
                                         {{ billet.ticket.offre.prix }}€<br>
                                     {% endlocalize %}
-                                    Date de l'événement : {{ billet.ticket.sport.date_evenement|date:"d/m/Y" }}<br>
+                                    Date de l'événement : {{ billet.ticket.sport.date_evenement }}<br>
                                 </p>
                                 <img src="{{ billet.qr_code }}" alt="QR Code" class="img-fluid" style="width: 150px; height: 150px;">
                             </div>

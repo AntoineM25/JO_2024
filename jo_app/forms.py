@@ -141,7 +141,7 @@ class TicketForm(forms.ModelForm):
         }
         widgets = {
             "offre": forms.Select(attrs={"class": "form-control", "localize": True}),
-            "sport": forms.Select(attrs={"class": "form-control"}),
+            "sport": forms.Select(attrs={"class": "form-control", "localize": True}),
         }
 
     def __init__(self, *args, **kwargs):
@@ -150,7 +150,7 @@ class TicketForm(forms.ModelForm):
         """
         super().__init__(*args, **kwargs)
         self.fields["sport"].choices = [("", "Choisissez votre sport !")] + [
-            (sport.id, f"{sport.nom} - {sport.date_evenement}")
+            (sport.id, f"{sport.nom} - {formats.localize_input(sport.date_evenement.strftime("%d %B %Y"))}")
             for sport in Sport.objects.all()
         ]
 

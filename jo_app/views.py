@@ -59,7 +59,7 @@ def ticket_create_view(request):
     sport = Sport.objects.filter(nom=sport_nom).first()
 
     if sport:
-        date_evenement = sport.date_evenement
+        date_evenement = sport.date_evenement.strftime("%d %B %Y")
     else:
         date_evenement = None
 
