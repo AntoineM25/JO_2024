@@ -3,7 +3,8 @@ from django.contrib.auth.forms import AuthenticationForm
 from django.core.exceptions import ValidationError
 from django.utils import formats
 
-from .models import Offre, Paiement, Sport, Ticket, Utilisateur, validate_password
+from .models import (Offre, Paiement, Sport, Ticket, Utilisateur,
+                     validate_password)
 
 
 # Formulaire d'inscription
@@ -82,9 +83,7 @@ class UtilisateurForm(forms.ModelForm):
         try:
             validate_password(password1)
         except ValidationError as e:
-            self.add_error(
-                "password1", e
-            )  
+            self.add_error("password1", e)
         return password1
 
     def clean(self):
@@ -99,7 +98,7 @@ class UtilisateurForm(forms.ModelForm):
 
     def save(self, commit=True):
         user = super().save(commit=False)
-        user.set_password(self.cleaned_data["password1"])  
+        user.set_password(self.cleaned_data["password1"])
         if commit:
             user.save()
         return user

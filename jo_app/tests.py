@@ -1,22 +1,18 @@
 from decimal import Decimal
 from unittest.mock import patch
+
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
 from django.test import TestCase
 from django.urls import reverse
-from jo_app.models import (
-    GenerationTicket,
-    Offre,
-    Paiement,
-    Sport,
-    Ticket,
-    Utilisateur,
-    validate_password,
-)
-from .forms import ConnexionForm, TicketForm, UtilisateurForm, PaiementForm
 
+from jo_app.models import (GenerationTicket, Offre, Paiement, Sport, Ticket,
+                           Utilisateur, validate_password)
+
+from .forms import ConnexionForm, PaiementForm, TicketForm, UtilisateurForm
 
 ## TEST DES MODELS ##
+
 
 # Test du modèle Utilisateur
 class UtilisateurModelTest(TestCase):
@@ -65,7 +61,7 @@ class UtilisateurModelTest(TestCase):
             utilisateur = Utilisateur(
                 prenom="SansNom", sexe="H", email="sans.nom@example.com"
             )
-            utilisateur.full_clean()  
+            utilisateur.full_clean()
 
     def test_validation_mot_de_passe(self):
         try:
@@ -107,9 +103,7 @@ class TicketModelTest(TestCase):
         ticket = Ticket.objects.create(
             utilisateur=self.utilisateur, sport=self.sport, offre=self.offre, quantite=3
         )
-        self.assertEqual(
-            ticket.get_prix_total(), 60.00
-        ) 
+        self.assertEqual(ticket.get_prix_total(), 60.00)
 
 
 # Test du modèle Sport
@@ -127,7 +121,7 @@ class SportModelTest(TestCase):
         self.assertEqual(sport.nom, "Natation")
         self.assertEqual(str(sport.date_evenement), "2024-07-25")
         self.assertEqual(sport.description, "Compétition de natation olympique.")
-        self.assertFalse(sport.image)  
+        self.assertFalse(sport.image)
 
     def test_str_representation(self):
         self.assertEqual(str(self.sport), "Natation")
@@ -164,9 +158,7 @@ class PaiementModelTest(TestCase):
         self.assertEqual(paiement.montant, self.ticket.get_prix_total())
         self.assertEqual(paiement.methode_paiement, "Carte de crédit")
         self.assertTrue(paiement.statut_paiement)
-        self.assertIsNotNone(
-            paiement.date_paiement
-        )  
+        self.assertIsNotNone(paiement.date_paiement)
 
     def test_str_representation(self):
         paiement = Paiement.objects.create(
@@ -200,7 +192,7 @@ class GenerationTicketModelTest(TestCase):
             utilisateur=self.utilisateur, sport=self.sport, offre=self.offre, quantite=1
         )
 
-    @patch("cloudinary.uploader.upload")  
+    @patch("cloudinary.uploader.upload")
     def test_generation_ticket_creation(self, mock_upload):
         mock_upload.return_value = {"secure_url": "http://example.com/fake_qrcode.png"}
 
@@ -265,6 +257,7 @@ class OffreModelTest(TestCase):
 
 
 ## Test des vues ##
+
 
 # Test de la vue home
 class HomeViewTest(TestCase):
@@ -370,9 +363,7 @@ class TicketListViewTest(TestCase):
     def test_ticket_list_view(self):
         response = self.client.get(reverse("ticket_list"))
         self.assertEqual(response.status_code, 200)
-        self.assertContains(
-            response, "Football"
-        )  
+        self.assertContains(response, "Football")
 
 
 # Test de la vue du panier
@@ -413,12 +404,10 @@ class PanierViewTest(TestCase):
     def test_quantite_invalide(self):
         response = self.client.post(
             reverse("panier"),
-            {f"quantite_{self.ticket.id}": -1, "action": "update"}, 
+            {f"quantite_{self.ticket.id}": -1, "action": "update"},
         )
         self.ticket.refresh_from_db()
-        self.assertNotEqual(
-            self.ticket.quantite, -1
-        )  
+        self.assertNotEqual(self.ticket.quantite, -1)
 
 
 # Test de la vue pour le téléchargement du billet
@@ -444,17 +433,11 @@ class TelechargerBilletViewTest(TestCase):
 
     def test_acces_telechargement_billet(self):
         response = self.client.get(reverse("telecharger_billet", args=[self.billet.id]))
-        self.assertEqual(
-            response.status_code, 200
-        )  
-        self.assertIn(
-            "application/pdf", response["Content-Type"]
-        )  
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("application/pdf", response["Content-Type"])
 
     def test_acces_billet_non_existant(self):
-        response = self.client.get(
-            reverse("telecharger_billet", args=[9999])
-        )  
+        response = self.client.get(reverse("telecharger_billet", args=[9999]))
         self.assertEqual(response.status_code, 404)
 
     def test_acces_billet_autre_utilisateur(self):
@@ -467,12 +450,11 @@ class TelechargerBilletViewTest(TestCase):
         self.client.login(email="jean.dupont@exemple.com", password="Test@123")
 
         response = self.client.get(reverse("telecharger_billet", args=[self.billet.id]))
-        self.assertEqual(
-            response.status_code, 404
-        )  
+        self.assertEqual(response.status_code, 404)
 
 
 ## Test des formulaires ##
+
 
 # Test du formulaire utilisateur
 class UtilisateurFormTest(TestCase):

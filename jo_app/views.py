@@ -1,4 +1,5 @@
 import locale
+
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.views import LoginView, LogoutView
@@ -7,6 +8,7 @@ from django.http import HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse_lazy
 from weasyprint import HTML
+
 from .forms import ConnexionForm, PaiementForm, TicketForm, UtilisateurForm
 from .models import GenerationTicket, Sport, Ticket
 

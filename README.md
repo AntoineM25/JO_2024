@@ -80,6 +80,11 @@ python manage.py runserver
 -   Test du formulaire de connexion
 -   Test du formulaire de choix de ticket pour s'assurer que la synchronisation est bien réalisée avec le panier.
 
+### ***Tests qualité du code***
+
+#### Tests avec pylint
+-   Amélioration de la note du code sous pylint : Your code has been rated at 3.11/10 (previous run: 2.90/10, +0.21)
+
 ### ***Tests unitaires***
 
 -   L'application comporte des tests unitaires pour vérifier le bon fonctionnement des principales fonctionnalités.

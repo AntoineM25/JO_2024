@@ -1,10 +1,14 @@
-import logging, os, re, secrets, traceback, cloudinary.uploader, qrcode
+import logging
+import os
+import re
+import secrets
+import traceback
 from io import BytesIO
-from django.contrib.auth.models import (
-    AbstractBaseUser,
-    BaseUserManager,
-    PermissionsMixin,
-)
+
+import cloudinary.uploader
+import qrcode
+from django.contrib.auth.models import (AbstractBaseUser, BaseUserManager,
+                                        PermissionsMixin)
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils import timezone
