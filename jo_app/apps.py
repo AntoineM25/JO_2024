@@ -1,6 +1,7 @@
 """
 Ce module gère la configuration de l'application.
 """
+
 from django.apps import AppConfig
 
 

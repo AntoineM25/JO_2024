@@ -1,6 +1,7 @@
 """
 Ce module gère l'administration de l'application via Django Admin.
 """
+
 from django.contrib import admin
 
 from .models import GenerationTicket, Offre, Paiement, Sport, Ticket, Utilisateur

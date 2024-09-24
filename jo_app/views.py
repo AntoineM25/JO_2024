@@ -21,20 +21,23 @@ from weasyprint import HTML
 from .forms import ConnexionForm, PaiementForm, TicketForm, UtilisateurForm
 from .models import GenerationTicket, Sport, Ticket
 
-# Parametrage de la locale en français
 try:
     locale.setlocale(locale.LC_ALL, "fr_FR.UTF-8")
 except locale.Error:
     locale.setlocale(locale.LC_ALL, "C")
 
 
-# Création de 'home'
 def home(request):
+    """
+    Crée la vue de la page d'accueil.
+    """
     return render(request, "home.html")
 
 
-# Création de 'inscription'
 def inscription(request):
+    """
+    Crée la vue pour l'inscription.
+    """
     if request.method == "POST":
         form = UtilisateurForm(request.POST)
         if form.is_valid():
@@ -47,9 +50,11 @@ def inscription(request):
     return render(request, "inscription.html", {"form": form})
 
 
-# Vue pour la création de tickets
 @login_required(login_url="connexion")
 def ticket_create_view(request):
+    """
+    Crée la vue pour la création d'un ticket.
+    """
     sport_nom = request.GET.get("sport", "")
     sport = Sport.objects.filter(nom=sport_nom).first()
 
@@ -74,17 +79,21 @@ def ticket_create_view(request):
     )
 
 
-# Affichage de la liste des tickets
 @login_required(login_url="connexion")
 def ticket_list_view(request):
+    """
+    Crée la vue pour la liste des tickets.
+    """
     tickets = Ticket.objects.all()
     tickets_list = ", ".join([str(ticket) for ticket in tickets])
     return HttpResponse(f"Liste des tickets: {tickets_list}")
 
 
-# Mise à jour d'un ticket
 @login_required(login_url="connexion")
 def ticket_update_view(request, ticket_id):
+    """
+    Crée la vue pour la mise à jour d'un ticket.
+    """
     ticket = get_object_or_404(Ticket, id=ticket_id)
     if request.method == "POST":
         form = TicketForm(request.POST, instance=ticket)
@@ -96,9 +105,11 @@ def ticket_update_view(request, ticket_id):
     return render(request, "ticket.html", {"form": form})
 
 
-# Suppression d'un ticket
 @login_required(login_url="connexion")
 def ticket_delete_view(request, ticket_id):
+    """
+    Crée la vue pour la suppression d'un ticket.
+    """
     ticket = get_object_or_404(Ticket, id=ticket_id, utilisateur=request.user)
     if request.method == "POST":
         ticket.delete()
@@ -107,6 +118,9 @@ def ticket_delete_view(request, ticket_id):
 
 
 def get_sport_date(request, sport_id):
+    """
+    Récupère la date d'un événement
+    """
     try:
         sport = Sport.objects.get(id=sport_id)
         formatted_date = sport.date_evenement.strftime("%d %B %Y")
@@ -117,15 +131,19 @@ def get_sport_date(request, sport_id):
         return JsonResponse({"error": "Sport non trouvé"}, status=404)
 
 
-# Liste des sports
 def sport_list_view(request):
+    """
+    Crée la vue pour la liste des sports.
+    """
     sports = Sport.objects.all()
     return render(request, "sport.html", {"sports": sports})
 
 
-# Vue du panier
 @login_required(login_url="connexion")
 def panier_view(request):
+    """
+    Crée la vue pour le panier.
+    """
     utilisateur = request.user
     tickets = Ticket.objects.filter(utilisateur=utilisateur, est_achete=False)
 
@@ -169,28 +187,40 @@ def panier_view(request):
     )
 
 
-# Vue pour la connexion
 class ConnexionView(LoginView):
+    """
+    Vue pour l'authentification.
+    """
     template_name = "connexion.html"
     form_class = ConnexionForm
 
     def form_valid(self, form):
+        """
+        Vérifie si le formulaire est valide.
+        """
         print(f"Authentification réussie pour : {form.get_user()}")
         return super().form_valid(form)
 
     def get_success_url(self):
+        """
+        Renvoie l'URL de redirection.
+        """
         next_url = self.request.POST.get("next") or self.request.GET.get("next")
         return next_url or reverse_lazy("home")
 
 
-# Vue pour la déconnexion
 class DeconnexionView(LogoutView):
+    """
+    Vue pour la déconnexion.
+    """
     next_page = "home"
 
 
-# Vue pour le paiement
 @login_required(login_url="connexion")
 def paiement_view(request):
+    """
+    Crée la vue pour le paiement.
+    """
     utilisateur = request.user
     tickets = Ticket.objects.filter(utilisateur=utilisateur, est_achete=False)
     total = sum(ticket.get_prix_total() for ticket in tickets)
@@ -218,9 +248,11 @@ def paiement_view(request):
     return render(request, "paiement.html", {"total": total})
 
 
-# MAJ automatique des quantités du panier
 @login_required(login_url="connexion")
 def maj_quantite_view(request):
+    """
+    Met à jour la quantité d'un ticket dans le panier.
+    """
     if request.method == "POST":
         ticket_id = request.POST.get("ticket_id")
         quantite = request.POST.get("quantite")
@@ -245,8 +277,10 @@ def maj_quantite_view(request):
     return JsonResponse({"success": False, "message": "Requête invalide."})
 
 
-# Vue de confirmation du paiement
 def confirmation_view(request):
+    """
+    Crée la vue pour la confirmation du paiement.
+    """
     return render(
         request,
         "confirmation.html",
@@ -256,9 +290,11 @@ def confirmation_view(request):
     )
 
 
-# Vue Mes commandes
 @login_required(login_url="connexion")
 def mes_commandes_view(request):
+    """
+    Crée la vue pour les commandes de l'utilisateur.
+    """
     utilisateur = request.user
     tickets = Ticket.objects.filter(utilisateur=utilisateur, est_achete=True)
     billets = GenerationTicket.objects.filter(ticket__utilisateur=utilisateur)
@@ -268,9 +304,11 @@ def mes_commandes_view(request):
     )
 
 
-# Vue pour télécharger le billet en PDF
 @login_required(login_url="connexion")
 def telecharger_billet_view(request, billet_id):
+    """
+    Télécharge un billet au format PDF.
+    """
     billet = get_object_or_404(
         GenerationTicket, id=billet_id, ticket__utilisateur=request.user
     )
@@ -293,6 +331,9 @@ def telecharger_billet_view(request, billet_id):
 # Vue ventes pour admin
 @login_required(login_url="connexion")
 def ventes_view(request):
+    """
+    Crée la vue pour les ventes.
+    """
     billets = GenerationTicket.objects.all()
 
     total_billets = billets.count()
