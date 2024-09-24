@@ -1,3 +1,12 @@
+"""
+Ce module contient les vues de l'application. 
+Il contient les vues home, inscription, ticket_create_view, 
+ticket_list_view, ticket_update_view, ticket_delete_view, 
+get_sport_date, sport_list_view, panier_view, ConnexionView, 
+DeconnexionView, paiement_view, maj_quantite_view, confirmation_view, 
+mes_commandes_view, telecharger_billet_view, ventes_view.
+"""
+
 import locale
 
 from django.contrib import messages

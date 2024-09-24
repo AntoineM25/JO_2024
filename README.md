@@ -84,6 +84,8 @@ python manage.py runserver
 
 #### Tests avec pylint
 -   Amélioration de la note du code sous pylint : Your code has been rated at 3.11/10 (previous run: 2.90/10, +0.21)
+-   Amélioration de la note du code sous pylint : Your code has been rated at 3.20/10 (previous run: 3.11/10, +0.09)
+-   Amélioration de la note du code sous pylint : Your code has been rated at 3.66/10 (previous run: 3.40/10, +0.25)
 
 ### ***Tests unitaires***
 

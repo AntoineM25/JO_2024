@@ -1,3 +1,7 @@
+"""
+Ce module gère les tests unitaires de l'application.
+"""
+
 from decimal import Decimal
 from unittest.mock import patch
 
