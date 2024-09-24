@@ -1,17 +1,14 @@
 import locale
-
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.views import LoginView, LogoutView
 from django.db.models import Count, F, Sum
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
-from django.template.loader import render_to_string
-from django.urls import reverse, reverse_lazy
+from django.urls import reverse_lazy
 from weasyprint import HTML
-
 from .forms import ConnexionForm, PaiementForm, TicketForm, UtilisateurForm
-from .models import GenerationTicket, Paiement, Sport, Ticket, Utilisateur
+from .models import GenerationTicket, Sport, Ticket
 
 # Parametrage de la locale en français
 try:
@@ -19,11 +16,9 @@ try:
 except locale.Error:
     locale.setlocale(locale.LC_ALL, "C")
 
-
 # Création de 'home'
 def home(request):
     return render(request, "home.html")
-
 
 # Création de 'inscription'
 def inscription(request):
@@ -33,15 +28,14 @@ def inscription(request):
             user = form.save(commit=False)
             user.set_password(
                 form.cleaned_data["password1"]
-            )  # Assure-toi d'enregistrer le mot de passe correctement
+            )
             user.save()
             return redirect(
                 "connexion"
-            )  # Redirige vers la page de connexion après l'inscription
+            )
     else:
         form = UtilisateurForm()
     return render(request, "inscription.html", {"form": form})
-
 
 # Vue pour la création de tickets
 @login_required(login_url="connexion")
@@ -59,12 +53,12 @@ def ticket_create_view(request):
         if form.is_valid():
             ticket = form.save(
                 commit=False
-            )  # Ne sauvegarde pas encore le ticket dans la base de données
+            )  
             ticket.utilisateur = (
                 request.user
-            )  # Associe le ticket à l'utilisateur connecté
-            ticket.save()  # Maintenant, on peut sauvegarder le ticket
-            return redirect("panier")  # Redirige vers la page du panier
+            )  
+            ticket.save()  
+            return redirect("panier") 
     else:
         initial_data = {"sport": sport}
         form = TicketForm(initial=initial_data)
@@ -73,14 +67,12 @@ def ticket_create_view(request):
         request, "ticket.html", {"form": form, "date_evenement": date_evenement}
     )
 
-
 # Affichage de la liste des tickets
 @login_required(login_url="connexion")
 def ticket_list_view(request):
     tickets = Ticket.objects.all()
     tickets_list = ", ".join([str(ticket) for ticket in tickets])
     return HttpResponse(f"Liste des tickets: {tickets_list}")
-
 
 # Mise à jour d'un ticket
 @login_required(login_url="connexion")
@@ -95,7 +87,6 @@ def ticket_update_view(request, ticket_id):
         form = TicketForm(instance=ticket)
     return render(request, "ticket.html", {"form": form})
 
-
 # Suppression d'un ticket
 @login_required(login_url="connexion")
 def ticket_delete_view(request, ticket_id):
@@ -104,7 +95,6 @@ def ticket_delete_view(request, ticket_id):
         ticket.delete()
         return redirect("panier")
     return render(request, "ticket_confirm_delete.html", {"ticket": ticket})
-
 
 def get_sport_date(request, sport_id):
     try:
@@ -116,25 +106,21 @@ def get_sport_date(request, sport_id):
         print(f"Sport avec ID {sport_id} non trouvé.")
         return JsonResponse({"error": "Sport non trouvé"}, status=404)
 
-
 # Liste des sports
 def sport_list_view(request):
     sports = Sport.objects.all()
     return render(request, "sport.html", {"sports": sports})
 
-
 # Vue du panier
 @login_required(login_url="connexion")
 def panier_view(request):
     utilisateur = request.user
-    # Filtrer uniquement les tickets non achetés
     tickets = Ticket.objects.filter(utilisateur=utilisateur, est_achete=False)
 
     if request.method == "POST":
         action = request.POST.get("action")
 
         if action.startswith("delete_"):
-            # Supprimer le ticket
             ticket_id = action.split("_")[1]
             ticket = get_object_or_404(Ticket, id=ticket_id, utilisateur=request.user)
             ticket.delete()
@@ -142,7 +128,6 @@ def panier_view(request):
             return redirect("panier")
 
         elif action == "update":
-            # Mettre à jour les quantités
             for ticket in tickets:
                 quantite_str = request.POST.get(f"quantite_{ticket.id}")
                 if quantite_str and quantite_str.isdigit():
@@ -154,7 +139,6 @@ def panier_view(request):
             return redirect("panier")
 
         elif action == "pay":
-            # Mettre à jour les quantités avant le paiement
             for ticket in tickets:
                 quantite_str = request.POST.get(f"quantite_{ticket.id}")
                 if quantite_str and quantite_str.isdigit():
@@ -163,19 +147,16 @@ def panier_view(request):
                         ticket.quantite = quantite
                         ticket.save()
 
-            # Rediriger vers la page de paiement avec le montant mis à jour
             return redirect("paiement")
 
-    # Recalculer le total après la mise à jour des quantités
     total = sum(
         ticket.get_prix_total() for ticket in tickets
-    )  # Calcul du total avec les quantités
+    )  
     form = PaiementForm(initial={"montant": total})
 
     return render(
         request, "panier.html", {"tickets": tickets, "total": total, "form": form}
     )
-
 
 # Vue pour la connexion
 class ConnexionView(LoginView):
@@ -183,7 +164,6 @@ class ConnexionView(LoginView):
     form_class = ConnexionForm
 
     def form_valid(self, form):
-        # Vérifier l'authentification
         print(f"Authentification réussie pour : {form.get_user()}")
         return super().form_valid(form)
 
@@ -191,42 +171,35 @@ class ConnexionView(LoginView):
         next_url = self.request.POST.get("next") or self.request.GET.get("next")
         return next_url or reverse_lazy("home")
 
-
 # Vue pour la déconnexion
 class DeconnexionView(LogoutView):
     next_page = "home"
-
 
 # Vue pour le paiement
 @login_required(login_url="connexion")
 def paiement_view(request):
     utilisateur = request.user
-    # Filtrer uniquement les tickets non achetés pour le calcul du paiement
     tickets = Ticket.objects.filter(utilisateur=utilisateur, est_achete=False)
     total = sum(
         ticket.get_prix_total() for ticket in tickets
-    )  # Calcul du total avec les quantités
+    )  
 
     if request.method == "POST":
-        # Simuler le paiement
         card_number = request.POST.get("cardNumber")
         expiry_date = request.POST.get("expiryDate")
         cvv = request.POST.get("cvv")
 
-        if card_number and expiry_date and cvv:  # Vérification basique pour le mock
-            # Générer les billets et marquer les tickets comme achetés
+        if card_number and expiry_date and cvv: 
             for ticket in tickets:
                 for _ in range(
                     ticket.quantite
-                ):  # Créer une instance de GenerationTicket pour chaque billet
+                ):  
                     GenerationTicket.objects.create(ticket=ticket)
                 ticket.est_achete = True
                 ticket.save()
-
-            # Afficher un message de succès
+                
             messages.success(request, "Paiement réussi et billets générés !")
 
-            # Rediriger vers la page de confirmation
             return redirect("confirmation")
         else:
             messages.error(
@@ -234,7 +207,6 @@ def paiement_view(request):
             )
 
     return render(request, "paiement.html", {"total": total})
-
 
 # MAJ automatique des quantités du panier
 @login_required(login_url="connexion")
@@ -244,7 +216,6 @@ def maj_quantite_view(request):
         quantite = request.POST.get("quantite")
 
         try:
-            # Assurez-vous de filtrer les tickets non achetés
             ticket = Ticket.objects.get(
                 id=ticket_id, utilisateur=request.user, est_achete=False
             )
@@ -256,16 +227,14 @@ def maj_quantite_view(request):
         except Ticket.DoesNotExist:
             return JsonResponse({"success": False, "message": "Ticket non trouvé."})
 
-        # Recalculer le total du panier après la mise à jour de la quantité
         tickets = Ticket.objects.filter(
             utilisateur=request.user, est_achete=False
-        )  # Filtrer les tickets non achetés
+        ) 
         total = sum(ticket.get_prix_total() for ticket in tickets)
 
         return JsonResponse({"success": True, "total": total})
 
     return JsonResponse({"success": False, "message": "Requête invalide."})
-
 
 # Vue de confirmation du paiement
 def confirmation_view(request):
@@ -277,20 +246,18 @@ def confirmation_view(request):
         },
     )
 
-
 # Vue Mes commandes
 @login_required(login_url="connexion")
 def mes_commandes_view(request):
     utilisateur = request.user
     tickets = Ticket.objects.filter(
         utilisateur=utilisateur, est_achete=True
-    )  # Filtrer uniquement les tickets achetés
+    ) 
     billets = GenerationTicket.objects.filter(ticket__utilisateur=utilisateur)
 
     return render(
         request, "mes_commandes.html", {"tickets": tickets, "billets": billets}
     )
-
 
 # Vue pour télécharger le billet en PDF
 @login_required(login_url="connexion")
@@ -313,16 +280,13 @@ def telecharger_billet_view(request, billet_id):
 
     return response
 
-
 # Vue ventes pour admin
 @login_required(login_url="connexion")
 def ventes_view(request):
     billets = GenerationTicket.objects.all()
 
-    # Calculer le nombre total des billets vendus
     total_billets = billets.count()
 
-    # Calculer le nombre total et le prix total des billets vendus par sport
     total_billets_par_sport = GenerationTicket.objects.values(
         "ticket__sport__nom"
     ).annotate(
@@ -330,7 +294,6 @@ def ventes_view(request):
         total_prix=Sum(F("ticket__quantite") * F("ticket__offre__prix")),
     )
 
-    # Calculer le nombre total et le prix total des billets vendus par offre
     total_billets_par_offre = GenerationTicket.objects.values(
         "ticket__offre__type"
     ).annotate(
@@ -338,7 +301,6 @@ def ventes_view(request):
         total_prix=Sum(F("ticket__quantite") * F("ticket__offre__prix")),
     )
 
-    # Calculer le nombre total et le prix total des billets vendus par sport et offre
     total_billets_par_sport_et_offre = GenerationTicket.objects.values(
         "ticket__sport__nom", "ticket__offre__type"
     ).annotate(
@@ -346,7 +308,6 @@ def ventes_view(request):
         total_prix=Sum(F("ticket__quantite") * F("ticket__offre__prix")),
     )
 
-    # Calculer le prix total global
     total_prix_global = sum(item["total_prix"] for item in total_billets_par_offre)
 
     return render(
