@@ -59,6 +59,10 @@ main::before {
     color: #fff;
 }
 
+.card-header h2 {
+    padding: 1px 0 !important;
+}
+
 .btn:hover {
     background-color: #d4c47c !important;
     color: #1a1a1a !important;
