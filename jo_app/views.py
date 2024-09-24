@@ -273,8 +273,10 @@ def maj_quantite_view(request):
 
         tickets = Ticket.objects.filter(utilisateur=request.user, est_achete=False)
         total = sum(ticket.get_prix_total() for ticket in tickets)
+        
+        formatted_total = f"{total:,.2f}€".replace(",", " ").replace(".", ",")
 
-        return JsonResponse({"success": True, "total": total})
+        return JsonResponse({"success": True, "total": formatted_total})
 
     return JsonResponse({"success": False, "message": "Requête invalide."})
 
