@@ -1,6 +1,7 @@
 .navbar {
     background-color: #1a1a1a !important;
-    height: 100px;
+    min-height: 100px;
+    z-index: 1030;
 }
 
 .nav-item a,
@@ -67,4 +68,20 @@ main::before {
     background-color: #d4c47c !important;
     color: #1a1a1a !important;
     border: solid 1px #d4c47c !important;
+}
+
+/* menu burger */
+@media (max-width: 992px) {
+    .navbar {
+        height: auto;
+    }
+    main {
+        padding-top: 430px;
+    }
+}
+
+@media (max-width: 576px) {
+    main {
+        padding-top: 470px;
+    }
 }
