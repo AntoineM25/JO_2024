@@ -41,7 +41,7 @@
             <p>Acheteur : {{ billet.ticket.utilisateur.prenom }} {{ billet.ticket.utilisateur.nom }}*</p>
             <p>Ticket : {{ offre_formate }}</p>
             <p>Date de l'événement : {{ billet.ticket.sport.date_evenement }}</p>
-            <img src="{{ qr_code_url }}" alt="QR Code" width="150" height="150">
+            <img src="{{ billet.qr_code }}" alt="QR Code" width="150" height="150">
             <p>*Carte d'identité obligatoire lors de la présentation des billets</p>
         </div>
     </div>
