@@ -6,22 +6,22 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('jo_app', '0002_remove_generationticket_qr_code_and_more'),
+        ("jo_app", "0002_remove_generationticket_qr_code_and_more"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='generationticket',
-            name='qr_code_url',
+            model_name="generationticket",
+            name="qr_code_url",
         ),
         migrations.AddField(
-            model_name='generationticket',
-            name='qr_code',
-            field=models.ImageField(blank=True, upload_to=''),
+            model_name="generationticket",
+            name="qr_code",
+            field=models.ImageField(blank=True, upload_to=""),
         ),
         migrations.AlterField(
-            model_name='generationticket',
-            name='date_generation',
+            model_name="generationticket",
+            name="date_generation",
             field=models.DateTimeField(auto_now_add=True),
         ),
     ]

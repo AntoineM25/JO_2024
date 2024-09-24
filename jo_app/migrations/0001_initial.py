@@ -11,85 +11,217 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ('auth', '0012_alter_user_first_name_max_length'),
+        ("auth", "0012_alter_user_first_name_max_length"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='Offre',
+            name="Offre",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('type', models.CharField(max_length=50)),
-                ('prix', models.DecimalField(decimal_places=2, max_digits=10)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("type", models.CharField(max_length=50)),
+                ("prix", models.DecimalField(decimal_places=2, max_digits=10)),
             ],
         ),
         migrations.CreateModel(
-            name='Sport',
+            name="Sport",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('nom', models.CharField(max_length=100)),
-                ('date_evenement', models.DateField()),
-                ('image', models.ImageField(blank=True, upload_to='images/sports/')),
-                ('description', models.TextField(blank=True)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("nom", models.CharField(max_length=100)),
+                ("date_evenement", models.DateField()),
+                ("image", models.ImageField(blank=True, upload_to="images/sports/")),
+                ("description", models.TextField(blank=True)),
             ],
         ),
         migrations.CreateModel(
-            name='Utilisateur',
+            name="Utilisateur",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('password', models.CharField(max_length=128, verbose_name='password')),
-                ('last_login', models.DateTimeField(blank=True, null=True, verbose_name='last login')),
-                ('is_superuser', models.BooleanField(default=False, help_text='Designates that this user has all permissions without explicitly assigning them.', verbose_name='superuser status')),
-                ('nom', models.CharField(max_length=50)),
-                ('prenom', models.CharField(max_length=50)),
-                ('sexe', models.CharField(choices=[('H', 'Homme'), ('F', 'Femme'), ('NB', 'Non-binaire')], default='H', max_length=5)),
-                ('email', models.EmailField(max_length=50, unique=True)),
-                ('adresse', models.CharField(max_length=100)),
-                ('code_postal', models.CharField(max_length=10)),
-                ('ville', models.CharField(max_length=50)),
-                ('date_de_naissance', models.DateField(default='2000-01-01')),
-                ('date_d_inscription', models.DateField(auto_now_add=True)),
-                ('cle_securisee_1', models.CharField(blank=True, editable=False, max_length=64)),
-                ('is_active', models.BooleanField(default=True)),
-                ('is_staff', models.BooleanField(default=False)),
-                ('groups', models.ManyToManyField(blank=True, help_text='The groups this user belongs to. A user will get all permissions granted to each of their groups.', related_name='user_set', related_query_name='user', to='auth.group', verbose_name='groups')),
-                ('user_permissions', models.ManyToManyField(blank=True, help_text='Specific permissions for this user.', related_name='user_set', related_query_name='user', to='auth.permission', verbose_name='user permissions')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("password", models.CharField(max_length=128, verbose_name="password")),
+                (
+                    "last_login",
+                    models.DateTimeField(
+                        blank=True, null=True, verbose_name="last login"
+                    ),
+                ),
+                (
+                    "is_superuser",
+                    models.BooleanField(
+                        default=False,
+                        help_text="Designates that this user has all permissions without explicitly assigning them.",
+                        verbose_name="superuser status",
+                    ),
+                ),
+                ("nom", models.CharField(max_length=50)),
+                ("prenom", models.CharField(max_length=50)),
+                (
+                    "sexe",
+                    models.CharField(
+                        choices=[("H", "Homme"), ("F", "Femme"), ("NB", "Non-binaire")],
+                        default="H",
+                        max_length=5,
+                    ),
+                ),
+                ("email", models.EmailField(max_length=50, unique=True)),
+                ("adresse", models.CharField(max_length=100)),
+                ("code_postal", models.CharField(max_length=10)),
+                ("ville", models.CharField(max_length=50)),
+                ("date_de_naissance", models.DateField(default="2000-01-01")),
+                ("date_d_inscription", models.DateField(auto_now_add=True)),
+                (
+                    "cle_securisee_1",
+                    models.CharField(blank=True, editable=False, max_length=64),
+                ),
+                ("is_active", models.BooleanField(default=True)),
+                ("is_staff", models.BooleanField(default=False)),
+                (
+                    "groups",
+                    models.ManyToManyField(
+                        blank=True,
+                        help_text="The groups this user belongs to. A user will get all permissions granted to each of their groups.",
+                        related_name="user_set",
+                        related_query_name="user",
+                        to="auth.group",
+                        verbose_name="groups",
+                    ),
+                ),
+                (
+                    "user_permissions",
+                    models.ManyToManyField(
+                        blank=True,
+                        help_text="Specific permissions for this user.",
+                        related_name="user_set",
+                        related_query_name="user",
+                        to="auth.permission",
+                        verbose_name="user permissions",
+                    ),
+                ),
             ],
             options={
-                'abstract': False,
+                "abstract": False,
             },
         ),
         migrations.CreateModel(
-            name='Ticket',
+            name="Ticket",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('quantite', models.PositiveIntegerField(default=1)),
-                ('est_achete', models.BooleanField(default=False)),
-                ('offre', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='jo_app.offre')),
-                ('sport', models.ForeignKey(default=1, on_delete=django.db.models.deletion.CASCADE, to='jo_app.sport')),
-                ('utilisateur', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='tickets', to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("quantite", models.PositiveIntegerField(default=1)),
+                ("est_achete", models.BooleanField(default=False)),
+                (
+                    "offre",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE, to="jo_app.offre"
+                    ),
+                ),
+                (
+                    "sport",
+                    models.ForeignKey(
+                        default=1,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="jo_app.sport",
+                    ),
+                ),
+                (
+                    "utilisateur",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="tickets",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='Paiement',
+            name="Paiement",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('montant', models.DecimalField(decimal_places=2, max_digits=10)),
-                ('methode_paiement', models.CharField(max_length=50)),
-                ('statut_paiement', models.BooleanField(default=False)),
-                ('date_paiement', models.DateTimeField(default=django.utils.timezone.now)),
-                ('ticket', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='paiements', to='jo_app.ticket')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("montant", models.DecimalField(decimal_places=2, max_digits=10)),
+                ("methode_paiement", models.CharField(max_length=50)),
+                ("statut_paiement", models.BooleanField(default=False)),
+                (
+                    "date_paiement",
+                    models.DateTimeField(default=django.utils.timezone.now),
+                ),
+                (
+                    "ticket",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="paiements",
+                        to="jo_app.ticket",
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='GenerationTicket',
+            name="GenerationTicket",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('qr_code', models.ImageField(blank=True, upload_to='qr_codes/')),
-                ('cle_securisee_2', models.CharField(blank=True, editable=False, max_length=64)),
-                ('quantite_vendue', models.IntegerField(default=0)),
-                ('date_generation', models.DateTimeField(default=django.utils.timezone.now)),
-                ('ticket', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='generation_tickets', to='jo_app.ticket')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("qr_code", models.ImageField(blank=True, upload_to="qr_codes/")),
+                (
+                    "cle_securisee_2",
+                    models.CharField(blank=True, editable=False, max_length=64),
+                ),
+                ("quantite_vendue", models.IntegerField(default=0)),
+                (
+                    "date_generation",
+                    models.DateTimeField(default=django.utils.timezone.now),
+                ),
+                (
+                    "ticket",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="generation_tickets",
+                        to="jo_app.ticket",
+                    ),
+                ),
             ],
         ),
     ]

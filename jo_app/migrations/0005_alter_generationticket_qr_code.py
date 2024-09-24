@@ -7,13 +7,15 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('jo_app', '0004_alter_generationticket_qr_code'),
+        ("jo_app", "0004_alter_generationticket_qr_code"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='generationticket',
-            name='qr_code',
-            field=cloudinary.models.CloudinaryField(blank=True, max_length=255, verbose_name='image'),
+            model_name="generationticket",
+            name="qr_code",
+            field=cloudinary.models.CloudinaryField(
+                blank=True, max_length=255, verbose_name="image"
+            ),
         ),
     ]

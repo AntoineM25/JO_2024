@@ -6,17 +6,17 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('jo_app', '0001_initial'),
+        ("jo_app", "0001_initial"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='generationticket',
-            name='qr_code',
+            model_name="generationticket",
+            name="qr_code",
         ),
         migrations.AddField(
-            model_name='generationticket',
-            name='qr_code_url',
+            model_name="generationticket",
+            name="qr_code_url",
             field=models.URLField(blank=True),
         ),
     ]

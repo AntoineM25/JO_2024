@@ -1,6 +1,7 @@
 # Models dans l'admin
 from django.contrib import admin
-from .models import Utilisateur, Sport, Offre, Ticket, Paiement, GenerationTicket
+
+from .models import GenerationTicket, Offre, Paiement, Sport, Ticket, Utilisateur
 
 admin.site.register(Utilisateur)
 admin.site.register(Sport)
